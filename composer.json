@@ -1,0 +1,19 @@
+{
+    "name": "Gw/AutoCustomerGroup",
+    "description": "GW AutoCustomerGroup",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Gw\\AutoCustomerGroup\\": ""
+        }
+    },
+    "require": {
+        "magento/module-tax": "*",
+        "magento/module-customer": "*",
+        "magento/module-config": "*"
+    }
+}

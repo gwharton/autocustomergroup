@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Gw\AutoCustomerGroup\Model\AutoCustomerGroup">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="ukvat" xsi:type="object">Gw\AutoCustomerGroup\Model\Validator\UkVat</item>
+                <item name="euvat" xsi:type="object">Gw\AutoCustomerGroup\Model\Validator\EuVat</item>
+           </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Quote\Model\Quote\TotalsCollector">
+        <plugin name="autocustomergroup-processgroupchange" type="Gw\AutoCustomerGroup\Plugin\Quote\TotalsCollectorPlugin" />
+    </type>
+</config>

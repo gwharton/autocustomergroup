@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="autocustomergroup" translate="label" sortOrder="135" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Automatic Customer Groups</label>
+            <tab>customer</tab>
+            <resource>Magento_Customer::config_customer</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="default_group" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Default Group</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <config_path>customer/create_account/default_group</config_path>
+                </field>
+                <field id="auto_group_assign" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Automatic Assignment to Customer Group</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>customer/create_account/auto_group_assign</config_path>
+                </field>
+                <field id="viv_on_each_transaction" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Validate on Each Transaction</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>customer/create_account/viv_on_each_transaction</config_path>
+                    <depends>
+                        <field id="auto_group_assign">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="ukvat" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>UK VAT Scheme</label>
+                <comment>The Destination Country is within the UK or Isle of Man.</comment>
+                <depends>
+                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                </depends>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>VAT Number will be validated with The HMRC's online VAT Number checking service. Signup for an account at https://developer.service.hmrc.gov.uk to get Client ID and Client Secret.</comment>
+                </field>
+                <field id="environment" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Environment</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Environment</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="clientid" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Client ID</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="clientsecret" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Client Secret</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="registrationnumber" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>VAT Registration Number</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importthreshold" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Import VAT Threshold</label>
+                    <comment>The order value (ex VAT) threshold (in Store Currency) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>                
+                <field id="importabovethreshold" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - UK Import (Above Threshold)</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above Tax Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="validimport" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - UK Import (Valid VAT No.)</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, VAT Number Validated Successfully.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="euvat" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>EU VAT Scheme</label>
+                <comment>The Destination Country is within the EU.</comment>
+                <depends>
+                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                </depends>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="registrationcountry" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Registration Country</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="registrationnumber" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>VAT Registration Number</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>  
+                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Import VAT Threshold</label>
+                    <comment>The order value (ex VAT) threshold (in Store Currency) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>                
+                <field id="importabovethreshold" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - EU Import (Above Threshold)</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is above Tax Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="validintraeu" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Intra-EU (Valid VAT No.)</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is within the EU, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="validimport" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - EU Import (Valid VAT No.)</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+        <section id="customer">
+            <group id="create_account">
+                <field id="viv_domestic_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
+                <field id="viv_intra_union_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
+                <field id="viv_invalid_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
+                <field id="viv_error_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
+                <field id="auto_group_assign" showInDefault="0" showInWebsite="0" showInStore="0"/>
+                <field id="tax_calculation_address_type" showInDefault="0" showInWebsite="0" showInStore="0"/>
+                <field id="viv_on_each_transaction" showInDefault="0" showInWebsite="0" showInStore="0"/>
+                <field id="default_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
+            </group>
+        </section>
+    </system>
+</config>
