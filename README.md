@@ -1,14 +1,11 @@
 <h1>AutoCustomerGroup</h1>
 <p>Magento 2 Module - Auto Assign Customer Group based on Tax Scheme validation</p>
-
+<h2>Overview</h2>
 <p>Changes introduced to both the UK and EU VAT Tax systems require changes to be made to the Magento Tax system. These changes are required URGENTLY, and while Magento consider the changes required and work towards a permanent solution, this module can be used as an interim measure.</p>
-
 <p>The module should be considered BETA. I encourage users to analyse the code, suggest improvements, generate PR's where applicable.</p>
-
+<p>Once customers have been placed in an appropriate group, tax rules can be configured to apply different taxes to each group, depending on what is required.</p>
 <p>The module completely replaces the current Magento 2 VIV subsystem. The old settings are removed from the admin panel and replaced with a new Admin screen.</p>
-
 <img src="images/menu.png">
-
 <h2>General</h2>
 <img src="images/general.png">
 <ul>
