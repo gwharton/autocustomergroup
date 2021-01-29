@@ -37,3 +37,10 @@
 <li><b>Customer Group - Intra-EU (Valid VAT No.)</b> - Merchant Country is within the EU, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</li>
 <li><b>Customer Group - EU Import (Valid VAT No.)</b> - Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</li>
 </ul>
+
+<h2>Known Issues</h2>
+<ul>
+<li>I havent done any testing on creating customers in the admin, or validating VAT numbers in admin. This will need looking at, at some point.</li>
+<li>Is it acceptable to use local currency. The law is 135GBP or 150EUR, but we would need currency conversion setting up for this to automatically convert from local to GBP/EUR. The law defines which currency rates you can use when converting the thresholds. Need to look into this.</li>
+<li>Need to consider the merchant is in NI and sending to the EU. Also when merchant is in EU and sending to NI.</li>
+</ul>
