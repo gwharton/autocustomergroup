@@ -165,7 +165,11 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
         $storeId = $this->storeManager->getStore()->getId();
         $groups = [0];
         $groups[] = $this->createGroupAndAssign('uk_domestic_taxed', 'autocustomergroup/ukvat/domestictaxed');
-        $groups[] = $this->createGroupAndAssign('uk_distance_sale_taxed', 'autocustomergroup/ukvat/distancesaletaxed');
+        $groups[] = $this->createGroupAndAssign('uk_intraeu_zero', 'autocustomergroup/ukvat/intraeuzero');
+        $groups[] = $this->createGroupAndAssign(
+            'uk_intraeu_distance_sale_taxed',
+            'autocustomergroup/ukvat/intraeudistancesaletaxed'
+        );
         $groups[] = $this->createGroupAndAssign('uk_import_zero', 'autocustomergroup/ukvat/importzero');
         $groups[] = $this->createGroupAndAssign('uk_import_taxed', 'autocustomergroup/ukvat/importtaxed');
         $groups[] = $this->createGroupAndAssign('uk_import_untaxed', 'autocustomergroup/ukvat/importuntaxed');
@@ -307,7 +311,9 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             [1, 'GB', '', 'GB', 'NE1 1AA', 'GB123', 'uk_domestic_taxed', 0], //VAT is invalid
             [1, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936943', 'uk_domestic_taxed', 0], //VAT is invalid
 
-            [1, 'FR', '75001', 'GB', 'BT1 1AA', '', 'uk_distance_sale_taxed', 0],
+            [1, 'FR', '75001', 'GB', 'BT1 1AA', 'GB948561936944', 'uk_intraeu_zero', 0], //VAT is invalid
+
+            [1, 'FR', '75001', 'GB', 'BT1 1AA', '', 'uk_intraeu_distance_sale_taxed', 0],
 
             [1, 'FR','75001',  'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_zero', 0], //VAT is valid
             [10, 'FR', '75001', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_zero', 0], //VAT is valid

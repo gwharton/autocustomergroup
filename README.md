@@ -14,7 +14,8 @@
 <li><b>Validate on Each Transaction</b> - If the order is being placed by a customer that has existing Tax ID Validation data stored in their shipping address, then this can be re-used on each subsequent order, or it can be revalidated every time.</li>
 </ul>
 <h2>UK VAT Scheme</h2>
-<img src="images/ukvat.png">
+<img src="images/ukvat1.png">
+<img src="images/ukvat2.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>Environment</b> - Whether to use the Sandbox or Production servers for the HMRC VAT Validation Service.</li>
@@ -27,7 +28,8 @@
 </ul>
 
 <h2>EU VAT Scheme</h2>
-<img src="images/euvat.png">
+<img src="images/euvat1.png">
+<img src="images/euvat2.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>VAT Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to HMRC when all validation checks are made.</li>

@@ -132,13 +132,25 @@ class UkVat extends AbstractValidator
         }
         //Merchant Country is in the EU
         //Item shipped to the NI
+        //VAT No is valid
+        //Therefore Intra-EU Zero
+        if ($this->isCountryInEU($merchantCountry) &&
+            $this->isNI($customerCountryCode, $customerPostCode) &&
+            $this->isValid($vatValidationResult)) {
+            return $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/intraeuzero",
+                ScopeInterface::SCOPE_STORE,
+                $store
+            );
+        }        //Merchant Country is in the EU
+        //Item shipped to the NI
         //VAT No is not valid
-        //Therefore Distance Sale Taxed
+        //Therefore Intra-EU Distance Sale Taxed
         if ($this->isCountryInEU($merchantCountry) &&
             $this->isNI($customerCountryCode, $customerPostCode) &&
             !$this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/distancesaletaxed",
+                "autocustomergroup/" . self::CODE . "/intraeudistancesaletaxed",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );

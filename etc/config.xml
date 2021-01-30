@@ -10,7 +10,8 @@
                 <clientsecret></clientsecret>
                 <importthreshold>135</importthreshold>
                 <domestictaxed>0</domestictaxed>
-                <distancesaletaxed>0</distancesaletaxed>
+                <intraeuzero>0</intraeuzero>
+                <intraeudistancesaletaxed>0</intraeudistancesaletaxed>
                 <importzero>0</importzero>
                 <importtaxed>0</importtaxed>
                 <importuntaxed>0</importuntaxed>

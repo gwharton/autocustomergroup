@@ -38,7 +38,9 @@
 <p>The module assumes the following rules :</p>
 <ul>
     <li><b>Domestic Taxed</b> - For shipments wthin the UK/IM, normal UK VAT rules apply.</li>
-    <li><b>Distance Sale Taxed</b> - For shipments from the EU to NI and the buyer does not present a validated UK VAT 
+    <li><b>Intra-EU Zero</b> - For shipments from the EU to NI and the buyer presents a validated UK VAT 
+        number, then the sale can be zero rated for UK VAT.</li>
+    <li><b>Intra-EU Distance Sale Taxed</b> - For shipments from the EU to NI and the buyer does not present a validated UK VAT 
         number UK VAT should be charged.</li>
     <li><b>Import Zero</b> - For shipments from outside of the UK/IM to the UK/IM and the buyer presents a 
         validated UK VAT number, then the sale can be zero rated for UK VAT.</li>
@@ -104,15 +106,23 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>       
-                <field id="distancesaletaxed" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Distance Sale Taxed</label>
+                <field id="intraeuzero" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Intra-EU Zero</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is within the EU, Item is being shipped to NI, VAT Number Validated Successfully.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="intraeudistancesaletaxed" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Intra-EU Distance Sale Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU, Item is being shipped to NI, Valid VAT number is NOT supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>     
-                <field id="importzero" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importzero" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Zero</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</comment>
@@ -120,7 +130,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importtaxed" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UKIM, Order Value is below or equal to Import VAT Threshold.</comment>
@@ -128,7 +138,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                 <field id="importuntaxed" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                 <field id="importuntaxed" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above the Import VAT Threshold.</comment>
