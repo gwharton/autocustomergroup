@@ -20,6 +20,7 @@ use Magento\Quote\Model\QuoteIdMaskFactory;
 use Magento\Sales\Model\OrderRepository;
 use Magento\SalesRule\Model\RuleFactory;
 use Magento\SalesRule\Model\RuleRepository;
+use Magento\Store\Model\Information as StoreInformation;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -124,8 +125,9 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
     /**
      * @param float $qty
      * @param string $merchantCountry
-     * @param string $destinationPostcode
+     * @param string $merchantPostCode
      * @param string $destinationCountry
+     * @param string $destinationPostcode
      * @param string $destinationVatId
      * @param string $customerGroup
      * @param int $percentageDiscount
@@ -153,33 +155,43 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
     public function testAutoCustomerGroup(
         $qty,
         $merchantCountry,
-        $destinationPostcode,
+        $merchantPostCode,
         $destinationCountry,
+        $destinationPostcode,
         $destinationVatId,
         $customerGroup,
         $percentageDiscount
     ): void {
         $storeId = $this->storeManager->getStore()->getId();
         $groups = [0];
-        $groups[] = $this->createGroupAndAssign('uk_valid_import', 'autocustomergroup/ukvat/validimport');
+        $groups[] = $this->createGroupAndAssign('uk_domestic_taxed', 'autocustomergroup/ukvat/domestictaxed');
+        $groups[] = $this->createGroupAndAssign('uk_distance_sale_taxed', 'autocustomergroup/ukvat/distancesaletaxed');
+        $groups[] = $this->createGroupAndAssign('uk_import_zero', 'autocustomergroup/ukvat/importzero');
+        $groups[] = $this->createGroupAndAssign('uk_import_taxed', 'autocustomergroup/ukvat/importtaxed');
+        $groups[] = $this->createGroupAndAssign('uk_import_untaxed', 'autocustomergroup/ukvat/importuntaxed');
+
+        $groups[] = $this->createGroupAndAssign('eu_domestic_taxed', 'autocustomergroup/euvat/domestictaxed');
+        $groups[] = $this->createGroupAndAssign('eu_intraeu_zero', 'autocustomergroup/euvat/intraeuzero');
         $groups[] = $this->createGroupAndAssign(
-            'uk_import_above_threshold',
-            'autocustomergroup/ukvat/importabovethreshold'
+            'eu_intraeu_distance_sale_taxed',
+            'autocustomergroup/euvat/intraeudistancesaletaxed'
         );
-        $groups[] = $this->createGroupAndAssign('eu_valid_intraeu', 'autocustomergroup/euvat/validintraeu');
-        $groups[] = $this->createGroupAndAssign('eu_valid_import', 'autocustomergroup/euvat/validimport');
-        $groups[] = $this->createGroupAndAssign(
-            'eu_import_above_threshold',
-            'autocustomergroup/euvat/importabovethreshold'
-        );
+        $groups[] = $this->createGroupAndAssign('eu_import_zero', 'autocustomergroup/euvat/importzero');
+        $groups[] = $this->createGroupAndAssign('eu_import_taxed', 'autocustomergroup/euvat/importtaxed');
+        $groups[] = $this->createGroupAndAssign('eu_import_untaxed', 'autocustomergroup/euvat/importuntaxed');
 
         if ($percentageDiscount > 0) {
             $this->createSalesRule($groups, $percentageDiscount, $storeId);
         }
 
         $this->config->setValue(
-            "general/store_information/country_id",
+            StoreInformation::XML_PATH_STORE_INFO_COUNTRY_CODE,
             $merchantCountry,
+            ScopeInterface::SCOPE_STORE
+        );
+        $this->config->setValue(
+            StoreInformation::XML_PATH_STORE_INFO_POSTCODE,
+            $merchantPostCode,
             ScopeInterface::SCOPE_STORE
         );
 
@@ -275,37 +287,67 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
     {
         //Items to put in basket £10 each
         //Merchant Country
-        //Destination Postcode
+        //Merchant Postcode
         //Destination Country
+        //Destination Postcode
         //Expected Customer Group
         //Discount Percentage
         return [
-            [1, 'GB', 'NE1 1AA', 'GB', '', 'NOT LOGGED IN', 0],
-            [1, 'GB', 'NE1 1AA', 'GB', 'GB948561936944', 'NOT LOGGED IN', 0],
-            [1, 'IM', 'NE1 1AA', 'GB', 'GB948561936944', 'NOT LOGGED IN', 0],
-            [1, 'GB', 'IM1 1AA', 'IM', 'GB000549615108', 'NOT LOGGED IN', 0],
-            [1, 'IM', 'IM1 1AA', 'IM', 'GB000549615108', 'NOT LOGGED IN', 0],
-            [1, 'FR', 'NE1 1AA', 'GB', 'GB948561936944', 'uk_valid_import', 0],
-            //10 x 10ea = 100,  * 50% = 50, Threshold is 40
-            [10, 'FR', 'NE1 1AA', 'GB', 'GB948561936944', 'uk_import_above_threshold', 50],
-            [1, 'GB', 'NE1 1AA', 'GB', 'GB123', 'NOT LOGGED IN', 0],
-            [1, 'GB', 'NE1 1AA', 'GB', 'GB948561936943', 'NOT LOGGED IN', 0],
-            [1, 'GB', '75001', 'FR', '', 'NOT LOGGED IN', 0],
-            [1, 'GB', '12345', 'BR', '', 'NOT LOGGED IN', 0],
-            [1, 'IE', '', 'IE', '', 'NOT LOGGED IN', 0],
-            [1, 'IE', '', 'IE', 'IE8256796U', 'NOT LOGGED IN', 0],
-            [1, 'GB', '', 'IE', 'IE8256796U', 'eu_valid_import', 0],
+
+            [1, 'GB', '', 'BR', '12345', '', 'NOT LOGGED IN', 0],
+            [1, 'FR', '75001', 'BR', '12345', '', 'NOT LOGGED IN', 0],
+
+            [1, 'GB', '', 'GB', 'NE1 1AA', '', 'uk_domestic_taxed', 0],
+            [1, 'GB', 'BT1 1AA', 'GB', 'NE1 1AA', '', 'uk_domestic_taxed', 0],
+            [1, 'GB', 'NE1 1AA', 'GB', 'BT1 1AA', '', 'uk_domestic_taxed', 0],
+            [1, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic_taxed', 0], //VAT is valid
+            [1, 'IM', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic_taxed', 0], //VAT is valid
+            [1, 'GB', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic_taxed', 0], //VAT is valid
+            [1, 'IM', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic_taxed', 0], //VAT is valid
+            [1, 'GB', '', 'GB', 'NE1 1AA', 'GB123', 'uk_domestic_taxed', 0], //VAT is invalid
+            [1, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936943', 'uk_domestic_taxed', 0], //VAT is invalid
+
+            [1, 'FR', '75001', 'GB', 'BT1 1AA', '', 'uk_distance_sale_taxed', 0],
+
+            [1, 'FR','75001',  'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_zero', 0], //VAT is valid
+            [10, 'FR', '75001', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_zero', 0], //VAT is valid
+
+            //1 x 10ea = 10, Threshold is 40
+            [1, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
+            //5 x 10ea = 50 * 50% = 25, Threshold is 40
+            [5, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 50],
+
+            //10 x 10ea = 100, Threshold is 40
+            [10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 0],
+            //10 x 10ea = 100 * 50% = 50, Threshold is 40
+            [10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 50],
+
+            [1, 'IE', '', 'IE', '', '', 'eu_domestic_taxed', 0],
+            [1, 'IE', '', 'IE', '', 'IE8256796U', 'eu_domestic_taxed', 0], //VAT is valid
+
+            [1, 'DE', '', 'IE', '', 'IE8256796U', 'eu_intraeu_zero', 0], //VAT is valid
+            [1, 'GB', 'BT1 1AA', 'IE', '', 'IE8256796U', 'eu_intraeu_zero', 0], //VAT is valid
+
+            [1, 'DE', '', 'IE', '', 'IE8256796H', 'eu_intraeu_distance_sale_taxed', 0], //VAT is invalid
+            [1, 'GB', 'BT1 1AA', 'IE', '', '', 'eu_intraeu_distance_sale_taxed', 0],
+
+            [1, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_zero', 0], //VAT is valid
             //20 x 10ea = 200,  * 50% = 100, Threshold is 90
-            [20, 'GB', '', 'IE', 'IE8256796U', 'eu_import_above_threshold', 50],
+            [20, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_zero', 50], //VAT is valid
             //18 x 10ea = 180,  * 50% = 90, Threshold is 90
-            [18, 'GB', '', 'IE', 'IE8256796U', 'eu_valid_import', 50],
+            [18, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_zero', 50], //VAT is valid
             //16 x 10ea = 160,  * 50% = 80, Threshold is 90
-            [16, 'GB', '', 'IE', 'IE8256796U', 'eu_valid_import', 50],
-            [1, 'DE', '', 'IE', 'IE8256796U', 'eu_valid_intraeu', 0],
-            [1, 'DE', '', 'IE', 'IE8256796H', 'NOT LOGGED IN', 0],
-            [1, 'GB', '', 'IE', '123456', 'NOT LOGGED IN', 0],
-            [1, 'BR', '', 'IE', '', 'NOT LOGGED IN', 0],
-            [1, 'BR', '', 'IE', 'IE8256796U', 'eu_valid_import', 0],
+            [16, 'GB', '', 'IE', '','IE8256796U', 'eu_import_zero', 50], //VAT is valid
+            [1, 'BR', '', 'IE', '', 'IE8256796U', 'eu_import_zero', 0], //VAT is valid
+
+            [1, 'GB', '', 'FR', '75001', '', 'eu_import_taxed', 0],
+            [1, 'GB', '', 'IE', '', '123456', 'eu_import_taxed', 0], //VAT is invalid
+            [1, 'BR', '', 'IE', '', '', 'eu_import_taxed', 0],
+
+            //10 x 10ea = 100, Threshold is 90
+            [10, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 0],
+            //20 x 10ea = 200 * 50% = 100, Threshold is 90
+            [20, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 50],
         ];
     }
 }

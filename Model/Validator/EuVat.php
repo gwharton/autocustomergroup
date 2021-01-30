@@ -16,7 +16,6 @@ class EuVat extends AbstractValidator
     const CODE = "euvat";
     protected $code = self::CODE;
 
-    const XML_PATH_EU_COUNTRIES_LIST = 'general/country/eu_countries';
     const VAT_VALIDATION_WSDL_URL = 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
@@ -38,48 +37,101 @@ class EuVat extends AbstractValidator
      * @param $store
      * @return int
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCustomerGroup($customerCountryCode, $vatValidationResult, $quote, $store = null)
-    {
+    public function getCustomerGroup(
+        $customerCountryCode,
+        $customerPostCode,
+        $vatValidationResult,
+        $quote,
+        $store = null
+    ) {
         $merchantCountry = $this->helper->getMerchantCountryCode($store);
-
-        //If the store is not based in the EU but the item is being shipped to the EU and the order value ex vat
-        //is above the threshold then place in the importabovethreshold group
+        $merchantPostCode = $this->helper->getMerchantPostCode($store);
         $importThreshold = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/importthreshold",
             ScopeInterface::SCOPE_STORE,
             $store
         );
-        if (!$this->isCountryInEU($merchantCountry) &&
+        //Merchant Country is in the EU
+        //Item shipped to the EU
+        //Both countries the same
+        //Therefore Domestic Taxed
+        if ($this->isCountryInEU($merchantCountry) &&
             $this->isCountryInEU($customerCountryCode) &&
-            ($this->getOrderTotal($quote) > $importThreshold)) {
+            $merchantCountry == $customerCountryCode) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/importuntaxed",
+                "autocustomergroup/" . self::CODE . "/domestictaxed",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
         }
-        //If the store is based in the EU and the item is being shipped to the EU, but they are not the same country
-        //and the VAT Id is valid then place in validintraeu group
-        if ($this->isCountryInEU($merchantCountry) &&
+        //Merchant Country is in the EU or NI
+        //Item shipped to the EU
+        //Both countries are not the same
+        //VAT No is valid
+        //Therefore Intra EU Zero
+        if (($this->isCountryInEU($merchantCountry) || $this->isNi($merchantCountry, $merchantPostCode)) &&
             $this->isCountryInEU($customerCountryCode) &&
             $merchantCountry != $customerCountryCode &&
-            $vatValidationResult->getRequestSuccess() &&
-            $vatValidationResult->getIsValid()) {
+            $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeuzero",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
         }
-        //If the store is not based in the EU and the item is being shipped to the EU and the VAT Id is valid
-        //then place in validimport group
+        //Merchant Country is in the EU or NI
+        //Item shipped to the EU
+        //Both countries are not the same
+        //VAT No is not valid
+        //Therefore Intra EU Distance Sale Taxed
+        if (($this->isCountryInEU($merchantCountry) || $this->isNi($merchantCountry, $merchantPostCode)) &&
+            $this->isCountryInEU($customerCountryCode) &&
+            $merchantCountry != $customerCountryCode &&
+            !$this->isValid($vatValidationResult)) {
+            return $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/intraeudistancesaletaxed",
+                ScopeInterface::SCOPE_STORE,
+                $store
+            );
+        }
+        //Merchant Country is not in the EU
+        //Item shipped to the EU
+        //VAT No is valid.
+        //Therefore Import Zero
         if (!$this->isCountryInEU($merchantCountry) &&
             $this->isCountryInEU($customerCountryCode) &&
-            $vatValidationResult->getRequestSuccess() &&
-            $vatValidationResult->getIsValid()) {
+            $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importzero",
+                ScopeInterface::SCOPE_STORE,
+                $store
+            );
+        }
+        //Merchant Country is not in the EU
+        //Item shipped to the EU
+        //Order value is equal or below threshold
+        //Therefore Import Taxed
+        if (!$this->isCountryInEU($merchantCountry) &&
+            $this->isCountryInEU($customerCountryCode) &&
+            ($this->getOrderTotal($quote) <= $importThreshold)) {
+            return $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/importtaxed",
+                ScopeInterface::SCOPE_STORE,
+                $store
+            );
+        }
+        //Merchant Country is not in the EU
+        //Item shipped to the EU
+        //Order value is above threshold
+        //Therefore Import Unaxed
+        if (!$this->isCountryInEU($merchantCountry) &&
+            $this->isCountryInEU($customerCountryCode) &&
+            ($this->getOrderTotal($quote) > $importThreshold)) {
+            return $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/importuntaxed",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
@@ -195,22 +247,6 @@ class EuVat extends AbstractValidator
             || !empty($requesterCountryCode) && empty($requesterVatNumber)
             || !empty($requesterCountryCode) && !$this->isCountryInEU($requesterCountryCode)
         );
-    }
-
-    /**
-     * Check whether specified country is in EU countries list
-     *
-     * @param string $countryCode
-     * @param null|int $storeId
-     * @return bool
-     */
-    private function isCountryInEU($countryCode, $storeId = null)
-    {
-        $euCountries = explode(
-            ',',
-            $this->scopeConfig->getValue(self::XML_PATH_EU_COUNTRIES_LIST, ScopeInterface::SCOPE_STORE, $storeId)
-        );
-        return in_array($countryCode, $euCountries);
     }
 
     /**

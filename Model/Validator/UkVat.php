@@ -87,29 +87,94 @@ class UkVat extends AbstractValidator
      */
     public function checkCountry($country)
     {
+        return $this->isCountryUKIM($country);
+    }
+
+    private function isCountryUKIM($country)
+    {
         return in_array($country, ['GB','IM']);
     }
 
     /**
      * Get customer group based on VAT Check Result and Country of customer
      * @param string $customerCountryCode
+     * @param string $customerPostCode
      * @param DataObject $vatValidationResult
      * @param Quote $quote
      * @param $store
      * @return int|null
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function getCustomerGroup($customerCountryCode, $vatValidationResult, $quote, $store = null)
-    {
+    public function getCustomerGroup(
+        $customerCountryCode,
+        $customerPostCode,
+        $vatValidationResult,
+        $quote,
+        $store = null
+    ) {
         $merchantCountry = $this->helper->getMerchantCountryCode();
-        //If the store is not based in UK/IM and the item is being shipped to UK/IM and the order value ex vat
-        //is above the threshold then place in the importabovethreshold group
         $importThreshold = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/importthreshold",
             ScopeInterface::SCOPE_STORE,
             $store
         );
-        if (!$this->checkCountry($merchantCountry) &&
-            $this->checkCountry($customerCountryCode) &&
+        //Merchant Country is in the UK/IM
+        //Item shipped to the UK/IM
+        //Therefore Domestic Taxed
+        if ($this->isCountryUKIM($merchantCountry) &&
+            $this->isCountryUKIM($customerCountryCode)) {
+            return $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/domestictaxed",
+                ScopeInterface::SCOPE_STORE,
+                $store
+            );
+        }
+        //Merchant Country is in the EU
+        //Item shipped to the NI
+        //VAT No is not valid
+        //Therefore Distance Sale Taxed
+        if ($this->isCountryInEU($merchantCountry) &&
+            $this->isNI($customerCountryCode, $customerPostCode) &&
+            !$this->isValid($vatValidationResult)) {
+            return $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/distancesaletaxed",
+                ScopeInterface::SCOPE_STORE,
+                $store
+            );
+        }
+        //Merchant Country is in the UK/IM
+        //Item shipped to the UK/IM
+        //VAT No is valid
+        //Therefore Import Zero
+        if (!$this->isCountryUKIM($merchantCountry) &&
+            $this->isCountryUKIM($customerCountryCode) &&
+            $this->isValid($vatValidationResult)) {
+            return $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/importzero",
+                ScopeInterface::SCOPE_STORE,
+                $store
+            );
+        }
+        //Merchant Country is in the UK/IM
+        //Item shipped to the UK/IM
+        //Order value is equal or below threshold
+        //Therefore Import Taxed
+        if (!$this->isCountryUKIM($merchantCountry) &&
+            $this->isCountryUKIM($customerCountryCode) &&
+            ($this->getOrderTotal($quote) <= $importThreshold)) {
+            return $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/importtaxed",
+                ScopeInterface::SCOPE_STORE,
+                $store
+            );
+        }
+        //Merchant Country is in the UK/IM
+        //Item shipped to the UK/IM
+        //Order value is above threshold
+        //Therefore Import Unaxed
+        if (!$this->isCountryUKIM($merchantCountry) &&
+            $this->isCountryUKIM($customerCountryCode) &&
             ($this->getOrderTotal($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",
@@ -117,19 +182,6 @@ class UkVat extends AbstractValidator
                 $store
             );
         }
-        //If the store is not based in UK/IM and the item is being shipped to UK/IM and the VAT Id is valid
-        //then place in validimport group
-        if (!$this->checkCountry($merchantCountry) &&
-            $this->checkCountry($customerCountryCode) &&
-            $vatValidationResult->getRequestSuccess() &&
-            $vatValidationResult->getIsValid()) {
-            return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/importzero",
-                ScopeInterface::SCOPE_STORE,
-                $store
-            );
-        }
-
         return null;
     }
 

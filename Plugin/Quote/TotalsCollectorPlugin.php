@@ -109,6 +109,7 @@ class TotalsCollectorPlugin
         //Get the auto assigned group for customer
         $groupId = $this->autoCustomerGroup->getCustomerGroup(
             $customerCountryCode,
+            $address->getPostcode(),
             $validationResult,
             $quote,
             $storeId

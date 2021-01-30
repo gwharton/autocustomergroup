@@ -43,6 +43,7 @@ class AutoCustomerGroup
 
     /**
      * @param string $customerCountryCode
+     * @param string $customerPostCode
      * @param DataObject $taxIdValidationResults
      * @param Quote $quote
      * @param int $storeId
@@ -50,6 +51,7 @@ class AutoCustomerGroup
      */
     public function getCustomerGroup(
         $customerCountryCode,
+        $customerPostCode,
         $taxIdValidationResults,
         $quote,
         $storeId
@@ -58,6 +60,7 @@ class AutoCustomerGroup
             if ($validator->isEnabled() && $validator->checkCountry($customerCountryCode)) {
                 return $validator->getCustomerGroup(
                     $customerCountryCode,
+                    $customerPostCode,
                     $taxIdValidationResults,
                     $quote,
                     $storeId

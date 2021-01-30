@@ -49,4 +49,19 @@ class AutoCustomerGroup
             $storeId
         );
     }
+
+    /**
+     * Retrieve merchant Post Code
+     *
+     * @param Store|string|int|null $store
+     * @return string
+     */
+    public function getMerchantPostCode($storeId = null)
+    {
+        return (string)$this->scopeConfig->getValue(
+            StoreInformation::XML_PATH_STORE_INFO_POSTCODE,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
 }
