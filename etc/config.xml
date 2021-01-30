@@ -8,18 +8,24 @@
                 <environment>sandbox</environment>
                 <clientid></clientid>
                 <clientsecret></clientsecret>
-                <validimport>0</validimport>
-                <importabovethreshold>0</importabovethreshold>
                 <importthreshold>135</importthreshold>
+                <domestictaxed>0</domestictaxed>
+                <distancesaletaxed>0</distancesaletaxed>
+                <importzero>0</importzero>
+                <importtaxed>0</importtaxed>
+                <importuntaxed>0</importuntaxed>
             </ukvat>
             <euvat>
                 <enabled>0</enabled>
                 <registrationnumber></registrationnumber>
                 <registrationcountry></registrationcountry>
-                <validintraeu>0</validintraeu>
-                <validimport>0</validimport>
-                <importabovethreshold>0</importabovethreshold>
                 <importthreshold>135</importthreshold>
+                <domestictaxed>0</domestictaxed>
+                <intraeuzero>0</intraeuzero>
+                <intraeudistancesaletaxed>0</intraeudistancesaletaxed>
+                <importzero>0</importzero>
+                <importtaxed>0</importtaxed>
+                <importuntaxed>0</importuntaxed>
             </euvat>
         </autocustomergroup>
     </default>

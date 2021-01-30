@@ -95,16 +95,40 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>                
-                <field id="validimport" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                </field>      
+                <field id="domestictaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Domestic Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is within the UK/IM, Item is being shipped to the UK/IM.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>       
+                <field id="distancesaletaxed" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Distance Sale Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is within the EU, Item is being shipped to NI, Valid VAT number is NOT supplied.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>     
+                <field id="importzero" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Zero</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, VAT Number Validated Successfully.</comment>
+                    <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                 <field id="importabovethreshold" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UKIM, Order Value is below or equal to Import VAT Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                 <field id="importuntaxed" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above the Import VAT Threshold.</comment>
@@ -169,16 +193,32 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>                
-                <field id="validintraeu" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                </field>        
+                <field id="domestictaxed" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Domestic Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is within the EU, Item is being shipped to the same country.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>           
+                <field id="intraeuzero" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra-EU Zero</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is within the EU, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</comment>
+                    <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="validimport" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="intraeudistancesaletaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Intra EU Distance Sale Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same. Valid VAT Number not supplied.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importzero" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Zero</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</comment>
@@ -186,7 +226,15 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importabovethreshold" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is below or equal to the Import VAT Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importuntaxed" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is above the Import VAT Threshold.</comment>

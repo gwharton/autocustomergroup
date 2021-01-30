@@ -112,7 +112,7 @@ class UkVat extends AbstractValidator
             $this->checkCountry($customerCountryCode) &&
             ($this->getOrderTotal($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/importabovethreshold",
+                "autocustomergroup/" . self::CODE . "/importuntaxed",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
@@ -124,7 +124,7 @@ class UkVat extends AbstractValidator
             $vatValidationResult->getRequestSuccess() &&
             $vatValidationResult->getIsValid()) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/validimport",
+                "autocustomergroup/" . self::CODE . "/importzero",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
