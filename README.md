@@ -22,8 +22,8 @@
 <li><b>Client Secret</b> - Client Secret as provided by HMRC Developer Portal.</li>
 <li><b>VAT Registration Number</b> - The UK VAT Registration Number for the Merchant. This will be provided to HMRC when all validation checks are made.</li>
 <li><b>Import VAT Threshold</b> - The order value (ex VAT) threshold (in Store Currency) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</li>
-<li><b>Customer Group - UK Import (Above Threshold)</b> - Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above Tax Threshold.</li>
-<li><b>Customer Group - UK Import (Valid VAT No.)</b> - Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Import Zero</b> - Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above Tax Threshold.</li>
 </ul>
 
 <h2>EU VAT Scheme</h2>
@@ -33,9 +33,10 @@
 <li><b>VAT Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to HMRC when all validation checks are made.</li>
   <li><b>VAT Registration Number</b> - The EU VAT Registration Number for the Merchant. This will be provided to HMRC when all validation checks are made.</li>
 <li><b>Import VAT Threshold</b> - The order value (ex VAT) threshold (in Store Currency) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</li>
-<li><b>Customer Group - EU Import (Above Threshold)</b> - Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is above Tax Threshold.</li>
-<li><b>Customer Group - Intra-EU (Valid VAT No.)</b> - Merchant Country is within the EU, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</li>
-<li><b>Customer Group - EU Import (Valid VAT No.)</b> - Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Intra-EU Zero</b> - Merchant Country is within the EU, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Import Zero</b> - Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is above Tax Threshold.</li>
+
 </ul>
 
 <h2>Known Issues</h2>
