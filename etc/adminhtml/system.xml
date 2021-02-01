@@ -53,16 +53,19 @@
         number UK VAT should be charged.</li>
     <li><b>Import B2B</b> - For shipments from outside of the UK/IM to the UK/IM and the buyer presents a 
         validated UK VAT number, then VAT should not be charged. Reverse Charge notice to be included on Invoice.</li>
-    <li><b>Import Taxed</b> - For shipments from outside of the UK/IM to the UK/IM and the Intrinsic Value is equal to or below 135 GBP, then 
+    <li><b>Import Taxed</b> - For shipments from outside of the UK/IM to the UK/IM and the total goods value is equal to or below 135 GBP, then 
         VAT should be charged.</li>
-    <li><b>Import Untaxed</b> - For shipments from outside of the UK/IM to the UK/IM, if the Intrinsic Value is above 135 GBP, then VAT should 
+    <li><b>Import Untaxed</b> - For shipments from outside of the UK/IM to the UK/IM, if the total goods value is above 135 GBP, then VAT should 
         NOT be charged and instead will be collected at the UK/IM border along with any duties due.</li>
 </ul>
-<p>For the UK VAT Scheme, Intrinsic Value is defined as "The price the goods were sold for, not including any transport or insurance 
-    costs, unless they are included in the price and not separately shown on the invoice or any other identifiable taxes and charges." This 
-    can be confirmed
-    <a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk#goods-that-are-outside-the-uk-at-the-point-of-sale" 
-    target="_blank">here</a>.</p>
+<p>For the UK VAT Scheme, the following applies (This can be confirmed 
+    <a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk#goods-that-are-outside-the-uk-at-the-point-of-sal" 
+    target="_blank">here</a>) :</p>
+<ul>
+    <li>Total Goods value is the sum of the sale price of all items sold (including any discounts)</li>
+    <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
+    <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
+</ul>
 <p>More information on the scheme can be found on the 
     <a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk" target="_blank">UK Government Website</a></p>
 <p>Credentials for the UK HMRC VAT Number checker API can be obtained by signing up on the <a href="https://developer.service.hmrc.gov.uk" target="_blank">HMRC Developers Website</a>.</p>
@@ -142,7 +145,7 @@
                 <field id="importtaxed" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UKIM, Order Value is below or equal to Import VAT Threshold.</comment>
+                    <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UKIM, Goods Value is below or equal to Import VAT Threshold.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -150,14 +153,14 @@
                  <field id="importuntaxed" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above the Import VAT Threshold.</comment>
+                    <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Goods Value is above the Import VAT Threshold.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
             </group>
             <group id="euvat" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>EU VAT Scheme</label>
+                <label>EU OSS VAT Scheme</label>
                 <comment><![CDATA[
 <div class="autocustomergroup-schemeoverview">
 <p>This Scheme applies to shipments being sent from anywhere in the world to the EU. Note special procedures
@@ -173,15 +176,19 @@
         Destination Country VAT should be charged.</li>
     <li><b>Import B2B</b> - For shipments from outside of the EU to within the EU and the buyer presents a validated EU VAT number, then 
         VAT should not be charged. Reverse Charge notice to be included on Invoice.</li>
-    <li><b>Import Taxed</b> - For shipments from outside of the EU to the EU and the Intrinsic Value is equal to or below 150 EUR, then 
+    <li><b>Import Taxed</b> - For shipments from outside of the EU to the EU and the total goods value is equal to or below 150 EUR, then 
         Destination Country VAT should be charged.</li>
-    <li><b>Import Untaxed</b> - For shipments from outside of the EU to the EU and the Intrinsic Value is above 150 EUR, then VAT should 
+    <li><b>Import Untaxed</b> - For shipments from outside of the EU to the EU and the total goods value is above 150 EUR, then VAT should 
         NOT be charged and instead will be collected at the EU border along with any duties due.</li>
 </ul>
-<p>For the EU VAT Scheme, Intrinsic Value is defined as "The intrinsic value is the actual value of the product and does not include any other
-    costs such as insurance and freight." This can be confirmed 
+<p>For the EU OSS VAT Scheme, the following applies (This can be confirmed 
     <a href="https://ec.europa.eu/taxation_customs/sites/taxation/files/guidance_on_import_and_export_of_low_value_consignments_final.pdf" 
-    target="_blank">here</a> in Section 1.3.1.</p>
+    target="_blank">here</a> in Section 1.3.1) :</p>
+<ul>
+    <li>Total Goods value is the sum of the sale price of all items sold (including any discounts)</li>
+    <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
+    <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
+</ul>
 <p>More information on the scheme can be found on the
     <a href="https://ec.europa.eu/taxation_customs/customs-procedures/customs-formalities-low-value-consignments_en" target="_blank">European Commission Website</a></p>
 </div>
@@ -248,7 +255,7 @@
                 <field id="importtaxed" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is below or equal to the Import VAT Threshold.</comment>
+                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Goods Value is below or equal to the Import VAT Threshold.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -256,7 +263,7 @@
                 <field id="importuntaxed" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is above the Import VAT Threshold.</comment>
+                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Goods Value is above the Import VAT Threshold.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -274,23 +281,28 @@
     <li><b>Domestic</b> - For shipments within Norway, normal Norway VAT rules apply.</li>
     <li><b>Import B2B</b> - For shipments from outside of Norway to Norway and the buyer presents a Norway Business Number, then 
         VAT should not be charged.</li>
-    <li><b>Import Taxed</b> - For imports into Norway, where the value of the item sold is equal to or below 3000 NOK, then 
-        Norway VAT should be charged on that item.</li>
-    <li><b>Import Untaxed</b> - For imports into Norway, where the value of the item sold is above 3000 NOK, then VAT should 
-        NOT be charged on the item and instead will be collected at the EU border along with any duties due.</li>
+    <li><b>Import Taxed</b> - For imports into Norway, where the value of each individual item is below or equal to 3,000 NOK, then 
+        Norway VAT should be charged.</li>
+    <li><b>Import Untaxed</b> - For imports into Norway, where one or more individual items value is above 3,000 NOK, then VAT should 
+        NOT be charged and instead will be collected at the Norwegian border along with any duties due.</li>
 </ul>
-<p>For the Norway VOEC Scheme, When determining whether to apply VAT or not, the Item Value is defined as "The value that the 
-    item is sold at, and does not include additional costs and fees e.g. shipping and insurance costs." This can be confirmed 
+<p>For the Norway VOEC Scheme, the following applies (This can be confirmed 
     <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf" 
-    target="_blank">here</a> in Section 4.1.</p>
-<p>The above guide also refers to bundling in Section 4.2 where it states that multiple items can be shipped in a single shipment,
-    and it is the cost of 1 item that determines whether VAT should be charged on that 1 item, so a consignment of 10 items, each sold for
-    1000 NOK, should not have VAT charged at the point of sale, as no single item was above the 3000 NOK threshold. The guidance recommends if an order contains a mix 
+    target="_blank">in Section 4.1</a>) :</p>
+<ul>
+    <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
+    <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
+</ul>
+<p>The <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf" 
+    target="_blank">Online Stores and Marketplace Guidelines</a> refers to bundling in Section 4.2 where it states that multiple items can be shipped in a single shipment,
+    and it is the cost of each item that determines whether VAT should be charged on each item, so a consignment of 10 items, each sold for
+    1,000 NOK, should still have VAT charged at the point of sale even though the total order value exceeds 3,000 NOK. The guidance recommends if an order contains a mix 
     of above and below threshold items, that the order is split into separate orders. <b>Because of this, this module assumes that if
     any one single item in a shipment is above the threshold in value, then the entire order does not have VAT applied. Orders sent in
-    this way will be processed at the Norwegian border with VAT being charged as appropriate. This is in accordance with Section 4.2 of the above guidance.</b> 
+    this way will be processed at the Norwegian border with VAT being charged as appropriate. This is still in accordance with Section 4.2 of the above guidance.</b> 
 <p>More information on the scheme can be found on the
     <a href="https://www.skatteetaten.no/en/business-and-organisation/vat-and-duties/vat/foreign/e-commerce-voec/" target="_blank">Norwegian Tax Administration Website</a></p>
+<p>Norwegian Business Numbers are verified by a simple test that they are 9 digit numbers beginning with 8 or 9. No online lookups are performed.</p>
 </div>
                     ]]></comment>
                 <depends>
@@ -332,7 +344,7 @@
                 <field id="importtaxed" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not in Norway, Item is being shipped to Norway, All individual items in the order are valued below or equal to the Import VAT Threshold.</comment>
+                    <comment>Merchant Country is not in Norway, Item is being shipped to Norway, All items in the order are valued below or equal to the Import VAT Threshold.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -341,6 +353,187 @@
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in Norway, Item is being shipped to Norway, One or more items in the order is valued above the Import VAT Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="australiagst" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Australia GST for Non Residents Scheme</label>
+                <comment><![CDATA[
+<div class="autocustomergroup-schemeoverview">
+<p>This Scheme applies to shipments being sent from anywhere in the world to Consumers (Not B2B transactions) in Australia.</p>
+<p>As of 1st July 2017, all sellers must (if their turnover to Australia exceeds 75,000 AUD) register for the Australia GST for Non Residents scheme, 
+    and collect GST for B2C transactions at the point of sale and remit to the Australian Government.</p>
+<p>The module assumes the following rules :</p>
+<ul>
+    <li><b>Domestic</b> - For shipments within Australia, normal Australia GST rules apply.</li>
+    <li><b>Import B2B</b> - For shipments from outside of Australia to Australia and the buyer presents their ABN, then 
+        GST should not be charged.</li>
+    <li><b>Import Taxed</b> - For imports into Australia, where the total goods value is equal to or below 1,000 AUD, then 
+        GST should be charged.</li>
+    <li><b>Import Untaxed</b> - For imports into Australia, where the total goods value is above 1,000 AUD, then GST should 
+        NOT be charged and instead will be collected at the Australia border along with any duties due.</li>
+</ul>
+<p>For the Australia GST for Non Residents Scheme, the following applies (This can be confirmed 
+    <a href="https://www.ato.gov.au/business/international-tax-for-business/gst-on-low-value-imported-goods/terms-we-use/#Lowvaluegoods" 
+    target="_blank">here</a>) :</p>
+<ul>
+    <li>Total Goods value is the sum of the sale price of all items sold (including any discounts)</li>
+    <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
+    <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
+</ul>
+<p>The <a href="https://www.ato.gov.au/business/international-tax-for-business/gst-on-low-value-imported-goods/when-to-charge-gst/?anchor=ExceptionformultiplegoodsthattotaloverA1#ExceptionformultiplegoodsthattotaloverA1" target="_blank">When To Charge GST</a> 
+    guide details how to handle shipments that contain multiple low value items that will be shipped together, that when combined present an order
+    value that is above 1,000 AUD. In this case, even though individual items may be classed as low value items and would attract GST, the value
+    of the entire shipment is above the threshold and VAT should not be charged at the point of sale.</p>
+<p>More information on the scheme can be found on the
+    <a href="https://www.ato.gov.au/business/international-tax-for-business/in-detail/doing-business-in-australia/australian-gst-registration-for-non-residents/" target="_blank">Australian Tax Office Website</a></p>
+    <p>Credentials for the Australian Tax Office ABN checker API can be obtained by signing up on the <a href="https://abr.business.gov.au/Tools/WebServices" target="_blank">Australian Business Register Website</a>.</p>
+<p>ABN Number Verification is performed by checking the number format and mathematical check digit. No online lookups are performed.</p>
+</div>
+                    ]]></comment>
+                <depends>
+                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                </depends>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <!--<field id="apiguid" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>ABN API GUID</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>-->
+                <field id="registrationnumber" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>ATO Registration Number</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Import GST Threshold</label>
+                    <comment>If any item within the order is valued above this threshold (in Store Currency) then no GST should be charged on the order.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>        
+                <field id="domestic" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Domestic</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is in Australia, Item is being shipped to Australia.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>           
+                <field id="importb2b" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import B2B</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in Australia, Item is being shipped to Australia, ABN Supplied.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importtaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in Australia, Item is being shipped to Australia, Goods Value is below or equal to Import GST Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importuntaxed" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Untaxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in Australia, Item is being shipped to Australia, Goods Value is above the Import GST Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="newzealandgst" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>New Zealand GST</label>
+                <comment><![CDATA[
+<div class="autocustomergroup-schemeoverview">
+<p>This Scheme applies to shipments being sent from anywhere in the world to Consumers (Not B2B transactions) in New Zealand.</p>
+<p>As of 1st December 2019, all sellers must (if their turnover to New Zealand exceeds 60,000 NZD) register for the New Zealand GST scheme, 
+    and collect GST for B2C transactions at the point of sale and remit to the New Zealand Government.</p>
+<p>The module assumes the following rules :</p>
+<ul>
+    <li><b>Domestic</b> - For shipments within New Zealand, normal New Zealand GST rules apply.</li>
+    <li><b>Import B2B</b> - For shipments from outside of New Zealand to New Zealand and the buyer presents their GST Number, then 
+        GST should not be charged.</li>
+    <li><b>Import Taxed</b> - For imports into New Zealand, where the value of each individual item is below or equal to 1,000 NZD, then 
+        GST should be charged on the order.</li>
+    <li><b>Import Untaxed</b> - For imports into New Zealand, where one or more individual items value is above 1,000 NZD, then GST should 
+        NOT be charged and instead will be collected at the New Zealand border along with any duties due.</li>
+</ul>
+<p>For the New Zealand GST Scheme, the following applies (This can be confirmed 
+    <a href="https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir200---ir299/ad264/ad264-2019.pdf" 
+    target="_blank">here</a>) : </p>
+<ul>
+    <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
+    <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
+</ul>
+<p>The <a href="https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir200---ir299/ad264/ad264-2019.pdf" target="_blank">Selling goods to consumers
+    in New Zealand Guide</a> provides information on what to do where an order contains a mixture of items below and above the threshold. It recommends to charge
+    GST on the low value items and not charge GST on the high value items. This situation is too complex for this module to handle at present, therefore
+    if any single item on the order is above the GST Threshold, then no GST will be charged on the order, and the correct GST will be charged at the 
+    New Zealand border.</p> 
+<p>More information on the scheme can be found on the
+    <a href="https://www.ird.govt.nz/gst/gst-for-overseas-businesses/gst-on-low-value-imported-goods" target="_blank">New Zealand Inland Revenue Website</a></p>
+<p>GST Number Verification is performed by checking the number format and mathematical check digit. No online lookups are performed.</p>
+</div>
+                    ]]></comment>
+                <depends>
+                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                </depends>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="registrationnumber" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>GST Registration Number</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importthreshold" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Import GST Threshold</label>
+                    <comment>The individual item value limit (in Store Currency) above which no GST should be charged on the order.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>        
+                <field id="domestic" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Domestic</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is in New Zealand, Item is being shipped to New Zealand.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>           
+                <field id="importb2b" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import B2B</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in New Zealand, Item is being shipped to New Zealand, GST Number Supplied.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importtaxed" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in New Zealand, Item is being shipped to New Zealand, Value of each individual item is below or equal to Import GST Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importuntaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Untaxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in New Zealand, Item is being shipped to New Zealand, One or more items value is above the Import GST Threshold.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

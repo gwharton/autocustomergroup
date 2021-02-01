@@ -148,6 +148,10 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/registrationnumber 12345
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/importthreshold 3000
+     * @magentoConfigFixture current_store autocustomergroup/australiagst/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/australiagst/importthreshold 1000
+     * @magentoConfigFixture current_store autocustomergroup/newzealandgst/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/newzealandgst/importthreshold 1000
      * @magentoConfigFixture current_store general/region/state_required ""
      * //phpcs:ignore
      * @magentoConfigFixture current_store general/country/eu_countries AT,BE,BG,HR,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,MC,NL,PL,PT,RO,SK,SI,ES,SE
@@ -185,6 +189,25 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
         $groups[] = $this->createGroupAndAssign('norway_import_b2b', 'autocustomergroup/norwayvoec/importb2b');
         $groups[] = $this->createGroupAndAssign('norway_import_taxed', 'autocustomergroup/norwayvoec/importtaxed');
         $groups[] = $this->createGroupAndAssign('norway_import_untaxed', 'autocustomergroup/norwayvoec/importuntaxed');
+
+        $groups[] = $this->createGroupAndAssign('australia_domestic', 'autocustomergroup/australiagst/domestic');
+        $groups[] = $this->createGroupAndAssign('australia_import_b2b', 'autocustomergroup/australiagst/importb2b');
+        $groups[] = $this->createGroupAndAssign('australia_import_taxed', 'autocustomergroup/australiagst/importtaxed');
+        $groups[] = $this->createGroupAndAssign(
+            'australia_import_untaxed',
+            'autocustomergroup/australiagst/importuntaxed'
+        );
+
+        $groups[] = $this->createGroupAndAssign('newzealand_domestic', 'autocustomergroup/newzealandgst/domestic');
+        $groups[] = $this->createGroupAndAssign('newzealand_import_b2b', 'autocustomergroup/newzealandgst/importb2b');
+        $groups[] = $this->createGroupAndAssign(
+            'newzealand_import_taxed',
+            'autocustomergroup/newzealandgst/importtaxed'
+        );
+        $groups[] = $this->createGroupAndAssign(
+            'newzealand_import_untaxed',
+            'autocustomergroup/newzealandgst/importuntaxed'
+        );
 
         if ($percentageDiscount > 0) {
             $this->createSalesRule($groups, $percentageDiscount, $storeId);
@@ -316,13 +339,46 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             [1, 10, 'GB', '', 'BR', '12345', '', 'NOT LOGGED IN', 0],
             [1, 10, 'FR', '75001', 'BR', '12345', '', 'NOT LOGGED IN', 0],
 
+            //New Zealand GST
+            [1, 10, 'NZ', '', 'NZ', '1234', '', 'newzealand_domestic', 0],
+            [1, 10, 'NZ', '', 'NZ', '1234', '1234', 'newzealand_domestic', 0], //Invalid Business No
+            [1, 10, 'NZ', '', 'NZ', '1234', '49-091-850', 'newzealand_domestic', 0], //Valid Business No
+            [1, 10, 'NZ', '', 'NZ', '1234', '49091850', 'newzealand_domestic', 0], //Valid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NZ', '1234', '49091850', 'newzealand_import_b2b', 0], //Valid Business No
+            [10, 1000, 'GB', 'NE1 1AA', 'NZ', '1234', '49091850', 'newzealand_import_b2b', 0], //Valid Business No
+            [1, 4000, 'GB', 'NE1 1AA', 'NZ', '1234', '49091850', 'newzealand_import_b2b', 0], //Valid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NZ', '1234', '1234', 'newzealand_import_taxed', 0], //Invalid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
+            [9, 100, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
+            [5, 250, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
+            [5, 1000, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
+            [1, 2000, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_untaxed', 0],
+            [5, 1001, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_untaxed', 0],
+            [5, 4000, 'GB', 'NE1 1AA', 'NZ', '1234', '1234', 'newzealand_import_untaxed', 0], //Invalid Business No
+
+            //Australia GST
+            [1, 10, 'AU', '', 'AU', '1234', '', 'australia_domestic', 0],
+            [1, 10, 'AU', '', 'AU', '1234', '1234', 'australia_domestic', 0], //Invalid Business No
+            [1, 10, 'AU', '', 'AU', '1234', '40 978 973 457', 'australia_domestic', 0], //Valid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_b2b', 0], //Valid Business No
+            [10, 1000, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_b2b', 0], //Valid Business No
+            [1, 4000, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_b2b', 0], //Valid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_taxed', 0], //Invalid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [9, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [1, 1000, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [10, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [1, 2000, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
+            [5, 250, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
+            [5, 4000, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_untaxed', 0], //Invalid Business No
+
             //Norway VOEC
             [1, 10, 'NO', '1234', 'NO', '1234', '', 'norway_domestic', 0],
-            [1, 10, 'NO', '1234', 'NO', '1234', '912345678', 'norway_domestic', 0], //Invalid Business No
-            [1, 10, 'NO', '1234', 'NO', '1234', '2443', 'norway_domestic', 0], //Valid Business No
+            [1, 10, 'NO', '1234', 'NO', '1234', '912345678', 'norway_domestic', 0], //Valid Business No
+            [1, 10, 'NO', '1234', 'NO', '1234', '2443', 'norway_domestic', 0], //Invalid Business No
             [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
             [10, 1000, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
-            [1, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
+            [1, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '812345678', 'norway_import_b2b', 0], //Valid Business No
             [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '2443', 'norway_import_taxed', 0], //Invalid Business No
             [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],
             [10, 1000, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],

@@ -6,6 +6,8 @@
                 <item name="ukvat" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\UkVat</item>
                 <item name="euvat" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat</item>
                 <item name="norwayvoec" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\NorwayVoec</item>
+                <item name="australiagst" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\AustraliaGst</item>
+                <item name="newzealandgst" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\NewZealandGst</item>
            </argument>
         </arguments>
     </type>

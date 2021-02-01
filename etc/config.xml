@@ -37,6 +37,25 @@
                 <importtaxed>0</importtaxed>
                 <importuntaxed>0</importuntaxed>
             </norwayvoec>
+            <australiagst>
+                <enabled>0</enabled>
+                <apiguid></apiguid>
+                <registrationnumber></registrationnumber>
+                <importthreshold>1000</importthreshold>
+                <domestic>0</domestic>
+                <importb2b>0</importb2b>
+                <importtaxed>0</importtaxed>
+                <importuntaxed>0</importuntaxed>
+            </australiagst>
+            <newzealandgst>
+                <enabled>0</enabled>
+                <registrationnumber></registrationnumber>
+                <importthreshold>1000</importthreshold>
+                <domestic>0</domestic>
+                <importb2b>0</importb2b>
+                <importtaxed>0</importtaxed>
+                <importuntaxed>0</importuntaxed>
+            </newzealandgst>
         </autocustomergroup>
     </default>
 </config>

@@ -4,6 +4,7 @@ namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
+use SoapClient;
 
 /**
  * Live EU VAT numbers
@@ -30,7 +31,7 @@ class EuVat extends AbstractTaxScheme
     }
 
     /**
-     * Get customer group based on VAT Check Result and Country of customer
+     * Get customer group based on Validation Result and Country of customer
      * @param string $customerCountryCode
      * @param DataObject $vatValidationResult
      * @param Quote $quote
@@ -179,7 +180,7 @@ class EuVat extends AbstractTaxScheme
         $requesterCountryCodeForVatNumber = $this->getCountryCodeForVatNumber($requesterCountryCode);
 
         try {
-            $soapClient = $this->createVatNumberValidationSoapClient();
+            $soapClient = new SoapClient(self::VAT_VALIDATION_WSDL_URL);
 
             $requestParams = [];
             $requestParams['countryCode'] = $countryCodeForVatNumber;
@@ -207,17 +208,6 @@ class EuVat extends AbstractTaxScheme
             $gatewayResponse->setRequestIdentifier('');
         }
         return $gatewayResponse;
-    }
-
-    /**
-     * Create SOAP client based on VAT validation service WSDL
-     *
-     * @param boolean $trace
-     * @return \SoapClient
-     */
-    private function createVatNumberValidationSoapClient($trace = false)
-    {
-        return new \SoapClient(self::VAT_VALIDATION_WSDL_URL, ['trace' => $trace]);
     }
 
     /**

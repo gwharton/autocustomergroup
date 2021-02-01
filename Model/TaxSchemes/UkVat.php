@@ -96,7 +96,7 @@ class UkVat extends AbstractTaxScheme
     }
 
     /**
-     * Get customer group based on VAT Check Result and Country of customer
+     * Get customer group based on Validation Result and Country of customer
      * @param string $customerCountryCode
      * @param string $customerPostCode
      * @param DataObject $vatValidationResult

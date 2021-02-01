@@ -30,7 +30,7 @@ class NorwayVoec extends AbstractTaxScheme
     }
 
     /**
-     * Get customer group based on VAT Check Result and Country of customer
+     * Get customer group based on Validation Result and Country of customer
      * @param string $customerCountryCode
      * @param string $customerPostCode
      * @param DataObject $vatValidationResult
@@ -133,7 +133,8 @@ class NorwayVoec extends AbstractTaxScheme
             'request_message' => __('Error during VAT Number verification.'),
         ]);
 
-        if (preg_match("/^[89][0-9]{8}$/", $businessNumber)) {
+        if (preg_match("/^[89][0-9]{8}$/", $businessNumber) &&
+            $this->isCountryNorway($countryCode)) {
             $gatewayResponse->setIsValid(true);
             $gatewayResponse->setRequestSuccess(true);
             $gatewayResponse->setRequestMessage(__('Business Registration Number is the correct format.'));
