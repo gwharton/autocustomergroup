@@ -12,7 +12,7 @@
                 <domestictaxed>0</domestictaxed>
                 <intraeuzero>0</intraeuzero>
                 <intraeudistancesaletaxed>0</intraeudistancesaletaxed>
-                <importzero>0</importzero>
+                <importreversecharge>0</importreversecharge>
                 <importtaxed>0</importtaxed>
                 <importuntaxed>0</importuntaxed>
             </ukvat>
@@ -24,7 +24,7 @@
                 <domestictaxed>0</domestictaxed>
                 <intraeuzero>0</intraeuzero>
                 <intraeudistancesaletaxed>0</intraeudistancesaletaxed>
-                <importzero>0</importzero>
+                <importreversecharge>0</importreversecharge>
                 <importtaxed>0</importtaxed>
                 <importuntaxed>0</importuntaxed>
             </euvat>
