@@ -42,8 +42,8 @@
         number, then the sale can be zero rated for UK VAT.</li>
     <li><b>Intra-EU Distance Sale Taxed</b> - For shipments from the EU to NI and the buyer does not present a validated UK VAT 
         number UK VAT should be charged.</li>
-    <li><b>Import Zero</b> - For shipments from outside of the UK/IM to the UK/IM and the buyer presents a 
-        validated UK VAT number, then the sale can be zero rated for UK VAT.</li>
+    <li><b>Import Reverse Charge</b> - For shipments from outside of the UK/IM to the UK/IM and the buyer presents a 
+        validated UK VAT number, then VAT should not be charged. Reverse Charge notice to be included on Invoice.</li>
     <li><b>Import Taxed</b> - For shipments from outside of the UK/IM to the UK/IM and the Intrinsic Value is equal to or below 135 GBP, then 
         VAT should be charged.</li>
     <li><b>Import Untaxed</b> - For shipments from outside of the UK/IM to the UK/IM, if the Intrinsic Value is above 135 GBP, then VAT should 
@@ -122,8 +122,8 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>     
-                <field id="importzero" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Import Zero</label>
+                <field id="importreversecharge" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Reverse Charge</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</comment>
                     <depends>
@@ -162,8 +162,8 @@
         the sale can be zero rated for EU VAT.</li>
     <li><b>Intra-EU Distance Sale Taxed</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer does NOT present a validated EU VAT number, then 
         Destination Country VAT should be charged.</li>
-    <li><b>Import Zero</b> - For shipments from outside of the EU to within the EU and the buyer presents a validated EU VAT number, then 
-        the sale can be zero rated for EU VAT.</li>
+    <li><b>Import Reverse Charge</b> - For shipments from outside of the EU to within the EU and the buyer presents a validated EU VAT number, then 
+        VAT should not be charged. Reverse Charge notice to be included on Invoice.</li>
     <li><b>Import Taxed</b> - For shipments from outside of the EU to the EU and the Intrinsic Value is equal to or below 150 EUR, then 
         Destination Country VAT should be charged.</li>
     <li><b>Import Untaxed</b> - For shipments from outside of the EU to the EU and the Intrinsic Value is above 150 EUR, then VAT should 
@@ -228,8 +228,8 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importzero" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Import Zero</label>
+                <field id="importreversecharge" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Reverse Charge</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</comment>
                     <depends>

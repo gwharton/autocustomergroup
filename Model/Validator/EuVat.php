@@ -100,12 +100,12 @@ class EuVat extends AbstractValidator
         //Merchant Country is not in the EU
         //Item shipped to the EU
         //VAT No is valid.
-        //Therefore Import Zero
+        //Therefore Import Reverse Charge
         if (!$this->isCountryInEU($merchantCountry) &&
             $this->isCountryInEU($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/importzero",
+                "autocustomergroup/" . self::CODE . "/importreversecharge",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );

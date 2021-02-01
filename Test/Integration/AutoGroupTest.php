@@ -170,7 +170,7 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             'uk_intraeu_distance_sale_taxed',
             'autocustomergroup/ukvat/intraeudistancesaletaxed'
         );
-        $groups[] = $this->createGroupAndAssign('uk_import_zero', 'autocustomergroup/ukvat/importzero');
+        $groups[] = $this->createGroupAndAssign('uk_import_reverse_charge', 'autocustomergroup/ukvat/importreversecharge');
         $groups[] = $this->createGroupAndAssign('uk_import_taxed', 'autocustomergroup/ukvat/importtaxed');
         $groups[] = $this->createGroupAndAssign('uk_import_untaxed', 'autocustomergroup/ukvat/importuntaxed');
 
@@ -180,7 +180,7 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             'eu_intraeu_distance_sale_taxed',
             'autocustomergroup/euvat/intraeudistancesaletaxed'
         );
-        $groups[] = $this->createGroupAndAssign('eu_import_zero', 'autocustomergroup/euvat/importzero');
+        $groups[] = $this->createGroupAndAssign('eu_import_reverse_charge', 'autocustomergroup/euvat/importreversecharge');
         $groups[] = $this->createGroupAndAssign('eu_import_taxed', 'autocustomergroup/euvat/importtaxed');
         $groups[] = $this->createGroupAndAssign('eu_import_untaxed', 'autocustomergroup/euvat/importuntaxed');
 
@@ -315,8 +315,8 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
 
             [1, 'FR', '75001', 'GB', 'BT1 1AA', '', 'uk_intraeu_distance_sale_taxed', 0],
 
-            [1, 'FR','75001',  'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_zero', 0], //VAT is valid
-            [10, 'FR', '75001', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_zero', 0], //VAT is valid
+            [1, 'FR','75001',  'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_reverse_charge', 0], //VAT is valid
+            [10, 'FR', '75001', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_reverse_charge', 0], //VAT is valid
 
             //1 x 10ea = 10, Threshold is 40
             [1, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
@@ -337,14 +337,14 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             [1, 'DE', '', 'IE', '', 'IE8256796H', 'eu_intraeu_distance_sale_taxed', 0], //VAT is invalid
             [1, 'GB', 'BT1 1AA', 'IE', '', '', 'eu_intraeu_distance_sale_taxed', 0],
 
-            [1, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_zero', 0], //VAT is valid
+            [1, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_reverse_charge', 0], //VAT is valid
             //20 x 10ea = 200,  * 50% = 100, Threshold is 90
-            [20, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_zero', 50], //VAT is valid
+            [20, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_reverse_charge', 50], //VAT is valid
             //18 x 10ea = 180,  * 50% = 90, Threshold is 90
-            [18, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_zero', 50], //VAT is valid
+            [18, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_reverse_charge', 50], //VAT is valid
             //16 x 10ea = 160,  * 50% = 80, Threshold is 90
-            [16, 'GB', '', 'IE', '','IE8256796U', 'eu_import_zero', 50], //VAT is valid
-            [1, 'BR', '', 'IE', '', 'IE8256796U', 'eu_import_zero', 0], //VAT is valid
+            [16, 'GB', '', 'IE', '','IE8256796U', 'eu_import_reverse_charge', 50], //VAT is valid
+            [1, 'BR', '', 'IE', '', 'IE8256796U', 'eu_import_reverse_charge', 0], //VAT is valid
 
             [1, 'GB', '', 'FR', '75001', '', 'eu_import_taxed', 0],
             [1, 'GB', '', 'IE', '', '123456', 'eu_import_taxed', 0], //VAT is invalid

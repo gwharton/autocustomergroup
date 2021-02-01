@@ -158,12 +158,12 @@ class UkVat extends AbstractValidator
         //Merchant Country is in the UK/IM
         //Item shipped to the UK/IM
         //VAT No is valid
-        //Therefore Import Zero
+        //Therefore Import Reverse Charge
         if (!$this->isCountryUKIM($merchantCountry) &&
             $this->isCountryUKIM($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/importzero",
+                "autocustomergroup/" . self::CODE . "/importreversecharge",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );

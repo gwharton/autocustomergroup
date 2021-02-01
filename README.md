@@ -26,7 +26,7 @@
 <li><b>Customer Group - Domestic Taxed</b> - Merchant Country is within the UK/IM, Item is being shipped to the UK/IM.</li>
 <li><b>Customer Group - Intra-EU Zero</b> - Merchant Country is within the EU, Item is being shipped to NI, VAT Number Validated Successfully.</li>
 <li><b>Customer Group - Intra-EU Distance Sale Taxed</b> - Merchant Country is within the EU, Item is being shipped to NI, Valid VAT number is NOT supplied.</li>
-<li><b>Customer Group - Import Zero</b> - Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Import Reverse Charge</b> - Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</li>
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within the UK/IM, Item is being shipped to the UKIM, Order Value is below or equal to Import VAT Threshold.</li>
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above the Import VAT Threshold.</li>
 </ul>
@@ -42,7 +42,7 @@
 <li><b>Customer Group - Domestic Taxed</b> - Merchant Country is within the EU, Item is being shipped to the same country.</li>
 <li><b>Customer Group - Intra-EU Zero</b> - Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</li>
 <li><b>Customer Group - Intra-EU Distance Sale Taxed</b> - Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same. Valid VAT Number not supplied.</li>
-<li><b>Customer Group - Import Zero</b> - Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Import Reverse Charge</b> - Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</li>
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is below or equal to the Import VAT Threshold.</li>
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is above the Import VAT Threshold.</li>
 
