@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Magento\Sales\Model\Order;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\ProductFactory;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Api\Data\GroupInterfaceFactory;
 use Magento\Customer\Api\GroupRepositoryInterface;
@@ -15,8 +16,6 @@ use Magento\Quote\Api\GuestCartRepositoryInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\AddressFactory;
 use Magento\Quote\Model\QuoteFactory;
-use Magento\Quote\Model\QuoteIdMask;
-use Magento\Quote\Model\QuoteIdMaskFactory;
 use Magento\Sales\Model\OrderRepository;
 use Magento\SalesRule\Model\RuleFactory;
 use Magento\SalesRule\Model\RuleRepository;
@@ -36,11 +35,6 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @var ObjectManagerInterface
      */
     private $objectManager;
-
-    /**
-     * @var QuoteIdMaskFactory
-     */
-    private $quoteIdMaskFactory;
 
     /**
      * @var GroupRepositoryInterface
@@ -102,11 +96,15 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      */
     private $ruleFactory;
 
+    /**
+     * @var ProductFactory
+     */
+    private $productFactory;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->objectManager = Bootstrap::getObjectManager();
-        $this->quoteIdMaskFactory = $this->objectManager->get(QuoteIdMaskFactory::class);
         $this->groupRepository = $this->objectManager->get(GroupRepositoryInterface::class);
         $this->config = $this->objectManager->get(ReinitableConfigInterface::class);
         $this->guestCartManagement = $this->objectManager->get(GuestCartManagementInterface::class);
@@ -120,10 +118,12 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
         $this->ruleRepository = $this->objectManager->get(RuleRepository::class);
         $this->ruleFactory = $this->objectManager->get(RuleFactory::class);
         $this->addressFactory = $this->objectManager->get(AddressFactory::class);
+        $this->productFactory = $this->objectManager->get(ProductFactory::class);
     }
 
     /**
      * @param float $qty
+     * @param float $price
      * @param string $merchantCountry
      * @param string $merchantPostCode
      * @param string $destinationCountry
@@ -132,8 +132,6 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @param string $customerGroup
      * @param int $percentageDiscount
      *
-     * £10 each, 22 in stock
-     * @magentoDataFixture Magento/Catalog/_files/products.php
      * @dataProvider dataProviderForTestAutoCustomerGroup
      * @magentoConfigFixture current_store customer/create_account/auto_group_assign 1
      * @magentoConfigFixture current_store customer/create_account/tax_calculation_address_type shipping
@@ -147,13 +145,18 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store autocustomergroup/euvat/importthreshold 90
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationcountry IE
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber IE3206488LH
+     * @magentoConfigFixture current_store autocustomergroup/norwayvoec/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/norwayvoec/registrationnumber 12345
+     * @magentoConfigFixture current_store autocustomergroup/norwayvoec/importthreshold 3000
      * @magentoConfigFixture current_store general/region/state_required ""
      * //phpcs:ignore
      * @magentoConfigFixture current_store general/country/eu_countries AT,BE,BG,HR,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,MC,NL,PL,PT,RO,SK,SI,ES,SE
      * @return void
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function testAutoCustomerGroup(
         $qty,
+        $price,
         $merchantCountry,
         $merchantPostCode,
         $destinationCountry,
@@ -164,25 +167,24 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
     ): void {
         $storeId = $this->storeManager->getStore()->getId();
         $groups = [0];
-        $groups[] = $this->createGroupAndAssign('uk_domestic_taxed', 'autocustomergroup/ukvat/domestictaxed');
-        $groups[] = $this->createGroupAndAssign('uk_intraeu_zero', 'autocustomergroup/ukvat/intraeuzero');
-        $groups[] = $this->createGroupAndAssign(
-            'uk_intraeu_distance_sale_taxed',
-            'autocustomergroup/ukvat/intraeudistancesaletaxed'
-        );
-        $groups[] = $this->createGroupAndAssign('uk_import_reverse_charge', 'autocustomergroup/ukvat/importreversecharge');
+        $groups[] = $this->createGroupAndAssign('uk_domestic', 'autocustomergroup/ukvat/domestic');
+        $groups[] = $this->createGroupAndAssign('uk_intraeu_b2b', 'autocustomergroup/ukvat/intraeub2b');
+        $groups[] = $this->createGroupAndAssign('uk_intraeu_b2c', 'autocustomergroup/ukvat/intraeub2c');
+        $groups[] = $this->createGroupAndAssign('uk_import_b2b', 'autocustomergroup/ukvat/importb2b');
         $groups[] = $this->createGroupAndAssign('uk_import_taxed', 'autocustomergroup/ukvat/importtaxed');
         $groups[] = $this->createGroupAndAssign('uk_import_untaxed', 'autocustomergroup/ukvat/importuntaxed');
 
-        $groups[] = $this->createGroupAndAssign('eu_domestic_taxed', 'autocustomergroup/euvat/domestictaxed');
-        $groups[] = $this->createGroupAndAssign('eu_intraeu_zero', 'autocustomergroup/euvat/intraeuzero');
-        $groups[] = $this->createGroupAndAssign(
-            'eu_intraeu_distance_sale_taxed',
-            'autocustomergroup/euvat/intraeudistancesaletaxed'
-        );
-        $groups[] = $this->createGroupAndAssign('eu_import_reverse_charge', 'autocustomergroup/euvat/importreversecharge');
+        $groups[] = $this->createGroupAndAssign('eu_domestic', 'autocustomergroup/euvat/domestic');
+        $groups[] = $this->createGroupAndAssign('eu_intraeu_b2b', 'autocustomergroup/euvat/intraeub2b');
+        $groups[] = $this->createGroupAndAssign('eu_intraeu_b2c', 'autocustomergroup/euvat/intraeub2c');
+        $groups[] = $this->createGroupAndAssign('eu_import_b2b', 'autocustomergroup/euvat/importb2b');
         $groups[] = $this->createGroupAndAssign('eu_import_taxed', 'autocustomergroup/euvat/importtaxed');
         $groups[] = $this->createGroupAndAssign('eu_import_untaxed', 'autocustomergroup/euvat/importuntaxed');
+
+        $groups[] = $this->createGroupAndAssign('norway_domestic', 'autocustomergroup/norwayvoec/domestic');
+        $groups[] = $this->createGroupAndAssign('norway_import_b2b', 'autocustomergroup/norwayvoec/importb2b');
+        $groups[] = $this->createGroupAndAssign('norway_import_taxed', 'autocustomergroup/norwayvoec/importtaxed');
+        $groups[] = $this->createGroupAndAssign('norway_import_untaxed', 'autocustomergroup/norwayvoec/importuntaxed');
 
         if ($percentageDiscount > 0) {
             $this->createSalesRule($groups, $percentageDiscount, $storeId);
@@ -198,6 +200,19 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             $merchantPostCode,
             ScopeInterface::SCOPE_STORE
         );
+
+        $product = $this->productFactory->create();
+        $product->setTypeId('simple')
+            ->setId(1)
+            ->setAttributeSetId(4)
+            ->setWebsiteIds([1])
+            ->setName('Simple Product')
+            ->setSku('simple')
+            ->setPrice($price)
+            ->setVisibility(\Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
+            ->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED)
+            ->setStockData(['use_config_manage_stock' => 0])
+            ->save();
 
         $addressData = [
             'telephone' => 12345,
@@ -289,7 +304,8 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      */
     public function dataProviderForTestAutoCustomerGroup()
     {
-        //Items to put in basket £10 each
+        //Item Qty
+        //Item Price
         //Merchant Country
         //Merchant Postcode
         //Destination Country
@@ -297,63 +313,68 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
         //Expected Customer Group
         //Discount Percentage
         return [
+            [1, 10, 'GB', '', 'BR', '12345', '', 'NOT LOGGED IN', 0],
+            [1, 10, 'FR', '75001', 'BR', '12345', '', 'NOT LOGGED IN', 0],
 
-            [1, 'GB', '', 'BR', '12345', '', 'NOT LOGGED IN', 0],
-            [1, 'FR', '75001', 'BR', '12345', '', 'NOT LOGGED IN', 0],
+            //Norway VOEC
+            [1, 10, 'NO', '1234', 'NO', '1234', '', 'norway_domestic', 0],
+            [1, 10, 'NO', '1234', 'NO', '1234', '912345678', 'norway_domestic', 0], //Invalid Business No
+            [1, 10, 'NO', '1234', 'NO', '1234', '2443', 'norway_domestic', 0], //Valid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
+            [10, 1000, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
+            [1, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '2443', 'norway_import_taxed', 0], //Invalid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],
+            [10, 1000, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],
+            [1, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_untaxed', 0],
+            [5, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_untaxed', 0],
+            [5, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '2443', 'norway_import_untaxed', 0], //Invalid Business No
 
-            [1, 'GB', '', 'GB', 'NE1 1AA', '', 'uk_domestic_taxed', 0],
-            [1, 'GB', 'BT1 1AA', 'GB', 'NE1 1AA', '', 'uk_domestic_taxed', 0],
-            [1, 'GB', 'NE1 1AA', 'GB', 'BT1 1AA', '', 'uk_domestic_taxed', 0],
-            [1, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic_taxed', 0], //VAT is valid
-            [1, 'IM', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic_taxed', 0], //VAT is valid
-            [1, 'GB', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic_taxed', 0], //VAT is valid
-            [1, 'IM', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic_taxed', 0], //VAT is valid
-            [1, 'GB', '', 'GB', 'NE1 1AA', 'GB123', 'uk_domestic_taxed', 0], //VAT is invalid
-            [1, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936943', 'uk_domestic_taxed', 0], //VAT is invalid
-
-            [1, 'FR', '75001', 'GB', 'BT1 1AA', 'GB948561936944', 'uk_intraeu_zero', 0], //VAT is invalid
-
-            [1, 'FR', '75001', 'GB', 'BT1 1AA', '', 'uk_intraeu_distance_sale_taxed', 0],
-
-            [1, 'FR','75001',  'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_reverse_charge', 0], //VAT is valid
-            [10, 'FR', '75001', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_reverse_charge', 0], //VAT is valid
-
+            //UK VAT
+            [1, 10, 'GB', '', 'GB', 'NE1 1AA', '', 'uk_domestic', 0],
+            [1, 10, 'GB', 'BT1 1AA', 'GB', 'NE1 1AA', '', 'uk_domestic', 0],
+            [1, 10, 'GB', 'NE1 1AA', 'GB', 'BT1 1AA', '', 'uk_domestic', 0],
+            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic', 0], //VAT is valid
+            [1, 10, 'IM', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic', 0], //VAT is valid
+            [1, 10, 'GB', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic', 0], //VAT is valid
+            [1, 10, 'IM', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic', 0], //VAT is valid
+            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB123', 'uk_domestic', 0], //VAT is invalid
+            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936943', 'uk_domestic', 0], //VAT is invalid
+            [1, 10, 'FR', '75001', 'GB', 'BT1 1AA', 'GB948561936944', 'uk_intraeu_b2b', 0], //VAT is invalid
+            [1, 10, 'FR', '75001', 'GB', 'BT1 1AA', '', 'uk_intraeu_b2c', 0],
+            [1, 10, 'FR','75001',  'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_b2b', 0], //VAT is valid
+            [10, 10, 'FR', '75001', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_b2b', 0], //VAT is valid
             //1 x 10ea = 10, Threshold is 40
-            [1, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
+            [1, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
             //5 x 10ea = 50 * 50% = 25, Threshold is 40
-            [5, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 50],
-
+            [5, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 50],
             //10 x 10ea = 100, Threshold is 40
-            [10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 0],
+            [10, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 0],
             //10 x 10ea = 100 * 50% = 50, Threshold is 40
-            [10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 50],
+            [10, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 50],
 
-            [1, 'IE', '', 'IE', '', '', 'eu_domestic_taxed', 0],
-            [1, 'IE', '', 'IE', '', 'IE8256796U', 'eu_domestic_taxed', 0], //VAT is valid
-
-            [1, 'DE', '', 'IE', '', 'IE8256796U', 'eu_intraeu_zero', 0], //VAT is valid
-            [1, 'GB', 'BT1 1AA', 'IE', '', 'IE8256796U', 'eu_intraeu_zero', 0], //VAT is valid
-
-            [1, 'DE', '', 'IE', '', 'IE8256796H', 'eu_intraeu_distance_sale_taxed', 0], //VAT is invalid
-            [1, 'GB', 'BT1 1AA', 'IE', '', '', 'eu_intraeu_distance_sale_taxed', 0],
-
-            [1, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_reverse_charge', 0], //VAT is valid
+            //EU VAT
+            [1, 10, 'IE', '', 'IE', '', '', 'eu_domestic', 0],
+            [1, 10, 'IE', '', 'IE', '', 'IE8256796U', 'eu_domestic', 0], //VAT is valid
+            [1, 10, 'DE', '', 'IE', '', 'IE8256796U', 'eu_intraeu_b2b', 0], //VAT is valid
+            [1, 10, 'GB', 'BT1 1AA', 'IE', '', 'IE8256796U', 'eu_intraeu_b2b', 0], //VAT is valid
+            [1, 10, 'DE', '', 'IE', '', 'IE8256796H', 'eu_intraeu_b2c', 0], //VAT is invalid
+            [1, 10, 'GB', 'BT1 1AA', 'IE', '', '', 'eu_intraeu_b2c', 0],
+            [1, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 0], //VAT is valid
             //20 x 10ea = 200,  * 50% = 100, Threshold is 90
-            [20, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_reverse_charge', 50], //VAT is valid
+            [20, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 50], //VAT is valid
             //18 x 10ea = 180,  * 50% = 90, Threshold is 90
-            [18, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_reverse_charge', 50], //VAT is valid
+            [18, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 50], //VAT is valid
             //16 x 10ea = 160,  * 50% = 80, Threshold is 90
-            [16, 'GB', '', 'IE', '','IE8256796U', 'eu_import_reverse_charge', 50], //VAT is valid
-            [1, 'BR', '', 'IE', '', 'IE8256796U', 'eu_import_reverse_charge', 0], //VAT is valid
-
-            [1, 'GB', '', 'FR', '75001', '', 'eu_import_taxed', 0],
-            [1, 'GB', '', 'IE', '', '123456', 'eu_import_taxed', 0], //VAT is invalid
-            [1, 'BR', '', 'IE', '', '', 'eu_import_taxed', 0],
-
+            [16, 10, 'GB', '', 'IE', '','IE8256796U', 'eu_import_b2b', 50], //VAT is valid
+            [1, 10, 'BR', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 0], //VAT is valid
+            [1, 10, 'GB', '', 'FR', '75001', '', 'eu_import_taxed', 0],
+            [1, 10, 'GB', '', 'IE', '', '123456', 'eu_import_taxed', 0], //VAT is invalid
+            [1, 10, 'BR', '', 'IE', '', '', 'eu_import_taxed', 0],
             //10 x 10ea = 100, Threshold is 90
-            [10, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 0],
+            [10, 10, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 0],
             //20 x 10ea = 200 * 50% = 100, Threshold is 90
-            [20, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 50],
+            [20, 10, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 50],
         ];
     }
 }

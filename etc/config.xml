@@ -9,10 +9,10 @@
                 <clientid></clientid>
                 <clientsecret></clientsecret>
                 <importthreshold>135</importthreshold>
-                <domestictaxed>0</domestictaxed>
-                <intraeuzero>0</intraeuzero>
-                <intraeudistancesaletaxed>0</intraeudistancesaletaxed>
-                <importreversecharge>0</importreversecharge>
+                <domestic>0</domestic>
+                <intraeub2b>0</intraeub2b>
+                <intraeub2c>0</intraeub2c>
+                <importb2b>0</importb2b>
                 <importtaxed>0</importtaxed>
                 <importuntaxed>0</importuntaxed>
             </ukvat>
@@ -20,14 +20,23 @@
                 <enabled>0</enabled>
                 <registrationnumber></registrationnumber>
                 <registrationcountry></registrationcountry>
-                <importthreshold>135</importthreshold>
-                <domestictaxed>0</domestictaxed>
-                <intraeuzero>0</intraeuzero>
-                <intraeudistancesaletaxed>0</intraeudistancesaletaxed>
-                <importreversecharge>0</importreversecharge>
+                <importthreshold>150</importthreshold>
+                <domestic>0</domestic>
+                <intraeub2b>0</intraeub2b>
+                <intraeub2c>0</intraeub2c>
+                <importb2b>0</importb2b>
                 <importtaxed>0</importtaxed>
                 <importuntaxed>0</importuntaxed>
             </euvat>
+            <norwayvoec>
+                <enabled>0</enabled>
+                <registrationnumber></registrationnumber>
+                <importthreshold>3000</importthreshold>
+                <domestic>0</domestic>
+                <importb2b>0</importb2b>
+                <importtaxed>0</importtaxed>
+                <importuntaxed>0</importuntaxed>
+            </norwayvoec>
         </autocustomergroup>
     </default>
 </config>

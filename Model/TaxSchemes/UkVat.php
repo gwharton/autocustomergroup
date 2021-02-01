@@ -121,11 +121,11 @@ class UkVat extends AbstractTaxScheme
         );
         //Merchant Country is in the UK/IM
         //Item shipped to the UK/IM
-        //Therefore Domestic Taxed
+        //Therefore Domestic
         if ($this->isCountryUKIM($merchantCountry) &&
             $this->isCountryUKIM($customerCountryCode)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/domestictaxed",
+                "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
@@ -133,24 +133,25 @@ class UkVat extends AbstractTaxScheme
         //Merchant Country is in the EU
         //Item shipped to the NI
         //VAT No is valid
-        //Therefore Intra-EU Zero
+        //Therefore Intra-EU B2B
         if ($this->isCountryInEU($merchantCountry) &&
             $this->isNI($customerCountryCode, $customerPostCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/intraeuzero",
+                "autocustomergroup/" . self::CODE . "/intraeub2b",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
-        }        //Merchant Country is in the EU
+        }
+        //Merchant Country is in the EU
         //Item shipped to the NI
         //VAT No is not valid
-        //Therefore Intra-EU Distance Sale Taxed
+        //Therefore Intra-EU B2C
         if ($this->isCountryInEU($merchantCountry) &&
             $this->isNI($customerCountryCode, $customerPostCode) &&
             !$this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/intraeudistancesaletaxed",
+                "autocustomergroup/" . self::CODE . "/intraeub2c",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
@@ -158,12 +159,12 @@ class UkVat extends AbstractTaxScheme
         //Merchant Country is in the UK/IM
         //Item shipped to the UK/IM
         //VAT No is valid
-        //Therefore Import Reverse Charge
+        //Therefore Import B2B
         if (!$this->isCountryUKIM($merchantCountry) &&
             $this->isCountryUKIM($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/importreversecharge",
+                "autocustomergroup/" . self::CODE . "/importb2b",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );

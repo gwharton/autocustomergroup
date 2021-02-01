@@ -22,11 +22,11 @@
 <li><b>Client ID</b> - Client ID as provided by HMRC Developer Portal.</li>
 <li><b>Client Secret</b> - Client Secret as provided by HMRC Developer Portal.</li>
 <li><b>VAT Registration Number</b> - The UK VAT Registration Number for the Merchant. This will be provided to HMRC when all validation checks are made.</li>
-<li><b>Import VAT Threshold</b> - The order value (ex VAT) threshold (in Store Currency) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</li>
-<li><b>Customer Group - Domestic Taxed</b> - Merchant Country is within the UK/IM, Item is being shipped to the UK/IM.</li>
-<li><b>Customer Group - Intra-EU Zero</b> - Merchant Country is within the EU, Item is being shipped to NI, VAT Number Validated Successfully.</li>
-<li><b>Customer Group - Intra-EU Distance Sale Taxed</b> - Merchant Country is within the EU, Item is being shipped to NI, Valid VAT number is NOT supplied.</li>
-<li><b>Customer Group - Import Reverse Charge</b> - Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</li>
+<li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>
+<li><b>Customer Group - Domestic</b> - Merchant Country is within the UK/IM, Item is being shipped to the UK/IM.</li>
+<li><b>Customer Group - Intra-EU B2B</b> - Merchant Country is within the EU, Item is being shipped to NI, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Intra-EU B2C</b> - Merchant Country is within the EU, Item is being shipped to NI, Valid VAT number is NOT supplied.</li>
+<li><b>Customer Group - Import B2B</b> - Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</li>
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within the UK/IM, Item is being shipped to the UKIM, Order Value is below or equal to Import VAT Threshold.</li>
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above the Import VAT Threshold.</li>
 </ul>
@@ -38,19 +38,32 @@
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>VAT Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to HMRC when all validation checks are made.</li>
   <li><b>VAT Registration Number</b> - The EU VAT Registration Number for the Merchant. This will be provided to HMRC when all validation checks are made.</li>
-<li><b>Import VAT Threshold</b> - The order value (ex VAT) threshold (in Store Currency) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</li>
-<li><b>Customer Group - Domestic Taxed</b> - Merchant Country is within the EU, Item is being shipped to the same country.</li>
-<li><b>Customer Group - Intra-EU Zero</b> - Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</li>
-<li><b>Customer Group - Intra-EU Distance Sale Taxed</b> - Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same. Valid VAT Number not supplied.</li>
-<li><b>Customer Group - Import Reverse Charge</b> - Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</li>
+<li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>
+<li><b>Customer Group - Domestic</b> - Merchant Country is within the EU, Item is being shipped to the same country.</li>
+<li><b>Customer Group - Intra-EU B2B</b> - Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</li>
+<li><b>Customer Group - Intra-EU B2C</b> - Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same. Valid VAT Number not supplied.</li>
+<li><b>Customer Group - Import B2B</b> - Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</li>
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is below or equal to the Import VAT Threshold.</li>
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within the EU, Item is being shipped to the EU, Order Value is above the Import VAT Threshold.</li>
-
 </ul>
 
+<h2>Norway VOEC Scheme</h2>
+<img src="images/norwayvoec1.png">
+<img src="images/norwayvoec2.png">
+<ul>
+<li><b>Enabled</b> - Enable/Disable this Scheme.</li>
+<li><b>VOEC Registration Number</b> - The Norway VOEC Registration Number for the Merchant. This is not currently used by the module.</li>
+<li><b>Import VAT Threshold</b> - If any single item within the order is valued above the VAT threshold then no VAT should be charged.</li>
+<li><b>Customer Group - Domestic</b> - Merchant Country is within Norway, Item is being shipped to Norway.</li>
+<li><b>Customer Group - Import B2B</b> - Merchant Country is not within Norway, Item is being shipped to Norway, Norwegian Business Number Supplied.</li>
+<li><b>Customer Group - Import Taxed</b> - Merchant Country is not within Norway, Item is being shipped to Norway, All items valued at or below the Import VAT Threshold.</li>
+<li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within Norway, Item is being shipped to Norway, One or more items in the order is valued above the Import VAT Threshold.</li>
+</ul>
 <h2>Known Issues</h2>
 <ul>
 <li>I havent done any testing on creating customers in the admin, or validating VAT numbers in admin. This will need looking at, at some point.</li>
-<li>Is it acceptable to use local currency. The law is 135GBP or 150EUR, but we would need currency conversion setting up for this to automatically convert from local to GBP/EUR. The law defines which currency rates you can use when converting the thresholds. Need to look into this.</li>
+<li>Currently, VAT thresholds need to be calculated from the values stated in law, and converted manually into store currency. Future update will
+ look into what can be done with this.</li>
 <li>What can be done where orders are split into multiple shipments, individually below the threshold, but the order is above the threshold.</li>
+<li>All testing sofar is done using Guest Orders. No Logged in orders have been tested.</li>
 </ul>

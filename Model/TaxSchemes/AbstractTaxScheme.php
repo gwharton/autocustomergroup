@@ -58,8 +58,10 @@ abstract class AbstractTaxScheme
     }
 
     /**
+     * Get order total, including discounts
+     *
      * @param Quote $quote
-     * @return void
+     * @return float
      */
     protected function getOrderTotal($quote)
     {
@@ -68,6 +70,24 @@ abstract class AbstractTaxScheme
             $orderTotal += ($item->getRowTotal() - $item->getDiscountAmount());
         }
         return $orderTotal;
+    }
+
+    /**
+     * Get most expensive item in order, including any discounts
+     *
+     * @param Quote $quote
+     * @return float
+     */
+    protected function getMostExpensiveItem($quote)
+    {
+        $mostExpensive = 0.0;
+        foreach ($quote->getItemsCollection() as $item) {
+            $itemPrice = $item->getPrice() - ($item->getDiscountAmount() / $item->getQty());
+            if ($itemPrice > $mostExpensive) {
+                $mostExpensive = $itemPrice;
+            }
+        }
+        return $mostExpensive;
     }
 
     /**

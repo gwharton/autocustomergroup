@@ -57,12 +57,12 @@ class EuVat extends AbstractTaxScheme
         //Merchant Country is in the EU
         //Item shipped to the EU
         //Both countries the same
-        //Therefore Domestic Taxed
+        //Therefore Domestic
         if ($this->isCountryInEU($merchantCountry) &&
             $this->isCountryInEU($customerCountryCode) &&
             $merchantCountry == $customerCountryCode) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/domestictaxed",
+                "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
@@ -71,13 +71,13 @@ class EuVat extends AbstractTaxScheme
         //Item shipped to the EU
         //Both countries are not the same
         //VAT No is valid
-        //Therefore Intra EU Zero
+        //Therefore Intra EU B2B
         if (($this->isCountryInEU($merchantCountry) || $this->isNi($merchantCountry, $merchantPostCode)) &&
             $this->isCountryInEU($customerCountryCode) &&
             $merchantCountry != $customerCountryCode &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/intraeuzero",
+                "autocustomergroup/" . self::CODE . "/intraeub2b",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
@@ -86,13 +86,13 @@ class EuVat extends AbstractTaxScheme
         //Item shipped to the EU
         //Both countries are not the same
         //VAT No is not valid
-        //Therefore Intra EU Distance Sale Taxed
+        //Therefore Intra EU B2C
         if (($this->isCountryInEU($merchantCountry) || $this->isNi($merchantCountry, $merchantPostCode)) &&
             $this->isCountryInEU($customerCountryCode) &&
             $merchantCountry != $customerCountryCode &&
             !$this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/intraeudistancesaletaxed",
+                "autocustomergroup/" . self::CODE . "/intraeub2c",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );
@@ -100,12 +100,12 @@ class EuVat extends AbstractTaxScheme
         //Merchant Country is not in the EU
         //Item shipped to the EU
         //VAT No is valid.
-        //Therefore Import Reverse Charge
+        //Therefore Import B2B
         if (!$this->isCountryInEU($merchantCountry) &&
             $this->isCountryInEU($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
-                "autocustomergroup/" . self::CODE . "/importreversecharge",
+                "autocustomergroup/" . self::CODE . "/importb2b",
                 ScopeInterface::SCOPE_STORE,
                 $store
             );

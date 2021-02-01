@@ -6,8 +6,17 @@
             <label>Automatic Customer Groups</label>
             <tab>customer</tab>
             <resource>Magento_Customer::config_customer</resource>
-            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+           <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General</label>
+                <comment><![CDATA[
+                    <div class="autocustomergroup-schemeoverview">
+                        <p><b>LEGAL DISCLAIMER</b> - The author of this module accepts no responsibility for any errors caused by this module. It is up to you
+                            as the store owner/manager/exporter to ensure you are compliant with the laws in place in the countries that you ship to, and it is your
+                            responsibility to ensure that your store is implementing those rules and laws correctly. The author does not make any guarantees as to whether
+                            this module implements the rules and laws correctly. That is for you to determine. The statements given in the descriptions below and the 
+                            rules that this module implement are not TAX advice. Please read and understand the scheme documentation yourself.</p>
+                    </div>
+                    ]]></comment>
                 <field id="default_group" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Default Group</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -37,12 +46,12 @@
 <p>As of 1st January 2021, all sellers must collect UK VAT at the point of sale and remit to the UK HMRC.</p>
 <p>The module assumes the following rules :</p>
 <ul>
-    <li><b>Domestic Taxed</b> - For shipments wthin the UK/IM, normal UK VAT rules apply.</li>
-    <li><b>Intra-EU Zero</b> - For shipments from the EU to NI and the buyer presents a validated UK VAT 
-        number, then the sale can be zero rated for UK VAT.</li>
-    <li><b>Intra-EU Distance Sale Taxed</b> - For shipments from the EU to NI and the buyer does not present a validated UK VAT 
+    <li><b>Domestic</b> - For shipments wthin the UK/IM, normal UK VAT rules apply.</li>
+    <li><b>Intra-EU B2B</b> - For shipments from the EU to NI and the buyer presents a validated UK VAT 
+        number, then the sale can be zero rated for UK VAT. Zero Rate notice to be included on Invoice.</li>
+    <li><b>Intra-EU B2C</b> - For shipments from the EU to NI and the buyer does not present a validated UK VAT 
         number UK VAT should be charged.</li>
-    <li><b>Import Reverse Charge</b> - For shipments from outside of the UK/IM to the UK/IM and the buyer presents a 
+    <li><b>Import B2B</b> - For shipments from outside of the UK/IM to the UK/IM and the buyer presents a 
         validated UK VAT number, then VAT should not be charged. Reverse Charge notice to be included on Invoice.</li>
     <li><b>Import Taxed</b> - For shipments from outside of the UK/IM to the UK/IM and the Intrinsic Value is equal to or below 135 GBP, then 
         VAT should be charged.</li>
@@ -98,32 +107,32 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>      
-                <field id="domestictaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Domestic Taxed</label>
+                <field id="domestic" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the UK/IM, Item is being shipped to the UK/IM.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>       
-                <field id="intraeuzero" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Intra-EU Zero</label>
+                <field id="intraeub2b" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU, Item is being shipped to NI, VAT Number Validated Successfully.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="intraeudistancesaletaxed" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Intra-EU Distance Sale Taxed</label>
+                <field id="intraeub2c" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Intra-EU B2C</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU, Item is being shipped to NI, Valid VAT number is NOT supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>     
-                <field id="importreversecharge" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Import Reverse Charge</label>
+                <field id="importb2b" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</comment>
                     <depends>
@@ -146,7 +155,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-           </group>
+            </group>
             <group id="euvat" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>EU VAT Scheme</label>
                 <comment><![CDATA[
@@ -157,12 +166,12 @@
     appropriate EU VAT at the point of sale and remit to the EU.</p>
 <p>The module assumes the following rules :</p>
 <ul>
-    <li><b>Domestic Taxed</b> - For shipments within a single EU country, normal EU VAT rules apply.</li>
-    <li><b>Intra-EU Zero</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer presents a validated EU VAT number, then 
-        the sale can be zero rated for EU VAT.</li>
-    <li><b>Intra-EU Distance Sale Taxed</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer does NOT present a validated EU VAT number, then 
+    <li><b>Domestic</b> - For shipments within a single EU country, normal EU VAT rules apply.</li>
+    <li><b>Intra-EU B2B</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer presents a validated EU VAT number, then 
+        the sale can be zero rated for EU VAT. Zero Rate notice to be included on Invoice.</li>
+    <li><b>Intra-EU B2C</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer does NOT present a validated EU VAT number, then 
         Destination Country VAT should be charged.</li>
-    <li><b>Import Reverse Charge</b> - For shipments from outside of the EU to within the EU and the buyer presents a validated EU VAT number, then 
+    <li><b>Import B2B</b> - For shipments from outside of the EU to within the EU and the buyer presents a validated EU VAT number, then 
         VAT should not be charged. Reverse Charge notice to be included on Invoice.</li>
     <li><b>Import Taxed</b> - For shipments from outside of the EU to the EU and the Intrinsic Value is equal to or below 150 EUR, then 
         Destination Country VAT should be charged.</li>
@@ -204,32 +213,32 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>        
-                <field id="domestictaxed" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Domestic Taxed</label>
+                <field id="domestic" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU, Item is being shipped to the same country.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>           
-                <field id="intraeuzero" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Intra-EU Zero</label>
+                <field id="intraeub2b" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="intraeudistancesaletaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Intra EU Distance Sale Taxed</label>
+                <field id="intraeub2c" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Intra EU B2C</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same. Valid VAT Number not supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importreversecharge" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer Group - Import Reverse Charge</label>
+                <field id="importb2b" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</comment>
                     <depends>
@@ -252,7 +261,90 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-
+            </group>
+            <group id="norwayvoec" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Norway VOEC Scheme</label>
+                <comment><![CDATA[
+<div class="autocustomergroup-schemeoverview">
+<p>This Scheme applies to shipments being sent from anywhere in the world to Consumers (Not B2B transactions) in Norway.</p>
+<p>As of 1st April 2020, all sellers must (if their turnover to Norway exceeds 50,000 NOK) register for the Norway VOEC scheme, 
+    and collect Norwegian VAT for B2C transactions at the point of sale and remit to the Norwegian Government.</p>
+<p>The module assumes the following rules :</p>
+<ul>
+    <li><b>Domestic</b> - For shipments within Norway, normal Norway VAT rules apply.</li>
+    <li><b>Import B2B</b> - For shipments from outside of Norway to Norway and the buyer presents a Norway Business Number, then 
+        VAT should not be charged.</li>
+    <li><b>Import Taxed</b> - For imports into Norway, where the value of the item sold is equal to or below 3000 NOK, then 
+        Norway VAT should be charged on that item.</li>
+    <li><b>Import Untaxed</b> - For imports into Norway, where the value of the item sold is above 3000 NOK, then VAT should 
+        NOT be charged on the item and instead will be collected at the EU border along with any duties due.</li>
+</ul>
+<p>For the Norway VOEC Scheme, When determining whether to apply VAT or not, the Item Value is defined as "The value that the 
+    item is sold at, and does not include additional costs and fees e.g. shipping and insurance costs." This can be confirmed 
+    <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf" 
+    target="_blank">here</a> in Section 4.1.</p>
+<p>The above guide also refers to bundling in Section 4.2 where it states that multiple items can be shipped in a single shipment,
+    and it is the cost of 1 item that determines whether VAT should be charged on that 1 item, so a consignment of 10 items, each sold for
+    1000 NOK, should not have VAT charged at the point of sale, as no single item was above the 3000 NOK threshold. The guidance recommends if an order contains a mix 
+    of above and below threshold items, that the order is split into separate orders. <b>Because of this, this module assumes that if
+    any one single item in a shipment is above the threshold in value, then the entire order does not have VAT applied. Orders sent in
+    this way will be processed at the Norwegian border with VAT being charged as appropriate. This is in accordance with Section 4.2 of the above guidance.</b> 
+<p>More information on the scheme can be found on the
+    <a href="https://www.skatteetaten.no/en/business-and-organisation/vat-and-duties/vat/foreign/e-commerce-voec/" target="_blank">Norwegian Tax Administration Website</a></p>
+</div>
+                    ]]></comment>
+                <depends>
+                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                </depends>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="registrationnumber" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>VOEC Registration Number</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>  
+                <field id="importthreshold" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Import VAT Threshold</label>
+                    <comment>If any item within the order is valued above this threshold (in Store Currency) then no VAT should be charged on the order.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>        
+                <field id="domestic" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Domestic</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is in Norway, Item is being shipped to Norway.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>           
+                <field id="importb2b" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import B2B</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in Norway, Item is being shipped to Norway, Norwegian Business Number Supplied.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importtaxed" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Taxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in Norway, Item is being shipped to Norway, All individual items in the order are valued below or equal to the Import VAT Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="importuntaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Group - Import Untaxed</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>Merchant Country is not in Norway, Item is being shipped to Norway, One or more items in the order is valued above the Import VAT Threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
             </group>
         </section>
         <section id="customer">
