@@ -2,9 +2,9 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Gw\AutoCustomerGroup\Model\AutoCustomerGroup">
         <arguments>
-            <argument name="validators" xsi:type="array">
-                <item name="ukvat" xsi:type="object">Gw\AutoCustomerGroup\Model\Validator\UkVat</item>
-                <item name="euvat" xsi:type="object">Gw\AutoCustomerGroup\Model\Validator\EuVat</item>
+            <argument name="taxSchemes" xsi:type="array">
+                <item name="ukvat" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\UkVat</item>
+                <item name="euvat" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat</item>
            </argument>
         </arguments>
     </type>

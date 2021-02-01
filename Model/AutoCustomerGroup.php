@@ -1,21 +1,21 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model;
 
-use Gw\AutoCustomerGroup\Model\Validator\AbstractValidator;
+use Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 
 class AutoCustomerGroup
 {
     /**
-     * @var AbstractValidator[]
+     * @var AbstractTaxScheme[]
      */
-    private $validators;
+    private $taxSchemes;
 
     public function __construct(
-        array $validators = []
+        array $taxSchemes = []
     ) {
-        $this->validators = $validators;
+        $this->taxSchemes = $taxSchemes;
     }
 
     /**
@@ -27,9 +27,9 @@ class AutoCustomerGroup
         $countryCode,
         $taxId
     ) {
-        foreach ($this->validators as $validator) {
-            if ($validator->isEnabled() && $validator->checkCountry($countryCode)) {
-                return $validator->checkTaxId($countryCode, $taxId);
+        foreach ($this->taxSchemes as $taxScheme) {
+            if ($taxScheme->isEnabled() && $taxScheme->checkCountry($countryCode)) {
+                return $taxScheme->checkTaxId($countryCode, $taxId);
             }
         }
         return new DataObject([
@@ -37,7 +37,7 @@ class AutoCustomerGroup
             'request_date' => '',
             'request_identifier' => '',
             'request_success' => false,
-            'request_message' => __('Tax Identifier Validator is not enabled for this country.'),
+            'request_message' => __('Tax Scheme is not enabled for this country.'),
         ]);
     }
 
@@ -56,9 +56,9 @@ class AutoCustomerGroup
         $quote,
         $storeId
     ) {
-        foreach ($this->validators as $validator) {
-            if ($validator->isEnabled() && $validator->checkCountry($customerCountryCode)) {
-                return $validator->getCustomerGroup(
+        foreach ($this->taxSchemes as $taxScheme) {
+            if ($taxScheme->isEnabled() && $taxScheme->checkCountry($customerCountryCode)) {
+                return $taxScheme->getCustomerGroup(
                     $customerCountryCode,
                     $customerPostCode,
                     $taxIdValidationResults,

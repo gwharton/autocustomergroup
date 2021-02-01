@@ -1,5 +1,5 @@
 <?php
-namespace Gw\AutoCustomerGroup\Model\Validator;
+namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
@@ -11,7 +11,7 @@ use Magento\Store\Model\ScopeInterface;
  * IE8256796U - Microsoft
  * IE6388047V - Google
  */
-class EuVat extends AbstractValidator
+class EuVat extends AbstractTaxScheme
 {
     const CODE = "euvat";
     protected $code = self::CODE;
@@ -19,7 +19,7 @@ class EuVat extends AbstractValidator
     const VAT_VALIDATION_WSDL_URL = 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
-     * Check if this Validator handles the requtested country
+     * Check if this Tax Scheme handles the requtested country
      *
      * @param string $country
      * @return bool

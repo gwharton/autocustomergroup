@@ -1,5 +1,5 @@
 <?php
-namespace Gw\AutoCustomerGroup\Model\Validator;
+namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
 use GuzzleHttp\ClientFactory;
 use GuzzleHttp\Exception\BadResponseException;
@@ -23,7 +23,7 @@ use Psr\Log\LoggerInterface;
  * GB948561936944
  * GB000549615108 //Isle of man
  */
-class UkVat extends AbstractValidator
+class UkVat extends AbstractTaxScheme
 {
     const CODE = "ukvat";
     protected $code = self::CODE;
@@ -80,7 +80,7 @@ class UkVat extends AbstractValidator
     }
 
     /**
-     * Check if this Validator handles the requtested country
+     * Check if this Tax Scheme handles the requtested country
      *
      * @param string $country
      * @return bool

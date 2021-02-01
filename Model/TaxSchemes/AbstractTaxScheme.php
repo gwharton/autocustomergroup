@@ -1,15 +1,13 @@
 <?php
-namespace Gw\AutoCustomerGroup\Model\Validator;
+namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
 use Gw\AutoCustomerGroup\Helper\AutoCustomerGroup;
-use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote;
-use Magento\Store\Model\Information as StoreInformation;
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
 
-abstract class AbstractValidator
+abstract class AbstractTaxScheme
 {
     const XML_PATH_EU_COUNTRIES_LIST = 'general/country/eu_countries';
 
@@ -46,7 +44,7 @@ abstract class AbstractValidator
     }
 
     /**
-     * Check if this Validator is enabled in Config
+     * Check if this Tax Scheme is enabled in Config
      *
      * @return boolean
      */
