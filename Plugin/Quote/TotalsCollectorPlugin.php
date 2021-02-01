@@ -116,7 +116,7 @@ class TotalsCollectorPlugin
         );
 
         //Update the quote object if the group has changed.
-        if ($groupId && $groupId !== $quote->getCustomerGroupId()) {
+        if (($groupId !== null) && $groupId !== $quote->getCustomerGroupId()) {
             $address->setPrevQuoteCustomerGroupId($quote->getCustomerGroupId());
             $quote->setCustomerGroupId($groupId);
             $this->customerSession->setCustomerGroupId($groupId);
