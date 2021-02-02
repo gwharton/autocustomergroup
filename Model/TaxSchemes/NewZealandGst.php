@@ -68,7 +68,7 @@ class NewZealandGst extends AbstractTaxScheme
         }
         //Merchant Country is not in New Zealand
         //Item shipped to New Zealand
-        //NZBN Supplied
+        //GST Number Supplied
         //Therefore Import B2B
         if (!$this->isCountryNewZealand($merchantCountry) &&
             $this->isCountryNewZealand($customerCountryCode) &&
@@ -147,12 +147,17 @@ class NewZealandGst extends AbstractTaxScheme
      *
      * @param string $gst
      * @return bool
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function isValidGst($gst)
     {
         $weightsa = [3,2,7,6,5,4,3,2];
         $weightsb = [7,4,3,2,5,2,7,6];
         $gst = preg_replace('/[^0-9]/', '', $gst);
+        if (!is_numeric($gst)) {
+            return false;
+        }
         $check = $gst[strlen($gst)-1];
         $withoutcheck = substr($gst, 0, strlen($gst)-1);
         if (strlen($withoutcheck) == 7) {

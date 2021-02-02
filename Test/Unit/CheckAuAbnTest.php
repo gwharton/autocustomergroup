@@ -12,9 +12,6 @@ class CheckAuAbnTest extends TestCase
      */
     private $model;
 
-    /**
-     * {@inheritDoc}
-     */
     protected function setUp(): void
     {
         $this->model = (new ObjectManagerHelper($this))->getObject(
@@ -27,9 +24,9 @@ class CheckAuAbnTest extends TestCase
      * @return void
      * @dataProvider isValidAbnDataProvider
      */
-    public function testIsValidAbn($number): void
+    public function testIsValidAbn($number, $valid): void
     {
-        $this->assertTrue($this->model->isValidAbn($number));
+        $this->assertEquals($valid, $this->model->isValidAbn($number));
     }
 
     /**
@@ -41,11 +38,13 @@ class CheckAuAbnTest extends TestCase
     {
         //Really need more Test ABN numbers for this.
         return [
-            ["72 629 951 766"],
-            ["90929922193"],
-            ["19621994018"],
-            ["61215203421"],
-            ["40 978 973 457"]
+            ["72 629 951 766", true],
+            ["90929922193", true],
+            ["19621994018", true],
+            ["61215203421", true],
+            ["40 978 973 457", true],
+            ["oygyg", false],
+            ["", false]
         ];
     }
 }

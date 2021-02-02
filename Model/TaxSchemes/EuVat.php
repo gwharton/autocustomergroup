@@ -71,7 +71,7 @@ class EuVat extends AbstractTaxScheme
         //Merchant Country is in the EU or NI
         //Item shipped to the EU
         //Both countries are not the same
-        //VAT No is valid
+        //Validated EU VAT Number Supplied
         //Therefore Intra EU B2B
         if (($this->isCountryInEU($merchantCountry) || $this->isNi($merchantCountry, $merchantPostCode)) &&
             $this->isCountryInEU($customerCountryCode) &&
@@ -86,7 +86,7 @@ class EuVat extends AbstractTaxScheme
         //Merchant Country is in the EU or NI
         //Item shipped to the EU
         //Both countries are not the same
-        //VAT No is not valid
+        //Validated EU VAT Number Not Supplied
         //Therefore Intra EU B2C
         if (($this->isCountryInEU($merchantCountry) || $this->isNi($merchantCountry, $merchantPostCode)) &&
             $this->isCountryInEU($customerCountryCode) &&
@@ -100,7 +100,7 @@ class EuVat extends AbstractTaxScheme
         }
         //Merchant Country is not in the EU
         //Item shipped to the EU
-        //VAT No is valid.
+        //Validated EU VAT Number Supplied
         //Therefore Import B2B
         if (!$this->isCountryInEU($merchantCountry) &&
             $this->isCountryInEU($customerCountryCode) &&
@@ -159,10 +159,6 @@ class EuVat extends AbstractTaxScheme
             'request_message' => __('Error during VAT Number verification.'),
         ]);
 
-        if (!extension_loaded('soap')) {
-            return $gatewayResponse;
-        }
-
         $requesterCountryCode = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/registrationcountry",
             ScopeInterface::SCOPE_STORE
@@ -171,72 +167,58 @@ class EuVat extends AbstractTaxScheme
             "autocustomergroup/" . self::CODE . "/registrationnumber",
             ScopeInterface::SCOPE_STORE
         );
+        $countryCodeForVatNumber = $this->getCountryCodeForVatNumber($countryCode);
+        $requesterCountryCodeForVatNumber = $this->getCountryCodeForVatNumber($requesterCountryCode);
+        $sanitisedVAT = str_replace(
+            [' ', '-', $countryCodeForVatNumber],
+            ['', '', ''],
+            $vatNumber
+        );
+        $sanitisedRequesterVAT = str_replace(
+            [' ', '-',
+            $requesterCountryCodeForVatNumber],
+            ['', '', ''],
+            $requesterVatNumber
+        );
 
-        if (!$this->canCheckVatNumber($countryCode, $vatNumber, $requesterCountryCode, $requesterVatNumber)) {
+        if (empty($sanitisedVAT) ||
+            empty($sanitisedRequesterVAT) ||
+            empty($countryCodeForVatNumber) ||
+            empty($requesterCountryCodeForVatNumber) ||
+            !$this->isCountryInEU($countryCode)) {
+            $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
             return $gatewayResponse;
         }
 
-        $countryCodeForVatNumber = $this->getCountryCodeForVatNumber($countryCode);
-        $requesterCountryCodeForVatNumber = $this->getCountryCodeForVatNumber($requesterCountryCode);
+        if (extension_loaded('soap')) {
+            try {
+                $soapClient = new SoapClient(self::VAT_VALIDATION_WSDL_URL);
 
-        try {
-            $soapClient = new SoapClient(self::VAT_VALIDATION_WSDL_URL);
+                $requestParams = [];
+                $requestParams['countryCode'] = $countryCodeForVatNumber;
+                $requestParams['vatNumber'] = $sanitisedVAT;
+                $requestParams['requesterCountryCode'] = $requesterCountryCodeForVatNumber;
+                $requestParams['requesterVatNumber'] = $sanitisedRequesterVAT;
 
-            $requestParams = [];
-            $requestParams['countryCode'] = $countryCodeForVatNumber;
-            $requestParams['vatNumber'] =
-                str_replace([' ', '-', $countryCodeForVatNumber], ['', '', ''], $vatNumber);
-            $requestParams['requesterCountryCode'] = $requesterCountryCodeForVatNumber;
-            $requestParams['requesterVatNumber'] =
-                str_replace([' ', '-', $requesterCountryCodeForVatNumber], ['', '', ''], $requesterVatNumber);
+                $result = $soapClient->checkVatApprox($requestParams);
 
-            $result = $soapClient->checkVatApprox($requestParams);
+                $gatewayResponse->setIsValid((bool)$result->valid);
+                $gatewayResponse->setRequestDate((string)$result->requestDate);
+                $gatewayResponse->setRequestIdentifier((string)$result->requestIdentifier);
+                $gatewayResponse->setRequestSuccess(true);
 
-            $gatewayResponse->setIsValid((bool)$result->valid);
-            $gatewayResponse->setRequestDate((string)$result->requestDate);
-            $gatewayResponse->setRequestIdentifier((string)$result->requestIdentifier);
-            $gatewayResponse->setRequestSuccess(true);
-
-            if ($gatewayResponse->getIsValid()) {
-                $gatewayResponse->setRequestMessage(__('VAT Number validated with VIES.'));
-            } else {
-                $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number including country code.'));
+                if ($gatewayResponse->getIsValid()) {
+                    $gatewayResponse->setRequestMessage(__('VAT Number validated with VIES.'));
+                } else {
+                    $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number including country code.'));
+                }
+            } catch (\Exception $exception) {
+                $gatewayResponse->setIsValid(false);
+                $gatewayResponse->setRequestDate('');
+                $gatewayResponse->setRequestIdentifier('');
             }
-        } catch (\Exception $exception) {
-            $gatewayResponse->setIsValid(false);
-            $gatewayResponse->setRequestDate('');
-            $gatewayResponse->setRequestIdentifier('');
         }
         return $gatewayResponse;
-    }
-
-    /**
-     * Check if parameters are valid to send to VAT validation service
-     *
-     * @param string $countryCode
-     * @param string $vatNumber
-     * @param string $requesterCountryCode
-     * @param string $requesterVatNumber
-     * @return boolean
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     */
-    private function canCheckVatNumber(
-        $countryCode,
-        $vatNumber,
-        $requesterCountryCode,
-        $requesterVatNumber
-    ) {
-        return !(!is_string($countryCode)
-            || !is_string($vatNumber)
-            || !is_string($requesterCountryCode)
-            || !is_string($requesterVatNumber)
-            || empty($countryCode)
-            || !$this->isCountryInEU($countryCode)
-            || empty($vatNumber)
-            || empty($requesterCountryCode) && !empty($requesterVatNumber)
-            || !empty($requesterCountryCode) && empty($requesterVatNumber)
-            || !empty($requesterCountryCode) && !$this->isCountryInEU($requesterCountryCode)
-        );
     }
 
     /**

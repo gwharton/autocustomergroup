@@ -27,9 +27,9 @@ class CheckNzGstTest extends TestCase
      * @return void
      * @dataProvider isValidGstDataProvider
      */
-    public function testIsValidGst($number): void
+    public function testIsValidGst($number, $valid): void
     {
-        $this->assertTrue($this->model->isValidGst($number));
+        $this->assertEquals($valid, $this->model->isValidGst($number));
     }
 
     /**
@@ -41,8 +41,11 @@ class CheckNzGstTest extends TestCase
     {
         //Really need more Test GST numbers for this.
         return [
-            ["49091850"],
-            ["123123123"]
+            ["49091850", true],
+            ["123123123", true],
+            ["123456789", false],
+            ["ghkk", false],
+            ["", false]
         ];
     }
 }

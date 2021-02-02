@@ -149,6 +149,7 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/registrationnumber 12345
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/importthreshold 3000
      * @magentoConfigFixture current_store autocustomergroup/australiagst/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/australiagst/apiguid b25876a7-f455-43ff-b978-1cf280b1a652
      * @magentoConfigFixture current_store autocustomergroup/australiagst/importthreshold 1000
      * @magentoConfigFixture current_store autocustomergroup/newzealandgst/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/newzealandgst/importthreshold 1000
@@ -324,6 +325,7 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @return array
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function dataProviderForTestAutoCustomerGroup()
     {
@@ -338,6 +340,28 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
         return [
             [1, 10, 'GB', '', 'BR', '12345', '', 'NOT LOGGED IN', 0],
             [1, 10, 'FR', '75001', 'BR', '12345', '', 'NOT LOGGED IN', 0],
+
+            //Australia GST
+            [1, 10, 'AU', '', 'AU', '1234', '', 'australia_domestic', 0],
+            [1, 10, 'AU', '', 'AU', '1234', '1234', 'australia_domestic', 0], //Invalid Business No
+            //Valid Business No, with GST registration
+            [1, 10, 'AU', '', 'AU', '1234', '72 629 951 766', 'australia_domestic', 0],
+            //Valid Business No, with GST registration
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '72 629 951 766', 'australia_import_b2b', 0],
+            //Valid Business No, with GST registration
+            [10, 1000, 'GB', 'NE1 1AA', 'AU', '1234', '72 629 951 766', 'australia_import_b2b', 0],
+            //Valid Business No, with GST registration
+            [1, 4000, 'GB', 'NE1 1AA', 'AU', '1234', '72 629 951 766', 'australia_import_b2b', 0],
+            //Valid Business No, but no GST registration
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_taxed', 0],
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_taxed', 0], //Invalid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [9, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [1, 1000, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [10, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [1, 2000, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
+            [5, 250, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
+            [5, 4000, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_untaxed', 0], //Invalid Business No
 
             //New Zealand GST
             [1, 10, 'NZ', '', 'NZ', '1234', '', 'newzealand_domestic', 0],
@@ -355,22 +379,6 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             [1, 2000, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_untaxed', 0],
             [5, 1001, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_untaxed', 0],
             [5, 4000, 'GB', 'NE1 1AA', 'NZ', '1234', '1234', 'newzealand_import_untaxed', 0], //Invalid Business No
-
-            //Australia GST
-            [1, 10, 'AU', '', 'AU', '1234', '', 'australia_domestic', 0],
-            [1, 10, 'AU', '', 'AU', '1234', '1234', 'australia_domestic', 0], //Invalid Business No
-            [1, 10, 'AU', '', 'AU', '1234', '40 978 973 457', 'australia_domestic', 0], //Valid Business No
-            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_b2b', 0], //Valid Business No
-            [10, 1000, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_b2b', 0], //Valid Business No
-            [1, 4000, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_b2b', 0], //Valid Business No
-            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_taxed', 0], //Invalid Business No
-            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
-            [9, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
-            [1, 1000, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
-            [10, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
-            [1, 2000, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
-            [5, 250, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
-            [5, 4000, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_untaxed', 0], //Invalid Business No
 
             //Norway VOEC
             [1, 10, 'NO', '1234', 'NO', '1234', '', 'norway_domestic', 0],

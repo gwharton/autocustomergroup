@@ -4,6 +4,7 @@ namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Gw\AutoCustomerGroup\Helper\AutoCustomerGroup;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
@@ -14,6 +15,31 @@ class AustraliaGst extends AbstractTaxScheme
     const CODE = "australiagst";
     protected $code = self::CODE;
     const ABN_VALIDATION_WSDL_URL = 'https://abr.business.gov.au/abrxmlsearch/ABRXMLSearch.asmx?WSDL';
+
+    /**
+     * @var DateTime
+     */
+    private $datetime;
+
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     * @param DateTime $datetime
+     * @param LoggerInterface $logger
+     * @param AutoCustomerGroup $helper
+     */
+    public function __construct(
+        ScopeConfigInterface $scopeConfig,
+        DateTime $datetime,
+        LoggerInterface $logger,
+        AutoCustomerGroup $helper
+    ) {
+        parent::__construct(
+            $scopeConfig,
+            $logger,
+            $helper
+        );
+        $this->datetime = $datetime;
+    }
 
     /**
      * Check if this Tax Scheme handles the requtested country
@@ -69,7 +95,7 @@ class AustraliaGst extends AbstractTaxScheme
         }
         //Merchant Country is not in Australia
         //Item shipped to Australia
-        //ATO Registration Number Supplied
+        //GST Validated ABN Number Supplied
         //Therefore Import B2B
         if (!$this->isCountryAustralia($merchantCountry) &&
             $this->isCountryAustralia($customerCountryCode) &&
@@ -115,7 +141,7 @@ class AustraliaGst extends AbstractTaxScheme
      * @param string $countryCode
      * @param string $abn
      * @return DataObject
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function checkTaxId($countryCode, $abn)
     {
@@ -129,62 +155,72 @@ class AustraliaGst extends AbstractTaxScheme
 
         $sanitisedAbn = str_replace([' ', '-'], ['', ''], $abn);
 
-        if (preg_match("/^[0-9]{11}$/", $sanitisedAbn) &&
-            $this->isCountryAustralia($countryCode) &&
-            $this->isValidAbn($sanitisedAbn)) {
-            $gatewayResponse->setIsValid(true);
-            $gatewayResponse->setRequestSuccess(true);
-            $gatewayResponse->setRequestMessage(__('ABN Number is Valid.'));
-        } else {
-            $gatewayResponse->setRequestMessage(__('ABN Number is not the correct format.'));
+        if (!preg_match("/^[0-9]{11}$/", $sanitisedAbn) ||
+            !$this->isCountryAustralia($countryCode) ||
+            !$this->isValidAbn($sanitisedAbn)) {
+            $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
+            return $gatewayResponse;
         }
 
-        /*$apiguid = $this->scopeConfig->getValue(
+        $apiguid = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/apiguid",
             ScopeInterface::SCOPE_STORE
         );
 
-        if (!extension_loaded('soap') ||
-            !$apiguid ||
-            !$this->isCountryAustralia($countryCode)) {
-            return $gatewayResponse;
-        }
+        if (extension_loaded('soap') && $apiguid) {
+            try {
+                $soapClient = new SoapClient(self::ABN_VALIDATION_WSDL_URL);
 
-        try {
-            $soapClient = new SoapClient(self::ABN_VALIDATION_WSDL_URL);
+                $requestParams = [];
+                $requestParams['searchString'] = $sanitisedAbn;
+                $requestParams['includeHistoricalDetails'] ='N';
+                $requestParams['authenticationGuid'] = $apiguid;
 
-            $requestParams = [];
-            $requestParams['searchString'] = str_replace([' ', '-'], ['', ''], $abn);
-            $requestParams['includeHistoricalDetails'] ='N';
-            $requestParams['authenticationGuid'] = $apiguid;
+                $result = $soapClient->ABRSearchByABN($requestParams);
 
-            $result = $soapClient->ABRSearchByABN($requestParams);
+                $isCurrent = $result->ABRPayloadSearchResults->response->businessEntity->ABN->isCurrentIndicator;
+                $gstValid = false;
 
-            $isCurrent = $result->ABRPayloadSearchResults->response->businessEntity->ABN->isCurrentIndicator;
-            $gstFrom = $result->ABRPayloadSearchResults->response->businessEntity->goodsAndServicesTax->effectiveFrom;
-            $gstTo = $result->ABRPayloadSearchResults->response->businessEntity->goodsAndServicesTax->effectiveTo;
-            $identifier = $result->ABRPayloadSearchResults->response->businessEntity->ABN->identifierValue;
-            $datetime = $result->ABRPayloadSearchResults->response->dateTimeRetrieved;
+                if (isset($result->ABRPayloadSearchResults->response->businessEntity->goodsAndServicesTax)) {
+                    $gstValid = true;
+                    $gstFrom = $result->ABRPayloadSearchResults->response
+                        ->businessEntity->goodsAndServicesTax->effectiveFrom;
+                    $day = $this->datetime->gmtDate("Y-m-d");
+                    if ($gstFrom > $day) {
+                        $gstValid = false;
+                    } else {
+                        $gstTo = $result->ABRPayloadSearchResults->response
+                            ->businessEntity->goodsAndServicesTax->effectiveTo;
+                        if (($gstTo != "0001-01-01") &&
+                            ($gstTo < $day)) {
+                            $gstValid = false;
+                        }
+                    }
+                }
+                $identifier = $result->ABRPayloadSearchResults->response->businessEntity->ABN->identifierValue;
+                $datetime = $result->ABRPayloadSearchResults->response->dateTimeRetrieved;
 
-            $gatewayResponse->setRequestSuccess(true);
-            if (($isCurrent == "yes") &&
-                !empty($gstFrom) &&
-                empty($gstTo) &&
-                !empty($datetime)) {
-                $gatewayResponse->setRequestIdentifier($identifier);
-                $gatewayResponse->setRequestDate($datetime);
-                $gatewayResponse->setIsValid(true);
-                $gatewayResponse->setRequestMessage(__('ABN validated and business is registered for GST with ATO.'));
-            } else {
+                $gatewayResponse->setRequestSuccess(true);
+                if (preg_match("/^[Yy](es)?$/", $isCurrent) &&
+                    $gstValid &&
+                    !empty($datetime)) {
+                    $gatewayResponse->setRequestIdentifier($identifier);
+                    $gatewayResponse->setRequestDate($datetime);
+                    $gatewayResponse->setIsValid(true);
+                    $gatewayResponse->setRequestMessage(
+                        __('ABN validated and business is registered for GST with ATO.')
+                    );
+                } else {
+                    $gatewayResponse->setIsValid(false);
+                    $gatewayResponse->setRequestDate('');
+                    $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
+                }
+            } catch (\Exception $exception) {
                 $gatewayResponse->setIsValid(false);
                 $gatewayResponse->setRequestDate('');
-                $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
+                $gatewayResponse->setRequestIdentifier('');
             }
-        } catch (\Exception $exception) {
-            $gatewayResponse->setIsValid(false);
-            $gatewayResponse->setRequestDate('');
-            $gatewayResponse->setRequestIdentifier('');
-        }*/
+        }
         return $gatewayResponse;
     }
 

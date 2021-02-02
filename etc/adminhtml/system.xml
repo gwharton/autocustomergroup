@@ -68,7 +68,8 @@
 </ul>
 <p>More information on the scheme can be found on the 
     <a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk" target="_blank">UK Government Website</a></p>
-<p>Credentials for the UK HMRC VAT Number checker API can be obtained by signing up on the <a href="https://developer.service.hmrc.gov.uk" target="_blank">HMRC Developers Website</a>.</p>
+<p>If the customer enters a valid format UK VAT number at checkout, the number will be validated with the UK HMRC VAT Number checker service. Credentials 
+    for the VAT Number Checker API can be obtained by signing up on the <a href="https://developer.service.hmrc.gov.uk" target="_blank">HMRC Developers Website</a>.</p>
 </div>
                     ]]></comment>
                 <depends>
@@ -121,7 +122,7 @@
                 <field id="intraeub2b" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is within the EU, Item is being shipped to NI, VAT Number Validated Successfully.</comment>
+                    <comment>Merchant Country is within the EU, Item is being shipped to NI, Validated UK VAT Number Supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -129,7 +130,7 @@
                 <field id="intraeub2c" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra-EU B2C</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is within the EU, Item is being shipped to NI, Valid VAT number is NOT supplied.</comment>
+                    <comment>Merchant Country is within the EU, Item is being shipped to NI, Validated UK VAT Number is NOT Supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -137,7 +138,7 @@
                 <field id="importb2b" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, VAT Number Validated Successfully.</comment>
+                    <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, Validated UK VAT Number Supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -191,6 +192,7 @@
 </ul>
 <p>More information on the scheme can be found on the
     <a href="https://ec.europa.eu/taxation_customs/customs-procedures/customs-formalities-low-value-consignments_en" target="_blank">European Commission Website</a></p>
+<p>If the customer enters a valid format EU VAT number at checkout, the number will be validated with the EU VIES service.</p>
 </div>
                     ]]></comment>
                 <depends>
@@ -231,7 +233,7 @@
                 <field id="intraeub2b" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, VAT Number Validated Successfully.</comment>
+                    <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, Validated EU VAT Number Supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -239,7 +241,7 @@
                 <field id="intraeub2c" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra EU B2C</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same. Valid VAT Number not supplied.</comment>
+                    <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, Validated EU VAT Number is NOT Supplied..</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -247,7 +249,7 @@
                 <field id="importb2b" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, VAT Number Validated Successfully.</comment>
+                    <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Validated EU VAT Number Supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -368,7 +370,7 @@
 <p>The module assumes the following rules :</p>
 <ul>
     <li><b>Domestic</b> - For shipments within Australia, normal Australia GST rules apply.</li>
-    <li><b>Import B2B</b> - For shipments from outside of Australia to Australia and the buyer presents their ABN, then 
+    <li><b>Import B2B</b> - For shipments from outside of Australia to Australia and the buyer presents a validated for GST ABN number, then 
         GST should not be charged.</li>
     <li><b>Import Taxed</b> - For imports into Australia, where the total goods value is equal to or below 1,000 AUD, then 
         GST should be charged.</li>
@@ -390,7 +392,8 @@
 <p>More information on the scheme can be found on the
     <a href="https://www.ato.gov.au/business/international-tax-for-business/in-detail/doing-business-in-australia/australian-gst-registration-for-non-residents/" target="_blank">Australian Tax Office Website</a></p>
     <p>Credentials for the Australian Tax Office ABN checker API can be obtained by signing up on the <a href="https://abr.business.gov.au/Tools/WebServices" target="_blank">Australian Business Register Website</a>.</p>
-<p>ABN Number Verification is performed by checking the number format and mathematical check digit. No online lookups are performed.</p>
+<p>If the customer enters a valid format AU ABN number at checkout, the number will be validated with the Australian Business Register. Credentials 
+    for the Australian Business Register API can be obtained by signing up on the <a href="https://abr.business.gov.au/" target="_blank">Australian Business Register Website</a>.</p>
 </div>
                     ]]></comment>
                 <depends>
@@ -400,12 +403,12 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <!--<field id="apiguid" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="apiguid" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>ABN API GUID</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>-->
+                </field>
                 <field id="registrationnumber" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>ATO Registration Number</label>
                     <depends>
@@ -430,7 +433,7 @@
                 <field id="importb2b" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <comment>Merchant Country is not in Australia, Item is being shipped to Australia, ABN Supplied.</comment>
+                    <comment>Merchant Country is not in Australia, Item is being shipped to Australia, Validated for GST ABN Number Supplied.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
