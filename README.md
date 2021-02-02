@@ -86,6 +86,14 @@
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, All items valued at or below the Import GST Threshold.</li>
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, One or more items in the order is valued above the Import GST Threshold.</li>
 </ul>
+<h2>Integration Tests</h2>
+<p>To run the inmtegration tests, you need your own credentials for the UK Sandbox and Australian ID Checker services. Please
+add them to config-global.php. The tests for UK (Sandbox), EU and Australia use the live API's</p>
+<ul>
+<li>autocustomergroup/ukvat/clientid'</li>
+<li>autocustomergroup/ukvat/clientsecret'</li>
+<li>autocustomergroup/australiagst/apiguid'</li>
+</ul>
 <h2>Known Issues</h2>
 <ul>
 <li>I havent done any testing on creating customers in the admin, or validating VAT numbers in admin. This will need looking at, at some point.</li>

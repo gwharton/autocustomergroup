@@ -136,11 +136,9 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store customer/create_account/auto_group_assign 1
      * @magentoConfigFixture current_store customer/create_account/tax_calculation_address_type shipping
      * @magentoConfigFixture current_store autocustomergroup/ukvat/enabled 1
-     * @magentoConfigFixture current_store autocustomergroup/ukvat/registrationnumber GB553557881
      * @magentoConfigFixture current_store autocustomergroup/ukvat/environment sandbox
      * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 40
-     * @magentoConfigFixture current_store autocustomergroup/ukvat/clientid ENdwPn9Bo1kzjmdJRIwnVwJ67ws7
-     * @magentoConfigFixture current_store autocustomergroup/ukvat/clientsecret d6fe5959-55cc-4354-bcfb-647bcb322ff9
+     * @magentoConfigFixture current_store autocustomergroup/ukvat/registrationnumber GB553557881
      * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/euvat/importthreshold 90
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationcountry IE
@@ -149,7 +147,6 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/registrationnumber 12345
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/importthreshold 3000
      * @magentoConfigFixture current_store autocustomergroup/australiagst/enabled 1
-     * @magentoConfigFixture current_store autocustomergroup/australiagst/apiguid b25876a7-f455-43ff-b978-1cf280b1a652
      * @magentoConfigFixture current_store autocustomergroup/australiagst/importthreshold 1000
      * @magentoConfigFixture current_store autocustomergroup/newzealandgst/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/newzealandgst/importthreshold 1000
