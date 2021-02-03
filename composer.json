@@ -1,8 +1,7 @@
 {
-    "name": "Gw/AutoCustomerGroup",
+    "name": "gw/autocustomergroup",
     "description": "GW AutoCustomerGroup",
     "type": "magento2-module",
-    "version": "1.0.0",
     "autoload": {
         "files": [
             "registration.php"
