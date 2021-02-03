@@ -248,7 +248,7 @@ class AustraliaGst extends AbstractTaxScheme
         // Sum the products
         $sum = 0;
         foreach (str_split($abn) as $key => $digit) {
-            $sum += ($digit * $weights[$key]);
+            $sum += ((int) $digit * $weights[$key]);
         }
 
         if (($sum % 89) != 0) {

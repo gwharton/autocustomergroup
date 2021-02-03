@@ -47,7 +47,7 @@ class AutoCustomerGroup
      * @param DataObject $taxIdValidationResults
      * @param Quote $quote
      * @param int $storeId
-     * @return void
+     * @return int|null
      */
     public function getCustomerGroup(
         $customerCountryCode,
