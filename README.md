@@ -87,7 +87,7 @@
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, One or more items in the order is valued above the Import GST Threshold.</li>
 </ul>
 <h2>Integration Tests</h2>
-<p>To run the inmtegration tests, you need your own credentials for the UK Sandbox and Australian ID Checker services. Please
+<p>To run the integration tests, you need your own credentials for the UK Sandbox and Australian ID Checker services. Please
 add them to config-global.php. The tests for UK (Sandbox), EU and Australia use the live API's</p>
 <ul>
 <li>autocustomergroup/ukvat/clientid'</li>
@@ -96,7 +96,6 @@ add them to config-global.php. The tests for UK (Sandbox), EU and Australia use 
 </ul>
 <h2>Known Issues</h2>
 <ul>
-<li>I havent done any testing on creating customers in the admin, or validating VAT numbers in admin. This will need looking at, at some point.</li>
 <li>Currently, VAT thresholds need to be calculated from the values stated in law, and converted manually into store currency. Future update will
  look into what can be done with this.</li>
 <li>What can be done where orders are split into multiple shipments, individually below the threshold, but the order is above the threshold.</li>
