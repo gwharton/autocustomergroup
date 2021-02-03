@@ -36,7 +36,7 @@ class EuVat extends AbstractTaxScheme
      * @param DataObject $vatValidationResult
      * @param Quote $quote
      * @param $store
-     * @return int
+     * @return int|null
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

@@ -168,7 +168,7 @@ class NewZealandGst extends AbstractTaxScheme
         }
         $sum = 0;
         foreach (str_split($withoutcheck) as $key => $digit) {
-            $sum += ($digit * $weightsa[$key]);
+            $sum += ((int) $digit * $weightsa[$key]);
         }
         $remainder = $sum % 11;
         if ($remainder == 0) {
@@ -178,7 +178,7 @@ class NewZealandGst extends AbstractTaxScheme
             if ($calculatedCheck == 10) {
                 $sum = 0;
                 foreach (str_split($withoutcheck) as $key => $digit) {
-                    $sum += ($digit * $weightsb[$key]);
+                    $sum += ((int) $digit * $weightsb[$key]);
                 }
                 $remainder = $sum % 11;
                 if ($remainder == 0) {
@@ -194,5 +194,6 @@ class NewZealandGst extends AbstractTaxScheme
         if ($calculatedCheck == $check) {
             return true;
         }
+        return false;
     }
 }

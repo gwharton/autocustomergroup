@@ -3,6 +3,7 @@ namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
 use Gw\AutoCustomerGroup\Helper\AutoCustomerGroup;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
