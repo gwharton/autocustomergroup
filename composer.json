@@ -11,8 +11,14 @@
         }
     },
     "require": {
-        "magento/module-tax": "*",
-        "magento/module-customer": "*",
-        "magento/module-config": "*"
+        "magento/module-tax": "100.4.*",
+        "magento/module-customer": "103.0.*",
+        "magento/module-directory": "100.4.*",
+        "magento/framework": "103.0.*",
+        "magento/module-store": "101.1.*",
+        "magento/module-quote": "101.2.*",
+        "magento/module-config": "101.2.*",
+        "ext-soap": "*",
+        "guzzlehttp/guzzle": "^6.3.3"
     }
 }
