@@ -131,6 +131,8 @@ class NewZealandGst extends AbstractTaxScheme
             $gatewayResponse->setRequestSuccess(true);
             $gatewayResponse->setRequestMessage(__('GST Number is the correct format.'));
         } else {
+            $gatewayResponse->setIsValid(false);
+            $gatewayResponse->setRequestSuccess(true);
             $gatewayResponse->setRequestMessage(__('GST Number is not the correct format.'));
         }
         return $gatewayResponse;

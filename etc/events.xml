@@ -4,4 +4,11 @@
         <!-- Existing VIV Validation needs disabling -->
         <observer name="sales_customer_validate_vat_number" disabled="true"/>
     </event>
+    <event name="customer_address_save_after">
+        <observer name="customer_address_after_save_viv_observer" disabled="true" />
+    </event>
+    <event name="customer_address_save_before">
+        <observer name="customer_address_before_save_viv_observer"  disabled="true" />
+        <observer name="customer_address_before_save_viv_observer_new" instance="Gw\AutoCustomerGroup\Observer\BeforeAddressSaveObserver" />
+    </event>
 </config>

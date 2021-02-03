@@ -216,6 +216,7 @@ class AustraliaGst extends AbstractTaxScheme
                     $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
                 }
             } catch (\Exception $exception) {
+                $gatewayResponse->setRequestSuccess(false);
                 $gatewayResponse->setIsValid(false);
                 $gatewayResponse->setRequestDate('');
                 $gatewayResponse->setRequestIdentifier('');

@@ -136,6 +136,8 @@ class NorwayVoec extends AbstractTaxScheme
             $gatewayResponse->setRequestSuccess(true);
             $gatewayResponse->setRequestMessage(__('Business Registration Number is the correct format.'));
         } else {
+            $gatewayResponse->setIsValid(false);
+            $gatewayResponse->setRequestSuccess(true);
             $gatewayResponse->setRequestMessage(__('Business Registration Number is not the correct format.'));
         }
         return $gatewayResponse;

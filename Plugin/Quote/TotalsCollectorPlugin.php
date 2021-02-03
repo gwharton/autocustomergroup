@@ -93,15 +93,16 @@ class TotalsCollectorPlugin
                 $customerCountryCode,
                 $customerTaxId
             );
-
-            // Store validation results in corresponding quote address
-            $address->setVatIsValid((int)$validationResult->getIsValid());
-            $address->setVatRequestId($validationResult->getRequestIdentifier());
-            $address->setVatRequestDate($validationResult->getRequestDate());
-            $address->setVatRequestSuccess($validationResult->getRequestSuccess());
-            $address->setValidatedVatNumber($customerTaxId);
-            $address->setValidatedCountryCode($customerCountryCode);
-            $address->save();
+            if ($validationResult) {
+                // Store validation results in corresponding quote address
+                $address->setVatIsValid($validationResult->getIsValid());
+                $address->setVatRequestId($validationResult->getRequestIdentifier());
+                $address->setVatRequestDate($validationResult->getRequestDate());
+                $address->setVatRequestSuccess($validationResult->getRequestSuccess());
+                $address->setValidatedVatNumber($customerTaxId);
+                $address->setValidatedCountryCode($customerCountryCode);
+                $address->save();
+            }
         } else {
             // Restore validation results from corresponding quote address
             $validationResult = new DataObject(
@@ -114,14 +115,17 @@ class TotalsCollectorPlugin
             );
         }
 
-        //Get the auto assigned group for customer
-        $groupId = $this->autoCustomerGroup->getCustomerGroup(
-            $customerCountryCode,
-            $address->getPostcode(),
-            $validationResult,
-            $quote,
-            $storeId
-        );
+        $groupId = null;
+        if ($validationResult) {
+            //Get the auto assigned group for customer
+            $groupId = $this->autoCustomerGroup->getCustomerGroup(
+                $customerCountryCode,
+                $address->getPostcode(),
+                $validationResult,
+                $quote,
+                $storeId
+            );
+        }
 
         //Update the quote object if the group has changed.
         if (($groupId !== null) && $groupId !== $quote->getCustomerGroupId()) {
@@ -132,8 +136,6 @@ class TotalsCollectorPlugin
                 $customer->setGroupId($groupId);
                 $quote->setCustomer($customer);
             }
-            //TODO Do we need to re-run collectTotals now we have changed group. What if different discounts
-            //apply to different groups?
         }
 
         return $total;

@@ -213,6 +213,7 @@ class EuVat extends AbstractTaxScheme
                     $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number including country code.'));
                 }
             } catch (\Exception $exception) {
+                $gatewayResponse->setRequestSuccess(false);
                 $gatewayResponse->setIsValid(false);
                 $gatewayResponse->setRequestDate('');
                 $gatewayResponse->setRequestIdentifier('');

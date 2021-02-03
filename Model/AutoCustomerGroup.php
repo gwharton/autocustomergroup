@@ -21,7 +21,7 @@ class AutoCustomerGroup
     /**
      * @param string $countryCode
      * @param string $taxId
-     * @return DataObject
+     * @return DataObject|null
      */
     public function checkTaxId(
         $countryCode,
@@ -32,13 +32,7 @@ class AutoCustomerGroup
                 return $taxScheme->checkTaxId($countryCode, $taxId);
             }
         }
-        return new DataObject([
-            'is_valid' => false,
-            'request_date' => '',
-            'request_identifier' => '',
-            'request_success' => false,
-            'request_message' => __('Tax Scheme is not enabled for this country.'),
-        ]);
+        return null;
     }
 
     /**
