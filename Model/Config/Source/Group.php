@@ -4,8 +4,10 @@ namespace Gw\AutoCustomerGroup\Model\Config\Source;
 use Magento\Customer\Api\GroupManagementInterface;
 use Magento\Customer\Model\Customer\Attribute\Source\GroupSourceLoggedInOnlyInterface;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Convert\DataObject;
+use Magento\Framework\Data\OptionSourceInterface;
 
-class Group implements \Magento\Framework\Option\ArrayInterface
+class Group implements OptionSourceInterface
 {
     /**
      * @var array
@@ -18,7 +20,7 @@ class Group implements \Magento\Framework\Option\ArrayInterface
     protected $_groupManagement;
 
     /**
-     * @var \Magento\Framework\Convert\DataObject
+     * @var DataObject
      */
     protected $_converter;
 
@@ -29,12 +31,12 @@ class Group implements \Magento\Framework\Option\ArrayInterface
 
     /**
      * @param GroupManagementInterface $groupManagement
-     * @param \Magento\Framework\Convert\DataObject $converter
+     * @param DataObject $converter
      * @param GroupSourceLoggedInOnlyInterface $groupSourceForLoggedInCustomers
      */
     public function __construct(
         GroupManagementInterface $groupManagement,
-        \Magento\Framework\Convert\DataObject $converter,
+        DataObject $converter,
         GroupSourceLoggedInOnlyInterface $groupSourceForLoggedInCustomers = null
     ) {
         $this->_groupManagement = $groupManagement;

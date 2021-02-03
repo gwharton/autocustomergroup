@@ -1,9 +1,9 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\Config\Source;
 
-use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Data\OptionSourceInterface;
 
-class Environment implements ArrayInterface
+class Environment implements OptionSourceInterface
 {
     const ENVIRONMENT_SANDBOX = 'sandbox';
     const ENVIRONMENT_PRODUCTION = 'production';
