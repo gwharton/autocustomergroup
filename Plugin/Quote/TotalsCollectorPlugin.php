@@ -2,6 +2,7 @@
 namespace Gw\AutoCustomerGroup\Plugin\Quote;
 
 use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
+use Magento\Customer\Api\AddressRepositoryInterface;
 use Magento\Customer\Helper\Address as AddressHelper;
 use Magento\Customer\Model\Session;
 use Magento\Framework\DataObject;
@@ -27,15 +28,22 @@ class TotalsCollectorPlugin
     private $customerSession;
 
     /**
+     * @var AddressRepositoryInterface
+     */
+    private $addressRepository;
+
+    /**
      */
     public function __construct(
         AddressHelper $customerAddressHelper,
         Session $customerSession,
-        AutoCustomerGroup $autoCustomerGroup
+        AutoCustomerGroup $autoCustomerGroup,
+        AddressRepositoryInterface $addressRepository
     ) {
         $this->customerAddressHelper = $customerAddressHelper;
         $this->customerSession = $customerSession;
         $this->autoCustomerGroup = $autoCustomerGroup;
+        $this->addressRepository = $addressRepository;
     }
 
     /**
