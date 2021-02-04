@@ -24,7 +24,7 @@ it, the customer is presented with a note above the input field, notifying what 
 <h3>Correct format but not valid</h3>
 <img src="images/frontend2.png">
 <h3>Wrong Format</h3>
-<img src="images/frontend31.png">
+<img src="images/frontend3.png">
 <h3>Valid UK VAT Numnber</h3>
 <img src="images/frontend4.png">
 <h2>UK VAT Scheme</h2>
