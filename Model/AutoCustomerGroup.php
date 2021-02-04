@@ -28,7 +28,7 @@ class AutoCustomerGroup
         $taxId
     ) {
         foreach ($this->taxSchemes as $taxScheme) {
-            if ($taxScheme->isEnabled() && $taxScheme->checkCountry($countryCode)) {
+            if ($taxScheme->isEnabled() && $taxScheme->isSchemeCountry($countryCode)) {
                 return $taxScheme->checkTaxId($countryCode, $taxId);
             }
         }
@@ -51,7 +51,7 @@ class AutoCustomerGroup
         $storeId
     ) {
         foreach ($this->taxSchemes as $taxScheme) {
-            if ($taxScheme->isEnabled() && $taxScheme->checkCountry($customerCountryCode)) {
+            if ($taxScheme->isEnabled() && $taxScheme->isSchemeCountry($customerCountryCode)) {
                 return $taxScheme->getCustomerGroup(
                     $customerCountryCode,
                     $customerPostCode,

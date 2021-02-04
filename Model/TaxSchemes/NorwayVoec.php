@@ -11,20 +11,11 @@ class NorwayVoec extends AbstractTaxScheme
     protected $code = self::CODE;
 
     /**
-     * Check if this Tax Scheme handles the requtested country
+     * Array of country ID's that this scheme supports
      *
-     * @param string $country
-     * @return bool
+     * @var string[]
      */
-    public function checkCountry($country)
-    {
-        return $this->isCountryNorway($country);
-    }
-
-    private function isCountryNorway($country)
-    {
-        return in_array($country, ['NO']);
-    }
+    protected $schemeCountries = ['NO'];
 
     /**
      * Get customer group based on Validation Result and Country of customer
@@ -54,8 +45,8 @@ class NorwayVoec extends AbstractTaxScheme
         //Merchant Country is in Norway
         //Item shipped to Norway
         //Therefore Domestic
-        if ($this->isCountryNorway($merchantCountry) &&
-            $this->isCountryNorway($customerCountryCode)) {
+        if ($this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
@@ -66,8 +57,8 @@ class NorwayVoec extends AbstractTaxScheme
         //Item shipped to Norway
         //Norway Business Number Supplied
         //Therefore Import B2B
-        if (!$this->isCountryNorway($merchantCountry) &&
-            $this->isCountryNorway($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importb2b",
@@ -79,8 +70,8 @@ class NorwayVoec extends AbstractTaxScheme
         //Item shipped to Norway
         //All items equal or below threshold
         //Therefore Import Taxed
-        if (!$this->isCountryNorway($merchantCountry) &&
-            $this->isCountryNorway($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getMostExpensiveItem($quote) <= $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importtaxed",
@@ -92,8 +83,8 @@ class NorwayVoec extends AbstractTaxScheme
         //Item shipped to Norway
         //Any item is above threshold
         //Therefore Import Unaxed
-        if (!$this->isCountryNorway($merchantCountry) &&
-            $this->isCountryNorway($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getMostExpensiveItem($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",
@@ -131,7 +122,7 @@ class NorwayVoec extends AbstractTaxScheme
         ]);
 
         if (preg_match("/^[89][0-9]{8}$/", $businessNumber) &&
-            $this->isCountryNorway($countryCode)) {
+            $this->isSchemeCountry($countryCode)) {
             $gatewayResponse->setIsValid(true);
             $gatewayResponse->setRequestSuccess(true);
             $gatewayResponse->setRequestMessage(__('Business Registration Number is the correct format.'));

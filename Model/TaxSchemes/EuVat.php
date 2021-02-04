@@ -20,15 +20,12 @@ class EuVat extends AbstractTaxScheme
     const VAT_VALIDATION_WSDL_URL = 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
-     * Check if this Tax Scheme handles the requtested country
+     * Array of country ID's that this scheme supports
      *
-     * @param string $country
-     * @return bool
+     * @var string[]
      */
-    public function checkCountry($country)
-    {
-        return $this->isCountryInEU($country);
-    }
+    protected $schemeCountries = [  'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE',
+                                    'IT','LV','LT','LU','MT','MC','NL','PL','PT','RO','SK','SI','ES','SE'];
 
     /**
      * Get customer group based on Validation Result and Country of customer
@@ -40,6 +37,7 @@ class EuVat extends AbstractTaxScheme
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function getCustomerGroup(
         $customerCountryCode,
@@ -59,8 +57,8 @@ class EuVat extends AbstractTaxScheme
         //Item shipped to the EU
         //Both countries the same
         //Therefore Domestic
-        if ($this->isCountryInEU($merchantCountry) &&
-            $this->isCountryInEU($customerCountryCode) &&
+        if ($this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             $merchantCountry == $customerCountryCode) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/domestic",
@@ -73,8 +71,9 @@ class EuVat extends AbstractTaxScheme
         //Both countries are not the same
         //Validated EU VAT Number Supplied
         //Therefore Intra EU B2B
-        if (($this->isCountryInEU($merchantCountry) || $this->isNi($merchantCountry, $merchantPostCode)) &&
-            $this->isCountryInEU($customerCountryCode) &&
+        if (($this->isSchemeCountry($merchantCountry) ||
+            $this->helper->isNi($merchantCountry, $merchantPostCode)) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             $merchantCountry != $customerCountryCode &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
@@ -88,8 +87,9 @@ class EuVat extends AbstractTaxScheme
         //Both countries are not the same
         //Validated EU VAT Number Not Supplied
         //Therefore Intra EU B2C
-        if (($this->isCountryInEU($merchantCountry) || $this->isNi($merchantCountry, $merchantPostCode)) &&
-            $this->isCountryInEU($customerCountryCode) &&
+        if (($this->isSchemeCountry($merchantCountry) ||
+            $this->helper->isNi($merchantCountry, $merchantPostCode)) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             $merchantCountry != $customerCountryCode &&
             !$this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
@@ -102,8 +102,8 @@ class EuVat extends AbstractTaxScheme
         //Item shipped to the EU
         //Validated EU VAT Number Supplied
         //Therefore Import B2B
-        if (!$this->isCountryInEU($merchantCountry) &&
-            $this->isCountryInEU($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importb2b",
@@ -115,8 +115,8 @@ class EuVat extends AbstractTaxScheme
         //Item shipped to the EU
         //Order value is equal or below threshold
         //Therefore Import Taxed
-        if (!$this->isCountryInEU($merchantCountry) &&
-            $this->isCountryInEU($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getOrderTotal($quote) <= $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importtaxed",
@@ -128,8 +128,8 @@ class EuVat extends AbstractTaxScheme
         //Item shipped to the EU
         //Order value is above threshold
         //Therefore Import Unaxed
-        if (!$this->isCountryInEU($merchantCountry) &&
-            $this->isCountryInEU($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getOrderTotal($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",
@@ -185,7 +185,7 @@ class EuVat extends AbstractTaxScheme
             empty($sanitisedRequesterVAT) ||
             empty($countryCodeForVatNumber) ||
             empty($requesterCountryCodeForVatNumber) ||
-            !$this->isCountryInEU($countryCode)) {
+            !$this->isSchemeCountry($countryCode)) {
             $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
             return $gatewayResponse;
         }

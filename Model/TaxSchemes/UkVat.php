@@ -5,6 +5,7 @@ use GuzzleHttp\ClientFactory;
 use GuzzleHttp\Exception\BadResponseException;
 use Gw\AutoCustomerGroup\Helper\AutoCustomerGroup;
 use Gw\AutoCustomerGroup\Model\Config\Source\Environment;
+use Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\FlagManager;
@@ -22,11 +23,19 @@ use Psr\Log\LoggerInterface;
  * GB146295999727
  * GB948561936944
  * GB000549615108 //Isle of man
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class UkVat extends AbstractTaxScheme
 {
     const CODE = "ukvat";
     protected $code = self::CODE;
+
+    /**
+     * Array of country ID's that this scheme supports
+     *
+     * @var string[]
+     */
+    protected $schemeCountries = ['GB','IM'];
 
     /**
      * @var FlagManager
@@ -48,6 +57,11 @@ class UkVat extends AbstractTaxScheme
      */
     private $datetime;
 
+    /**
+     * @var EuVat
+     */
+    private $euVat;
+
     const ACCESS_TOKEN_PATH = 'autocustomergroup/hmrc/accesstoken';
 
     /**
@@ -58,6 +72,7 @@ class UkVat extends AbstractTaxScheme
      * @param DateTime $datetime
      * @param LoggerInterface $logger
      * @param AutoCustomerGroup $helper
+     * @param EuVat $euVat
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -66,7 +81,8 @@ class UkVat extends AbstractTaxScheme
         Json $serializer,
         DateTime $datetime,
         LoggerInterface $logger,
-        AutoCustomerGroup $helper
+        AutoCustomerGroup $helper,
+        EuVat $euVat
     ) {
         parent::__construct(
             $scopeConfig,
@@ -77,22 +93,7 @@ class UkVat extends AbstractTaxScheme
         $this->flagManager = $flagManager;
         $this->serializer = $serializer;
         $this->datetime = $datetime;
-    }
-
-    /**
-     * Check if this Tax Scheme handles the requtested country
-     *
-     * @param string $country
-     * @return bool
-     */
-    public function checkCountry($country)
-    {
-        return $this->isCountryUKIM($country);
-    }
-
-    private function isCountryUKIM($country)
-    {
-        return in_array($country, ['GB','IM']);
+        $this->euVat = $euVat;
     }
 
     /**
@@ -122,8 +123,8 @@ class UkVat extends AbstractTaxScheme
         //Merchant Country is in the UK/IM
         //Item shipped to the UK/IM
         //Therefore Domestic
-        if ($this->isCountryUKIM($merchantCountry) &&
-            $this->isCountryUKIM($customerCountryCode)) {
+        if ($this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
@@ -134,8 +135,8 @@ class UkVat extends AbstractTaxScheme
         //Item shipped to the NI
         //VAT No is valid
         //Therefore Intra-EU B2B
-        if ($this->isCountryInEU($merchantCountry) &&
-            $this->isNI($customerCountryCode, $customerPostCode) &&
+        if ($this->euVat->isSchemeCountry($merchantCountry) &&
+            $this->helper->isNI($customerCountryCode, $customerPostCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeub2b",
@@ -147,8 +148,8 @@ class UkVat extends AbstractTaxScheme
         //Item shipped to the NI
         //VAT No is not valid
         //Therefore Intra-EU B2C
-        if ($this->isCountryInEU($merchantCountry) &&
-            $this->isNI($customerCountryCode, $customerPostCode) &&
+        if ($this->euVat->isSchemeCountry($merchantCountry) &&
+            $this->helper->isNI($customerCountryCode, $customerPostCode) &&
             !$this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeub2c",
@@ -160,8 +161,8 @@ class UkVat extends AbstractTaxScheme
         //Item shipped to the UK/IM
         //VAT No is valid
         //Therefore Import B2B
-        if (!$this->isCountryUKIM($merchantCountry) &&
-            $this->isCountryUKIM($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importb2b",
@@ -173,8 +174,8 @@ class UkVat extends AbstractTaxScheme
         //Item shipped to the UK/IM
         //Order value is equal or below threshold
         //Therefore Import Taxed
-        if (!$this->isCountryUKIM($merchantCountry) &&
-            $this->isCountryUKIM($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getOrderTotal($quote) <= $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importtaxed",
@@ -186,8 +187,8 @@ class UkVat extends AbstractTaxScheme
         //Item shipped to the UK/IM
         //Order value is above threshold
         //Therefore Import Unaxed
-        if (!$this->isCountryUKIM($merchantCountry) &&
-            $this->isCountryUKIM($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getOrderTotal($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",

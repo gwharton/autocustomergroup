@@ -11,20 +11,11 @@ class NewZealandGst extends AbstractTaxScheme
     protected $code = self::CODE;
 
     /**
-     * Check if this Tax Scheme handles the requtested country
+     * Array of country ID's that this scheme supports
      *
-     * @param string $country
-     * @return bool
+     * @var string[]
      */
-    public function checkCountry($country)
-    {
-        return $this->isCountryNewZealand($country);
-    }
-
-    private function isCountryNewZealand($country)
-    {
-        return in_array($country, ['NZ']);
-    }
+    protected $schemeCountries = ['NZ'];
 
     /**
      * Get customer group based on Validation Result and Country of customer
@@ -54,8 +45,8 @@ class NewZealandGst extends AbstractTaxScheme
         //Merchant Country is in New Zealand
         //Item shipped to New Zealand
         //Therefore Domestic
-        if ($this->isCountryNewZealand($merchantCountry) &&
-            $this->isCountryNewZealand($customerCountryCode)) {
+        if ($this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
@@ -66,8 +57,8 @@ class NewZealandGst extends AbstractTaxScheme
         //Item shipped to New Zealand
         //GST Number Supplied
         //Therefore Import B2B
-        if (!$this->isCountryNewZealand($merchantCountry) &&
-            $this->isCountryNewZealand($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importb2b",
@@ -79,8 +70,8 @@ class NewZealandGst extends AbstractTaxScheme
         //Item shipped to New Zealand
         //All items equal or below threshold
         //Therefore Import Taxed
-        if (!$this->isCountryNewZealand($merchantCountry) &&
-            $this->isCountryNewZealand($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getMostExpensiveItem($quote) <= $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importtaxed",
@@ -92,8 +83,8 @@ class NewZealandGst extends AbstractTaxScheme
         //Item shipped to New Zealand
         //Any item is above threshold
         //Therefore Import Unaxed
-        if (!$this->isCountryNewZealand($merchantCountry) &&
-            $this->isCountryNewZealand($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getMostExpensiveItem($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",
@@ -125,7 +116,7 @@ class NewZealandGst extends AbstractTaxScheme
         $sanitisedGst = str_replace([' ', '-'], ['', ''], $gst);
 
         if (preg_match("/^[0-9]{8,9}$/", $sanitisedGst) &&
-            $this->isCountryNewZealand($countryCode) &&
+            $this->isSchemeCountry($countryCode) &&
             $this->isValidGst($sanitisedGst)) {
             $gatewayResponse->setIsValid(true);
             $gatewayResponse->setRequestSuccess(true);

@@ -64,4 +64,16 @@ class AutoCustomerGroup
             $storeId
         );
     }
+
+    /**
+     * Check whether specified Country and PostCode is within Northern Ireland
+     *
+     * @param string $country
+     * @param string $postCode
+     * @return boolean
+     */
+    public function isNI($country, $postCode)
+    {
+        return ($country == "GB" && preg_match("/^[Bb][Tt].*$/", $postCode));
+    }
 }

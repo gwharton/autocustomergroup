@@ -17,6 +17,13 @@ class AustraliaGst extends AbstractTaxScheme
     const ABN_VALIDATION_WSDL_URL = 'https://abr.business.gov.au/abrxmlsearch/ABRXMLSearch.asmx?WSDL';
 
     /**
+     * Array of country ID's that this scheme supports
+     *
+     * @var string[]
+     */
+    protected $schemeCountries = ['AU'];
+
+    /**
      * @var DateTime
      */
     private $datetime;
@@ -39,22 +46,6 @@ class AustraliaGst extends AbstractTaxScheme
             $helper
         );
         $this->datetime = $datetime;
-    }
-
-    /**
-     * Check if this Tax Scheme handles the requtested country
-     *
-     * @param string $country
-     * @return bool
-     */
-    public function checkCountry($country)
-    {
-        return $this->isCountryAustralia($country);
-    }
-
-    private function isCountryAustralia($country)
-    {
-        return in_array($country, ['AU']);
     }
 
     /**
@@ -85,8 +76,8 @@ class AustraliaGst extends AbstractTaxScheme
         //Merchant Country is in Australia
         //Item shipped to Australia
         //Therefore Domestic
-        if ($this->isCountryAustralia($merchantCountry) &&
-            $this->isCountryAustralia($customerCountryCode)) {
+        if ($this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
@@ -97,8 +88,8 @@ class AustraliaGst extends AbstractTaxScheme
         //Item shipped to Australia
         //GST Validated ABN Number Supplied
         //Therefore Import B2B
-        if (!$this->isCountryAustralia($merchantCountry) &&
-            $this->isCountryAustralia($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importb2b",
@@ -110,8 +101,8 @@ class AustraliaGst extends AbstractTaxScheme
         //Item shipped to Australia
         //Order Value equal or below threshold
         //Therefore Import Taxed
-        if (!$this->isCountryAustralia($merchantCountry) &&
-            $this->isCountryAustralia($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getOrderTotal($quote) <= $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importtaxed",
@@ -123,8 +114,8 @@ class AustraliaGst extends AbstractTaxScheme
         //Item shipped to Australia
         //Order value below threshold
         //Therefore Import Unaxed
-        if (!$this->isCountryAustralia($merchantCountry) &&
-            $this->isCountryAustralia($customerCountryCode) &&
+        if (!$this->isSchemeCountry($merchantCountry) &&
+            $this->isSchemeCountry($customerCountryCode) &&
             ($this->getOrderTotal($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",
@@ -156,7 +147,7 @@ class AustraliaGst extends AbstractTaxScheme
         $sanitisedAbn = str_replace([' ', '-'], ['', ''], $abn);
 
         if (!preg_match("/^[0-9]{11}$/", $sanitisedAbn) ||
-            !$this->isCountryAustralia($countryCode) ||
+            !$this->isSchemeCountry($countryCode) ||
             !$this->isValidAbn($sanitisedAbn)) {
             $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
             return $gatewayResponse;

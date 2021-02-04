@@ -13,6 +13,7 @@ abstract class AbstractTaxScheme
     const XML_PATH_EU_COUNTRIES_LIST = 'general/country/eu_countries';
 
     protected $code;
+    protected $schemeCountries = [];
 
     /**
      * @var ScopeConfigInterface
@@ -59,6 +60,27 @@ abstract class AbstractTaxScheme
     }
 
     /**
+     * Return an array of Country ID's that this Scheme Supports
+     *
+     * @return string[]
+     */
+    public function getSchemeCountries()
+    {
+        return $this->schemeCountries;
+    }
+
+    /**
+     * Check if this scheme supports the given country
+     *
+     * @param string $countryId
+     * @return string[]
+     */
+    public function isSchemeCountry($countryId)
+    {
+        return in_array($countryId, $this->schemeCountries);
+    }
+
+    /**
      * Get order total, including discounts
      *
      * @param Quote $quote
@@ -92,34 +114,6 @@ abstract class AbstractTaxScheme
     }
 
     /**
-     * Check whether specified country is in EU countries list
-     *
-     * @param string $countryCode
-     * @param null|int $storeId
-     * @return bool
-     */
-    protected function isCountryInEU($countryCode, $storeId = null)
-    {
-        $euCountries = explode(
-            ',',
-            $this->scopeConfig->getValue(self::XML_PATH_EU_COUNTRIES_LIST, ScopeInterface::SCOPE_STORE, $storeId)
-        );
-        return in_array($countryCode, $euCountries);
-    }
-
-    /**
-     * Check whether specified Country and PostCode is within Northern Ireland
-     *
-     * @param string $country
-     * @param string $postCode
-     * @return boolean
-     */
-    protected function isNI($country, $postCode)
-    {
-        return ($country == "GB" && preg_match("/^[Bb][Tt].*$/", $postCode));
-    }
-
-    /**
      * Check whether a validation result contained a valid VAT Number
      *
      * @param DataObject $validationResult
@@ -130,7 +124,6 @@ abstract class AbstractTaxScheme
         return ($validationResult->getRequestSuccess() && $validationResult->getIsValid());
     }
 
-    abstract public function checkCountry($country);
     abstract public function getCustomerGroup(
         $customerCountryCode,
         $customerPostCode,
