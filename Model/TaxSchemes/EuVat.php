@@ -46,8 +46,8 @@ class EuVat extends AbstractTaxScheme
         $quote,
         $store = null
     ) {
-        $merchantCountry = $this->helper->getMerchantCountryCode($store);
-        $merchantPostCode = $this->helper->getMerchantPostCode($store);
+        $merchantCountry = $this->getMerchantCountryCode($store);
+        $merchantPostCode = $this->getMerchantPostCode($store);
         $importThreshold = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/importthreshold",
             ScopeInterface::SCOPE_STORE,
@@ -72,7 +72,7 @@ class EuVat extends AbstractTaxScheme
         //Validated EU VAT Number Supplied
         //Therefore Intra EU B2B
         if (($this->isSchemeCountry($merchantCountry) ||
-            $this->helper->isNi($merchantCountry, $merchantPostCode)) &&
+            $this->isNi($merchantCountry, $merchantPostCode)) &&
             $this->isSchemeCountry($customerCountryCode) &&
             $merchantCountry != $customerCountryCode &&
             $this->isValid($vatValidationResult)) {
@@ -88,7 +88,7 @@ class EuVat extends AbstractTaxScheme
         //Validated EU VAT Number Not Supplied
         //Therefore Intra EU B2C
         if (($this->isSchemeCountry($merchantCountry) ||
-            $this->helper->isNi($merchantCountry, $merchantPostCode)) &&
+            $this->isNi($merchantCountry, $merchantPostCode)) &&
             $this->isSchemeCountry($customerCountryCode) &&
             $merchantCountry != $customerCountryCode &&
             !$this->isValid($vatValidationResult)) {
@@ -186,7 +186,7 @@ class EuVat extends AbstractTaxScheme
             empty($countryCodeForVatNumber) ||
             empty($requesterCountryCodeForVatNumber) ||
             !$this->isSchemeCountry($countryCode)) {
-            $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
+            $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number.'));
             return $gatewayResponse;
         }
 

@@ -36,7 +36,7 @@ class NorwayVoec extends AbstractTaxScheme
         $quote,
         $store = null
     ) {
-        $merchantCountry = $this->helper->getMerchantCountryCode();
+        $merchantCountry = $this->getMerchantCountryCode();
         $importThreshold = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/importthreshold",
             ScopeInterface::SCOPE_STORE,

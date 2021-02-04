@@ -1,19 +1,22 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model;
 
-use Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme;
+use Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 
 class AutoCustomerGroup
 {
     /**
-     * @var AbstractTaxScheme[]
+     * @var TaxSchemes
      */
     private $taxSchemes;
 
+    /**
+     * @param TaxSchemes $taxSchemes
+     */
     public function __construct(
-        array $taxSchemes = []
+        TaxSchemes $taxSchemes
     ) {
         $this->taxSchemes = $taxSchemes;
     }
@@ -27,8 +30,8 @@ class AutoCustomerGroup
         $countryCode,
         $taxId
     ) {
-        foreach ($this->taxSchemes as $taxScheme) {
-            if ($taxScheme->isEnabled() && $taxScheme->isSchemeCountry($countryCode)) {
+        foreach ($this->taxSchemes->getEnabledTaxSchemes() as $taxScheme) {
+            if ($taxScheme->isSchemeCountry($countryCode)) {
                 return $taxScheme->checkTaxId($countryCode, $taxId);
             }
         }
@@ -50,8 +53,8 @@ class AutoCustomerGroup
         $quote,
         $storeId
     ) {
-        foreach ($this->taxSchemes as $taxScheme) {
-            if ($taxScheme->isEnabled() && $taxScheme->isSchemeCountry($customerCountryCode)) {
+        foreach ($this->taxSchemes->getEnabledTaxSchemes() as $taxScheme) {
+            if ($taxScheme->isSchemeCountry($customerCountryCode)) {
                 return $taxScheme->getCustomerGroup(
                     $customerCountryCode,
                     $customerPostCode,

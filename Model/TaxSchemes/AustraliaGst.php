@@ -1,7 +1,6 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
-use Gw\AutoCustomerGroup\Helper\AutoCustomerGroup;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\Stdlib\DateTime\DateTime;
@@ -32,18 +31,15 @@ class AustraliaGst extends AbstractTaxScheme
      * @param ScopeConfigInterface $scopeConfig
      * @param DateTime $datetime
      * @param LoggerInterface $logger
-     * @param AutoCustomerGroup $helper
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         DateTime $datetime,
-        LoggerInterface $logger,
-        AutoCustomerGroup $helper
+        LoggerInterface $logger
     ) {
         parent::__construct(
             $scopeConfig,
-            $logger,
-            $helper
+            $logger
         );
         $this->datetime = $datetime;
     }
@@ -67,7 +63,7 @@ class AustraliaGst extends AbstractTaxScheme
         $quote,
         $store = null
     ) {
-        $merchantCountry = $this->helper->getMerchantCountryCode();
+        $merchantCountry = $this->getMerchantCountryCode();
         $importThreshold = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/importthreshold",
             ScopeInterface::SCOPE_STORE,
@@ -204,7 +200,8 @@ class AustraliaGst extends AbstractTaxScheme
                 } else {
                     $gatewayResponse->setIsValid(false);
                     $gatewayResponse->setRequestDate('');
-                    $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number.'));
+                    $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number, where ' .
+                        'the business is registered for GST.'));
                 }
             } catch (\Exception $exception) {
                 $gatewayResponse->setRequestSuccess(false);

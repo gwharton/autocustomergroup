@@ -3,7 +3,6 @@ namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
 use GuzzleHttp\ClientFactory;
 use GuzzleHttp\Exception\BadResponseException;
-use Gw\AutoCustomerGroup\Helper\AutoCustomerGroup;
 use Gw\AutoCustomerGroup\Model\Config\Source\Environment;
 use Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -71,7 +70,6 @@ class UkVat extends AbstractTaxScheme
      * @param Json $serializer
      * @param DateTime $datetime
      * @param LoggerInterface $logger
-     * @param AutoCustomerGroup $helper
      * @param EuVat $euVat
      */
     public function __construct(
@@ -81,13 +79,11 @@ class UkVat extends AbstractTaxScheme
         Json $serializer,
         DateTime $datetime,
         LoggerInterface $logger,
-        AutoCustomerGroup $helper,
         EuVat $euVat
     ) {
         parent::__construct(
             $scopeConfig,
-            $logger,
-            $helper
+            $logger
         );
         $this->clientFactory = $clientFactory;
         $this->flagManager = $flagManager;
@@ -114,7 +110,7 @@ class UkVat extends AbstractTaxScheme
         $quote,
         $store = null
     ) {
-        $merchantCountry = $this->helper->getMerchantCountryCode();
+        $merchantCountry = $this->getMerchantCountryCode();
         $importThreshold = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/importthreshold",
             ScopeInterface::SCOPE_STORE,
@@ -136,7 +132,7 @@ class UkVat extends AbstractTaxScheme
         //VAT No is valid
         //Therefore Intra-EU B2B
         if ($this->euVat->isSchemeCountry($merchantCountry) &&
-            $this->helper->isNI($customerCountryCode, $customerPostCode) &&
+            $this->isNI($customerCountryCode, $customerPostCode) &&
             $this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeub2b",
@@ -149,7 +145,7 @@ class UkVat extends AbstractTaxScheme
         //VAT No is not valid
         //Therefore Intra-EU B2C
         if ($this->euVat->isSchemeCountry($merchantCountry) &&
-            $this->helper->isNI($customerCountryCode, $customerPostCode) &&
+            $this->isNI($customerCountryCode, $customerPostCode) &&
             !$this->isValid($vatValidationResult)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeub2c",

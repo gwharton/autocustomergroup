@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <referenceBlock name="checkout.root">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="checkout" xsi:type="array">
+                                <item name="children" xsi:type="array">
+                                    <item name="steps" xsi:type="array">
+                                        <item name="children" xsi:type="array">
+                                            <item name="shipping-step" xsi:type="array">
+                                                <item name="children" xsi:type="array">
+                                                    <item name="shippingAddress" xsi:type="array">
+                                                        <item name="children" xsi:type="array">
+                                                            <item name="shipping-address-fieldset" xsi:type="array">
+                                                                <item name="children" xsi:type="array">
+                                                                    <item name="vat_id" xsi:type="array">
+                                                                        <item name="component" xsi:type="string">Gw_AutoCustomerGroup/js/tax-id-element</item>
+                                                                        <item name="config" xsi:type="helper" helper="Gw\AutoCustomerGroup\Model\JSConfig::getComponentConfig"/>
+                                                                    </item>
+                                                                </item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </referenceBlock>
+        </referenceContainer>
+    </body>
+</page>

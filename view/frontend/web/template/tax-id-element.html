@@ -1,0 +1,24 @@
+<div class="field" data-bind="visible: visible, attr: {'name': element.dataScope}, css: additionalClasses">
+    <label class="label" data-bind="attr: { for: element.uid }"><!-- ko if: element.label --><span translate="element.label"></span><!-- /ko --></label>
+    <div class="control">
+        <!-- ko if: element.prompt -->
+            <div class="field-note">
+                <span data-bind="text: element.prompt"/>
+            </div>
+        <!-- /ko -->
+        <!-- ko template: element.elementTmpl --><!-- /ko -->
+        <!-- ko if: element.success -->
+            <div class="message-success success message">
+                <span data-bind="text: element.success"></span>
+            </div>
+        <!-- /ko -->
+        <!-- ko if: element.warn -->
+            <div class="message warning">
+                <span data-bind="text: element.warn"></span>
+                <!-- ko if: (element.retry) -->
+                    <a id="vatid-retry" href="#" data-bind="click: retryValidation, text:element.retryText"></a>
+                <!-- /ko -->
+            </div>
+        <!-- /ko -->
+    </div>
+</div>

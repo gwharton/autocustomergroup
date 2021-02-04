@@ -2,8 +2,12 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <autocustomergroup>
+            <general>
+                <frontendlabel>Tax Identifier</frontendlabel>
+            </general>
             <ukvat>
                 <enabled>0</enabled>
+                <frontendprompt>UK and Isle of Man VAT Registered Businesses, please enter your UK VAT Number (including Country Code), so we can apply the correct rate of VAT to your order.</frontendprompt>
                 <registrationnumber></registrationnumber>
                 <environment>sandbox</environment>
                 <clientid></clientid>
@@ -18,6 +22,7 @@
             </ukvat>
             <euvat>
                 <enabled>0</enabled>
+                <frontendprompt>EU VAT Registered Businesses, please enter your EU VAT Number (including Country Code), so we can apply the correct rate of VAT to your order.</frontendprompt>
                 <registrationnumber></registrationnumber>
                 <registrationcountry></registrationcountry>
                 <importthreshold>150</importthreshold>
@@ -30,6 +35,7 @@
             </euvat>
             <norwayvoec>
                 <enabled>0</enabled>
+                <frontendprompt>Norwegian VAT Registered Businesses, please enter your VAT Number so we can apply the correct rate of VAT to your order.</frontendprompt>
                 <registrationnumber></registrationnumber>
                 <importthreshold>3000</importthreshold>
                 <domestic>0</domestic>
@@ -39,6 +45,7 @@
             </norwayvoec>
             <australiagst>
                 <enabled>0</enabled>
+                <frontendprompt>GST Registered Businesses, please enter your ABN so we can apply the correct rate of GST to your order.</frontendprompt>
                 <apiguid></apiguid>
                 <registrationnumber></registrationnumber>
                 <importthreshold>1000</importthreshold>
@@ -49,6 +56,7 @@
             </australiagst>
             <newzealandgst>
                 <enabled>0</enabled>
+                <frontendprompt>GST Registered Businesses, please enter your GST Number so we can apply the correct rate of GST to your order..</frontendprompt>
                 <registrationnumber></registrationnumber>
                 <importthreshold>1000</importthreshold>
                 <domestic>0</domestic>

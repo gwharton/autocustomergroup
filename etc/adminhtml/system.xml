@@ -35,6 +35,12 @@
                         <field id="auto_group_assign">1</field>
                     </depends>
                 </field>
+                <field id="frontendlabel" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>VAT/Tax Identifier Frontend Label</label>
+                    <depends>
+                        <field id="auto_group_assign">1</field>
+                    </depends>
+                </field>
             </group>
             <group id="ukvat" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>UK VAT Scheme</label>
@@ -79,39 +85,45 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="environment" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="frontendprompt" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tax Identifier Field - Customer Prompt</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="environment" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Environment</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Environment</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="clientid" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="clientid" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Client ID</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="clientsecret" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="clientsecret" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Client Secret</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="registrationnumber" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="registrationnumber" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>VAT Registration Number</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthreshold" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Import VAT Threshold</label>
                     <comment>The order value (ex VAT) threshold (in Store Currency) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>      
-                <field id="domestic" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="domestic" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the UK/IM, Item is being shipped to the UK/IM.</comment>
@@ -119,7 +131,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>       
-                <field id="intraeub2b" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="intraeub2b" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU, Item is being shipped to NI, Validated UK VAT Number Supplied.</comment>
@@ -127,7 +139,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="intraeub2c" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="intraeub2c" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra-EU B2C</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU, Item is being shipped to NI, Validated UK VAT Number is NOT Supplied.</comment>
@@ -135,7 +147,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>     
-                <field id="importb2b" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importb2b" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UK/IM, Validated UK VAT Number Supplied.</comment>
@@ -143,7 +155,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importtaxed" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/IM, Item is being shipped to the UKIM, Goods Value is below or equal to Import VAT Threshold.</comment>
@@ -151,7 +163,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                 <field id="importuntaxed" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                 <field id="importuntaxed" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Goods Value is above the Import VAT Threshold.</comment>
@@ -202,27 +214,33 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="registrationcountry" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="frontendprompt" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tax Identifier Field - Customer Prompt</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="registrationcountry" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Registration Country</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="registrationnumber" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="registrationnumber" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>VAT Registration Number</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>  
-                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Import VAT Threshold</label>
                     <comment>The order value (ex VAT) threshold (in Store Currency) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>        
-                <field id="domestic" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="domestic" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU, Item is being shipped to the same country.</comment>
@@ -230,7 +248,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>           
-                <field id="intraeub2b" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="intraeub2b" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, Validated EU VAT Number Supplied.</comment>
@@ -238,7 +256,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="intraeub2c" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="intraeub2c" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Intra EU B2C</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, Validated EU VAT Number is NOT Supplied..</comment>
@@ -246,7 +264,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importb2b" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importb2b" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Validated EU VAT Number Supplied.</comment>
@@ -254,7 +272,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importtaxed" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Goods Value is below or equal to the Import VAT Threshold.</comment>
@@ -262,7 +280,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importuntaxed" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importuntaxed" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Goods Value is above the Import VAT Threshold.</comment>
@@ -314,20 +332,26 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="registrationnumber" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="frontendprompt" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tax Identifier Field - Customer Prompt</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="registrationnumber" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>VOEC Registration Number</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>  
-                <field id="importthreshold" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Import VAT Threshold</label>
                     <comment>If any item within the order is valued above this threshold (in Store Currency) then no VAT should be charged on the order.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>        
-                <field id="domestic" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="domestic" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is in Norway, Item is being shipped to Norway.</comment>
@@ -335,7 +359,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>           
-                <field id="importb2b" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importb2b" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in Norway, Item is being shipped to Norway, Norwegian Business Number Supplied.</comment>
@@ -343,7 +367,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importtaxed" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in Norway, Item is being shipped to Norway, All items in the order are valued below or equal to the Import VAT Threshold.</comment>
@@ -351,7 +375,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importuntaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importuntaxed" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in Norway, Item is being shipped to Norway, One or more items in the order is valued above the Import VAT Threshold.</comment>
@@ -403,26 +427,32 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="apiguid" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="frontendprompt" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tax Identifier Field - Customer Prompt</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="apiguid" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>ABN API GUID</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="registrationnumber" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="registrationnumber" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>ATO Registration Number</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Import GST Threshold</label>
                     <comment>If any item within the order is valued above this threshold (in Store Currency) then no GST should be charged on the order.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>        
-                <field id="domestic" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="domestic" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is in Australia, Item is being shipped to Australia.</comment>
@@ -430,7 +460,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>           
-                <field id="importb2b" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importb2b" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in Australia, Item is being shipped to Australia, Validated for GST ABN Number Supplied.</comment>
@@ -438,7 +468,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importtaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in Australia, Item is being shipped to Australia, Goods Value is below or equal to Import GST Threshold.</comment>
@@ -446,7 +476,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importuntaxed" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importuntaxed" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in Australia, Item is being shipped to Australia, Goods Value is above the Import GST Threshold.</comment>
@@ -496,20 +526,26 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="registrationnumber" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="frontendprompt" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tax Identifier Field - Customer Prompt</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="registrationnumber" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>GST Registration Number</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthreshold" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Import GST Threshold</label>
                     <comment>The individual item value limit (in Store Currency) above which no GST should be charged on the order.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>        
-                <field id="domestic" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="domestic" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is in New Zealand, Item is being shipped to New Zealand.</comment>
@@ -517,7 +553,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>           
-                <field id="importb2b" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importb2b" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in New Zealand, Item is being shipped to New Zealand, GST Number Supplied.</comment>
@@ -525,7 +561,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importtaxed" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in New Zealand, Item is being shipped to New Zealand, Value of each individual item is below or equal to Import GST Threshold.</comment>
@@ -533,7 +569,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importuntaxed" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="importuntaxed" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not in New Zealand, Item is being shipped to New Zealand, One or more items value is above the Import GST Threshold.</comment>

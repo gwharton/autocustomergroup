@@ -12,7 +12,21 @@
 <li><b>Default Group</b> - This is the default group that customers will be assigned to if they do not have a group assigned. Note that guest users are always assigned to the "NOT LOGGED IN" group.</li>
 <li><b>Enable Automatic Assignment to Customer Group</b> - This activates and deactivates the module. When turned off, all orders will be placed either in the "NOT LOGGED IN" group for guests, or the Default Group/Customer Group for logged in customers.</li>
 <li><b>Validate on Each Transaction</b> - If the order is being placed by a customer that has existing Tax ID Validation data stored in their shipping address, then this can be re-used on each subsequent order, or it can be revalidated every time.</li>
+<li><b>VAT/Tax Identifier Frontend Label</b> - The label for the VAT/Tax Id Input Box at Checkout.</li>
 </ul>
+<h2>Frontend Validation Feedback</h2>
+<p>The module replaces the frontend Form Element for the VAT/Tax ID Input box. If the currently selected Country has a Tax Scheme
+associated with it, and is enabled, and a valid format VAT/Tax Id is input on the frontend, then the Id is validated by the relevant
+Tax Scheme and the results displayed to the customer. As soon as a country is selected that has a valid Tax Scheme associated with
+it, the customer is presented with a note above the input field, notifying what they need to enter.</p>
+<h4>Valid Irish VAT Number</h4>
+<img src="images/frontend1.png">
+<h3>Correct format but not valid</h3>
+<img src="images/frontend2.png">
+<h3>Wrong Format</h3>
+<img src="images/frontend31.png">
+<h3>Valid UK VAT Numnber</h3>
+<img src="images/frontend4.png">
 <h2>UK VAT Scheme</h2>
 <img src="images/ukvat1.png">
 <img src="images/ukvat2.png">

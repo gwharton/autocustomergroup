@@ -1,10 +1,10 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
-use Gw\AutoCustomerGroup\Helper\AutoCustomerGroup;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
+use Magento\Store\Model\Information as StoreInformation;
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
 
@@ -26,23 +26,15 @@ abstract class AbstractTaxScheme
     protected $logger;
 
     /**
-     * @var AutoCustomerGroup
-     */
-    protected $helper;
-
-    /**
      * @param ScopeConfigInterface $scopeConfig
      * @param LoggerInterface $logger
-     * @param AutoCustomerGroup $helper
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        LoggerInterface $logger,
-        AutoCustomerGroup $helper
+        LoggerInterface $logger
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->logger = $logger;
-        $this->helper = $helper;
     }
 
     /**
@@ -78,6 +70,16 @@ abstract class AbstractTaxScheme
     public function isSchemeCountry($countryId)
     {
         return in_array($countryId, $this->schemeCountries);
+    }
+
+    /**
+     * Get Scheme Code
+     *
+     * @return string
+     */
+    public function getSchemeId()
+    {
+        return $this->code;
     }
 
     /**
@@ -122,6 +124,63 @@ abstract class AbstractTaxScheme
     protected function isValid($validationResult)
     {
         return ($validationResult->getRequestSuccess() && $validationResult->getIsValid());
+    }
+
+    /**
+     * Retrieve merchant country code
+     *
+     * @param Store|string|int|null $store
+     * @return string
+     */
+    public function getMerchantCountryCode($storeId = null)
+    {
+        return (string)$this->scopeConfig->getValue(
+            StoreInformation::XML_PATH_STORE_INFO_COUNTRY_CODE,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Check whether specified Country and PostCode is within Northern Ireland
+     *
+     * @param string $country
+     * @param string $postCode
+     * @return boolean
+     */
+    public function isNI($country, $postCode)
+    {
+        return ($country == "GB" && preg_match("/^[Bb][Tt].*$/", $postCode));
+    }
+
+    /**
+     * Retrieve merchant Post Code
+     *
+     * @param Store|string|int|null $store
+     * @return string
+     */
+    public function getMerchantPostCode($storeId = null)
+    {
+        return (string)$this->scopeConfig->getValue(
+            StoreInformation::XML_PATH_STORE_INFO_POSTCODE,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Retrieve Frontend prompt for scheme
+     *
+     * @param Store|string|int|null $store
+     * @return string
+     */
+    public function getFrontEndPrompt($storeId = null)
+    {
+        return (string)$this->scopeConfig->getValue(
+            "autocustomergroup/" . $this->getSchemeId() . "/frontendprompt",
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     abstract public function getCustomerGroup(
