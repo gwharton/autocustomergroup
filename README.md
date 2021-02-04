@@ -112,6 +112,7 @@ add them to config-global.php. The tests for UK (Sandbox), EU and Australia use 
 <ul>
 <li>Currently, VAT thresholds need to be calculated from the values stated in law, and converted manually into store currency. Future update will
  look into what can be done with this.</li>
-<li>What can be done where orders are split into multiple shipments, individually below the threshold, but the order is above the threshold.</li>
+<li>What can be done where orders are split into multiple shipments, individually below the threshold, but the order is above the threshold. Nothing I'm guessing.</li>
 <li>All testing sofar is done using Guest Orders. No Logged in orders have been tested.</li>
+<li>I've re-used some Magento settings in the module, like the global enable setting is the old VIV enable setting. Should I use my own settings??</li>
 </ul>
