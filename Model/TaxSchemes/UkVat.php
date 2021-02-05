@@ -8,11 +8,13 @@ use Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\FlagManager;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,6 +29,7 @@ use Psr\Log\LoggerInterface;
 class UkVat extends AbstractTaxScheme
 {
     const CODE = "ukvat";
+    const SCHEME_CURRENCY = 'GBP';
     protected $code = self::CODE;
 
     /**
@@ -52,11 +55,6 @@ class UkVat extends AbstractTaxScheme
     private $serializer;
 
     /**
-     * @var DateTime
-     */
-    private $datetime;
-
-    /**
      * @var EuVat
      */
     private $euVat;
@@ -71,6 +69,8 @@ class UkVat extends AbstractTaxScheme
      * @param DateTime $datetime
      * @param LoggerInterface $logger
      * @param EuVat $euVat
+     * @param PriceCurrencyInterface $priceCurrency
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -79,16 +79,20 @@ class UkVat extends AbstractTaxScheme
         Json $serializer,
         DateTime $datetime,
         LoggerInterface $logger,
-        EuVat $euVat
+        EuVat $euVat,
+        StoreManagerInterface $storeManager,
+        PriceCurrencyInterface $priceCurrency
     ) {
         parent::__construct(
             $scopeConfig,
-            $logger
+            $logger,
+            $storeManager,
+            $priceCurrency,
+            $datetime
         );
         $this->clientFactory = $clientFactory;
         $this->flagManager = $flagManager;
         $this->serializer = $serializer;
-        $this->datetime = $datetime;
         $this->euVat = $euVat;
     }
 
@@ -111,11 +115,7 @@ class UkVat extends AbstractTaxScheme
         $store = null
     ) {
         $merchantCountry = $this->getMerchantCountryCode();
-        $importThreshold = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/importthreshold",
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $importThreshold = $this->getThresholdInStoreCurrency($store);
         //Merchant Country is in the UK/IM
         //Item shipped to the UK/IM
         //Therefore Domestic

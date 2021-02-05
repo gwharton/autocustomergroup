@@ -8,6 +8,7 @@ use Magento\Store\Model\ScopeInterface;
 class NorwayVoec extends AbstractTaxScheme
 {
     const CODE = "norwayvoec";
+    const SCHEME_CURRENCY = 'NOK';
     protected $code = self::CODE;
 
     /**
@@ -37,11 +38,7 @@ class NorwayVoec extends AbstractTaxScheme
         $store = null
     ) {
         $merchantCountry = $this->getMerchantCountryCode();
-        $importThreshold = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/importthreshold",
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $importThreshold = $this->getThresholdInStoreCurrency($store);
         //Merchant Country is in Norway
         //Item shipped to Norway
         //Therefore Domestic

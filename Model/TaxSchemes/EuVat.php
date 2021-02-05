@@ -15,6 +15,7 @@ use SoapClient;
 class EuVat extends AbstractTaxScheme
 {
     const CODE = "euvat";
+    const SCHEME_CURRENCY = 'EUR';
     protected $code = self::CODE;
 
     const VAT_VALIDATION_WSDL_URL = 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
@@ -48,11 +49,7 @@ class EuVat extends AbstractTaxScheme
     ) {
         $merchantCountry = $this->getMerchantCountryCode($store);
         $merchantPostCode = $this->getMerchantPostCode($store);
-        $importThreshold = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/importthreshold",
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $importThreshold = $this->getThresholdInStoreCurrency($store);
         //Merchant Country is in the EU
         //Item shipped to the EU
         //Both countries the same

@@ -28,8 +28,7 @@ it, the customer is presented with a note above the input field, notifying what 
 <h3>Valid UK VAT Numnber</h3>
 <img src="images/frontend4.png">
 <h2>UK VAT Scheme</h2>
-<img src="images/ukvat1.png">
-<img src="images/ukvat2.png">
+<img src="images/ukvat.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>Environment</b> - Whether to use the Sandbox or Production servers for the HMRC VAT Validation Service.</li>
@@ -37,6 +36,8 @@ it, the customer is presented with a note above the input field, notifying what 
 <li><b>Client Secret</b> - Client Secret as provided by HMRC Developer Portal.</li>
 <li><b>VAT Registration Number</b> - The UK VAT Registration Number for the Merchant. This will be provided to HMRC when all validation checks are made.</li>
 <li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>
+<li><b>Use Magento Exchange Rate</b> - To convert from GBP Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
+<li><b>Exchange Rate</b> - The exchange rate to use to convert from GBP Threshold to Store Currency Threshold.</li>
 <li><b>Customer Group - Domestic</b> - Merchant Country is within the UK/IM, Item is being shipped to the UK/IM.</li>
 <li><b>Customer Group - Intra-EU B2B</b> - Merchant Country is within the EU, Item is being shipped to NI, Validated UK VAT Number Supplied.</li>
 <li><b>Customer Group - Intra-EU B2C</b> - Merchant Country is within the EU, Item is being shipped to NI, Validated UK VAT Number is NOT Supplied.</li>
@@ -46,13 +47,14 @@ it, the customer is presented with a note above the input field, notifying what 
 </ul>
 
 <h2>EU VAT Scheme</h2>
-<img src="images/euvat1.png">
-<img src="images/euvat2.png">
+<img src="images/euvat.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>VAT Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to VIES when all validation checks are made.</li>
 <li><b>VAT Registration Number</b> - The EU VAT Registration Number for the Merchant. This will be provided to VIES when all validation checks are made.</li>
 <li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>
+<li><b>Use Magento Exchange Rate</b> - To convert from EUR Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
+<li><b>Exchange Rate</b> - The exchange rate to use to convert from EUR Threshold to Store Currency Threshold.</li>
 <li><b>Customer Group - Domestic</b> - Merchant Country is within the EU, Item is being shipped to the same country.</li>
 <li><b>Customer Group - Intra-EU B2B</b> - Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, Validated EU VAT Number Supplied.</li>
 <li><b>Customer Group - Intra-EU B2C</b> - Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, Validated EU VAT Number is NOT Supplied.</li>
@@ -62,12 +64,13 @@ it, the customer is presented with a note above the input field, notifying what 
 </ul>
 
 <h2>Norway VOEC Scheme</h2>
-<img src="images/norwayvoec1.png">
-<img src="images/norwayvoec2.png">
+<img src="images/norwayvoec.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>VOEC Registration Number</b> - The Norway VOEC Registration Number for the Merchant. This is not currently used by the module.</li>
 <li><b>Import VAT Threshold</b> - If any single item within the order is valued above the VAT threshold then no VAT should be charged.</li>
+<li><b>Use Magento Exchange Rate</b> - To convert from NOK Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
+<li><b>Exchange Rate</b> - The exchange rate to use to convert from NOK Threshold to Store Currency Threshold.</li>
 <li><b>Customer Group - Domestic</b> - Merchant Country is within Norway, Item is being shipped to Norway.</li>
 <li><b>Customer Group - Import B2B</b> - Merchant Country is not within Norway, Item is being shipped to Norway, Norwegian Business Number Supplied.</li>
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within Norway, Item is being shipped to Norway, All items valued at or below the Import VAT Threshold.</li>
@@ -75,13 +78,14 @@ it, the customer is presented with a note above the input field, notifying what 
 </ul>
 
 <h2>Australia GST for Non Residents Scheme</h2>
-<img src="images/australiagst1.png">
-<img src="images/australiagst2.png">
+<img src="images/australiagst.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>ABN API GUID</b> - The GUID provided by the Australian Business Register website for API access.</li>
 <li><b>ATO Registration Number</b> - The ATO Registration Number for the Merchant. This is not currently used by the module.</li>
 <li><b>Import GST Threshold</b> - If the order value is above the GST Threshold, no GST should be charged.</li>
+<li><b>Use Magento Exchange Rate</b> - To convert from AUD Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
+<li><b>Exchange Rate</b> - The exchange rate to use to convert from AUD Threshold to Store Currency Threshold.</li>
 <li><b>Customer Group - Domestic</b> - Merchant Country is within Australia, Item is being shipped to Australia.</li>
 <li><b>Customer Group - Import B2B</b> - Merchant Country is not within Australia, Item is being shipped to Australia, GST Validated ABN Number Supplied.</li>
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within Australia, Item is being shipped to Australia, Order Value is below or equal to the Import GST Threshold.</li>
@@ -89,12 +93,13 @@ it, the customer is presented with a note above the input field, notifying what 
 </ul>
 
 <h2>New Zealand GST Scheme</h2>
-<img src="images/newzealandgst1.png">
-<img src="images/newzealandgst2.png">
+<img src="images/newzealandgst.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>GST Registration Number</b> - The GST Registration Number for the Merchant. This is not currently used by the module.</li>
 <li><b>Import GST Threshold</b> - If the order value is above the GST Threshold, no GST should be charged.</li>
+<li><b>Use Magento Exchange Rate</b> - To convert from NZD Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
+<li><b>Exchange Rate</b> - The exchange rate to use to convert from NZD Threshold to Store Currency Threshold.</li>
 <li><b>Customer Group - Domestic</b> - Merchant Country is within New Zealand, Item is being shipped to New Zealand.</li>
 <li><b>Customer Group - Import B2B</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, GST Number Supplied.</li>
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, All items valued at or below the Import GST Threshold.</li>
@@ -110,9 +115,7 @@ add them to config-global.php. The tests for UK (Sandbox), EU and Australia use 
 </ul>
 <h2>Known Issues</h2>
 <ul>
-<li>Currently, VAT thresholds need to be calculated from the values stated in law, and converted manually into store currency. Future update will
- look into what can be done with this.</li>
-<li>What can be done where orders are split into multiple shipments, individually below the threshold, but the order is above the threshold. Nothing I'm guessing.</li>
 <li>All testing sofar is done using Guest Orders. No Logged in orders have been tested.</li>
 <li>I've re-used some Magento settings in the module, like the global enable setting is the old VIV enable setting. Should I use my own settings??</li>
+<li>Create order in admin, validate VAT link not working</li>
 </ul>

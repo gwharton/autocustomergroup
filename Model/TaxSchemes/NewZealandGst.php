@@ -8,6 +8,7 @@ use Magento\Store\Model\ScopeInterface;
 class NewZealandGst extends AbstractTaxScheme
 {
     const CODE = "newzealandgst";
+    const SCHEME_CURRENCY = 'NZD';
     protected $code = self::CODE;
 
     /**
@@ -37,11 +38,7 @@ class NewZealandGst extends AbstractTaxScheme
         $store = null
     ) {
         $merchantCountry = $this->getMerchantCountryCode();
-        $importThreshold = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/importthreshold",
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $importThreshold = $this->getThresholdInStoreCurrency($store);
         //Merchant Country is in New Zealand
         //Item shipped to New Zealand
         //Therefore Domestic

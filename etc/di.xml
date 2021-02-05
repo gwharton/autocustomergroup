@@ -14,4 +14,29 @@
     <type name="Magento\Quote\Model\Quote\TotalsCollector">
         <plugin name="autocustomergroup-processgroupchange" type="Gw\AutoCustomerGroup\Plugin\Quote\TotalsCollectorPlugin" />
     </type>
+    <virtualType name="UkVatImportThresholdStoreCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+        <arguments>
+            <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\UkVat</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="EuVatImportThresholdStoreCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+        <arguments>
+            <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NoVatImportThresholdStoreCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+        <arguments>
+            <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\NorwayVoec</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuGstImportThresholdStoreCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+        <arguments>
+            <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\AustraliaGst</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="NzGstImportThresholdStoreCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+        <arguments>
+            <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\NewZealandGst</argument>
+        </arguments>
+    </virtualType>
 </config>

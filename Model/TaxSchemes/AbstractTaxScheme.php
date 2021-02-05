@@ -3,14 +3,18 @@ namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Information as StoreInformation;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractTaxScheme
 {
     const XML_PATH_EU_COUNTRIES_LIST = 'general/country/eu_countries';
+    const SCHEME_CURRENCY = '';
 
     protected $code;
     protected $schemeCountries = [];
@@ -26,15 +30,39 @@ abstract class AbstractTaxScheme
     protected $logger;
 
     /**
+     * @var PriceCurrencyInterface
+     */
+    protected $priceCurrency;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
+
+    /**
+     * @var DateTime
+     */
+    protected $datetime;
+
+    /**
      * @param ScopeConfigInterface $scopeConfig
      * @param LoggerInterface $logger
+     * @param StoreManagerInterface $storeManager
+     * @param PriceCurrencyInterface $priceCurrency
+     * @param DateTime $datetime
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        StoreManagerInterface $storeManager,
+        PriceCurrencyInterface $priceCurrency,
+        DateTime $datetime
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->logger = $logger;
+        $this->storeManager = $storeManager;
+        $this->priceCurrency = $priceCurrency;
+        $this->datetime = $datetime;
     }
 
     /**
@@ -166,6 +194,66 @@ abstract class AbstractTaxScheme
             ScopeInterface::SCOPE_STORE,
             $storeId
         );
+    }
+
+    /**
+     * Get the Import Threshold in Store Currency
+     *
+     * @param int $storeId
+     * @return float
+     */
+    public function getThresholdInStoreCurrency($storeId = null)
+    {
+        $importthreshold = $this->scopeConfig->getValue(
+            "autocustomergroup/" . $this->getSchemeId() . "/importthreshold",
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+        $usemagentoexchangerate = $this->scopeConfig->isSetFlag(
+            "autocustomergroup/" . $this->getSchemeId() . '/usemagentoexchangerate',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+
+        if ($usemagentoexchangerate) {
+            return $this->priceCurrency->convert(
+                $importthreshold,
+                static::SCHEME_CURRENCY,
+                $this->storeManager->getStore($storeId)
+            );
+        } else {
+            $exchangerate = $this->scopeConfig->getValue(
+                "autocustomergroup/" . $this->getSchemeId() . "/exchangerate",
+                ScopeInterface::SCOPE_STORE,
+                $storeId
+            );
+            return $exchangerate * $importthreshold;
+        }
+    }
+
+    /**
+     * Get the Import Threshold in Scheme Currency
+     *
+     * @param int $storeId
+     * @return float
+     */
+    public function getThresholdInSchemeCurrency($storeId = null)
+    {
+        return $this->scopeConfig->getValue(
+            "autocustomergroup/" . $this->getSchemeId() . "/importthreshold",
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Get the currency of the tax scheme
+     *
+     * @return string
+     */
+    public function getSchemeCurrencyCode()
+    {
+        return static::SCHEME_CURRENCY;
     }
 
     /**

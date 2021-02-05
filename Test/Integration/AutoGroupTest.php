@@ -134,25 +134,35 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      *
      * @dataProvider dataProviderForTestAutoCustomerGroup
      * @magentoConfigFixture current_store customer/create_account/auto_group_assign 1
+     * @magentoConfigFixture current_store currency/options/default GBP
+     * @magentoConfigFixture current_store currency/options/base GBP
      * @magentoConfigFixture current_store customer/create_account/tax_calculation_address_type shipping
      * @magentoConfigFixture current_store autocustomergroup/ukvat/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/ukvat/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/ukvat/exchangerate 1
      * @magentoConfigFixture current_store autocustomergroup/ukvat/environment sandbox
-     * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 40
+     * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 135
      * @magentoConfigFixture current_store autocustomergroup/ukvat/registrationnumber GB553557881
      * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
-     * @magentoConfigFixture current_store autocustomergroup/euvat/importthreshold 90
+     * @magentoConfigFixture current_store autocustomergroup/euvat/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/euvat/exchangerate 0.88603
+     * @magentoConfigFixture current_store autocustomergroup/euvat/importthreshold 150
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationcountry IE
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber IE3206488LH
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/norwayvoec/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/norwayvoec/exchangerate 0.08540
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/registrationnumber 12345
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/importthreshold 3000
      * @magentoConfigFixture current_store autocustomergroup/australiagst/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/australiagst/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/australiagst/exchangerate 0.5666
      * @magentoConfigFixture current_store autocustomergroup/australiagst/importthreshold 1000
      * @magentoConfigFixture current_store autocustomergroup/newzealandgst/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/newzealandgst/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/newzealandgst/exchangerate 0.52
      * @magentoConfigFixture current_store autocustomergroup/newzealandgst/importthreshold 1000
      * @magentoConfigFixture current_store general/region/state_required ""
-     * //phpcs:ignore
-     * @magentoConfigFixture current_store general/country/eu_countries AT,BE,BG,HR,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,MC,NL,PL,PT,RO,SK,SI,ES,SE
      * @return void
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
@@ -335,10 +345,74 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
         //Expected Customer Group
         //Discount Percentage
         return [
+
             [1, 10, 'GB', '', 'BR', '12345', '', 'NOT LOGGED IN', 0],
             [1, 10, 'FR', '75001', 'BR', '12345', '', 'NOT LOGGED IN', 0],
 
+            //UK VAT
+            //Threshold is 135GBP
+            [1, 10, 'GB', '', 'GB', 'NE1 1AA', '', 'uk_domestic', 0],
+            [1, 10, 'GB', 'BT1 1AA', 'GB', 'NE1 1AA', '', 'uk_domestic', 0],
+            [1, 10, 'GB', 'NE1 1AA', 'GB', 'BT1 1AA', '', 'uk_domestic', 0],
+            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic', 0], //VAT is valid
+            [1, 10, 'IM', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic', 0], //VAT is valid
+            [1, 10, 'GB', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic', 0], //VAT is valid
+            [1, 10, 'IM', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic', 0], //VAT is valid
+            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB123', 'uk_domestic', 0], //VAT is invalid
+            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936943', 'uk_domestic', 0], //VAT is invalid
+            [1, 10, 'FR', '75001', 'GB', 'BT1 1AA', 'GB948561936944', 'uk_intraeu_b2b', 0], //VAT is invalid
+            [1, 10, 'FR', '75001', 'GB', 'BT1 1AA', '', 'uk_intraeu_b2c', 0],
+            [1, 10, 'FR','75001',  'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_b2b', 0], //VAT is valid
+            [10, 10, 'FR', '75001', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_b2b', 0], //VAT is valid
+            [1, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
+            [20, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 50], //20 x 10ea = 200 * 50% = 100
+            [1, 130, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
+            [1, 140, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 0],
+            [14, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 0],
+            [30, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 50], //30 x 10ea = 300 * 50% = 200
+
+            //EU VAT
+            //Threshold is 150EUR = 132.90 GBP
+            [1, 10, 'IE', '', 'IE', '', '', 'eu_domestic', 0],
+            [1, 10, 'IE', '', 'IE', '', 'IE8256796U', 'eu_domestic', 0], //VAT is valid
+            [1, 10, 'DE', '', 'IE', '', 'IE8256796U', 'eu_intraeu_b2b', 0], //VAT is valid
+            [1, 10, 'GB', 'BT1 1AA', 'IE', '', 'IE8256796U', 'eu_intraeu_b2b', 0], //VAT is valid
+            [1, 10, 'DE', '', 'IE', '', 'IE8256796H', 'eu_intraeu_b2c', 0], //VAT is invalid
+            [1, 10, 'GB', 'BT1 1AA', 'IE', '', '', 'eu_intraeu_b2c', 0],
+            [1, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 0], //VAT is valid
+            //30 x 10ea = 300,  * 50% = 150
+            [30, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 50], //VAT is valid
+            //18 x 10ea = 180,  * 50% = 90
+            [18, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 50], //VAT is valid
+            //16 x 10ea = 160,  * 50% = 80
+            [16, 10, 'GB', '', 'IE', '','IE8256796U', 'eu_import_b2b', 50], //VAT is valid
+            [1, 10, 'BR', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 0], //VAT is valid
+            [1, 10, 'GB', '', 'FR', '75001', '', 'eu_import_taxed', 0],
+            [1, 10, 'GB', '', 'IE', '', '123456', 'eu_import_taxed', 0], //VAT is invalid
+            [1, 10, 'BR', '', 'IE', '', '', 'eu_import_taxed', 0],
+            [1, 130, 'BR', '', 'IE', '', '', 'eu_import_taxed', 0],
+            [1, 140, 'BR', '', 'IE', '', '', 'eu_import_untaxed', 0],
+            [14, 10, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 0],
+            [28, 10, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 50], //28 x 10ea = 280 * 50% = 140
+
+            //Norway VOEC
+            //Threshold is 3000NOK = 256.20GBP
+            [1, 10, 'NO', '1234', 'NO', '1234', '', 'norway_domestic', 0],
+            [1, 10, 'NO', '1234', 'NO', '1234', '912345678', 'norway_domestic', 0], //Valid Business No
+            [1, 10, 'NO', '1234', 'NO', '1234', '2443', 'norway_domestic', 0], //Invalid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
+            [10, 20, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
+            [1, 300, 'GB', 'NE1 1AA', 'NO', '1234', '812345678', 'norway_import_b2b', 0], //Valid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '2443', 'norway_import_taxed', 0], //Invalid Business No
+            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],
+            [10, 200, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],
+            [1, 250, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],
+            [1, 260, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_untaxed', 0],
+            [5, 300, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_untaxed', 0],
+            [1, 300, 'GB', 'NE1 1AA', 'NO', '1234', '2443', 'norway_import_untaxed', 0], //Invalid Business No
+
             //Australia GST
+            //Threshold is 1000AUD = 566.60GBP
             [1, 10, 'AU', '', 'AU', '1234', '', 'australia_domestic', 0],
             [1, 10, 'AU', '', 'AU', '1234', '1234', 'australia_domestic', 0], //Invalid Business No
             //Valid Business No, with GST registration
@@ -353,14 +427,18 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_taxed', 0],
             [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_taxed', 0], //Invalid Business No
             [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
-            [9, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
-            [1, 1000, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
-            [10, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
-            [1, 2000, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
-            [5, 250, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [56, 10, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [5, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [1, 560, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
+            [2, 570, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 50],
+            [1, 570, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
+            [2, 570, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 50],
+            [9, 100, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_untaxed', 0],
             [5, 4000, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_untaxed', 0], //Invalid Business No
 
             //New Zealand GST
+            //Threshold is 1000NZD = 520.00GBP
             [1, 10, 'NZ', '', 'NZ', '1234', '', 'newzealand_domestic', 0],
             [1, 10, 'NZ', '', 'NZ', '1234', '1234', 'newzealand_domestic', 0], //Invalid Business No
             [1, 10, 'NZ', '', 'NZ', '1234', '49-091-850', 'newzealand_domestic', 0], //Valid Business No
@@ -370,72 +448,16 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             [1, 4000, 'GB', 'NE1 1AA', 'NZ', '1234', '49091850', 'newzealand_import_b2b', 0], //Valid Business No
             [1, 10, 'GB', 'NE1 1AA', 'NZ', '1234', '1234', 'newzealand_import_taxed', 0], //Invalid Business No
             [1, 10, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
-            [9, 100, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
-            [5, 250, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
-            [5, 1000, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
+            [5, 100, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
+            [5, 500, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
+            [1, 520, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_taxed', 0],
+            [1, 530, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_untaxed', 0],
             [1, 2000, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_untaxed', 0],
-            [5, 1001, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_untaxed', 0],
+            [5, 600, 'GB', 'NE1 1AA', 'NZ', '1234', '', 'newzealand_import_untaxed', 0],
             [5, 4000, 'GB', 'NE1 1AA', 'NZ', '1234', '1234', 'newzealand_import_untaxed', 0], //Invalid Business No
 
-            //Norway VOEC
-            [1, 10, 'NO', '1234', 'NO', '1234', '', 'norway_domestic', 0],
-            [1, 10, 'NO', '1234', 'NO', '1234', '912345678', 'norway_domestic', 0], //Valid Business No
-            [1, 10, 'NO', '1234', 'NO', '1234', '2443', 'norway_domestic', 0], //Invalid Business No
-            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
-            [10, 1000, 'GB', 'NE1 1AA', 'NO', '1234', '912345678', 'norway_import_b2b', 0], //Valid Business No
-            [1, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '812345678', 'norway_import_b2b', 0], //Valid Business No
-            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '2443', 'norway_import_taxed', 0], //Invalid Business No
-            [1, 10, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],
-            [10, 1000, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_taxed', 0],
-            [1, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_untaxed', 0],
-            [5, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '', 'norway_import_untaxed', 0],
-            [5, 4000, 'GB', 'NE1 1AA', 'NO', '1234', '2443', 'norway_import_untaxed', 0], //Invalid Business No
 
-            //UK VAT
-            [1, 10, 'GB', '', 'GB', 'NE1 1AA', '', 'uk_domestic', 0],
-            [1, 10, 'GB', 'BT1 1AA', 'GB', 'NE1 1AA', '', 'uk_domestic', 0],
-            [1, 10, 'GB', 'NE1 1AA', 'GB', 'BT1 1AA', '', 'uk_domestic', 0],
-            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic', 0], //VAT is valid
-            [1, 10, 'IM', '', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_domestic', 0], //VAT is valid
-            [1, 10, 'GB', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic', 0], //VAT is valid
-            [1, 10, 'IM', '', 'IM', 'IM1 1AA', 'GB000549615108', 'uk_domestic', 0], //VAT is valid
-            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB123', 'uk_domestic', 0], //VAT is invalid
-            [1, 10, 'GB', '', 'GB', 'NE1 1AA', 'GB948561936943', 'uk_domestic', 0], //VAT is invalid
-            [1, 10, 'FR', '75001', 'GB', 'BT1 1AA', 'GB948561936944', 'uk_intraeu_b2b', 0], //VAT is invalid
-            [1, 10, 'FR', '75001', 'GB', 'BT1 1AA', '', 'uk_intraeu_b2c', 0],
-            [1, 10, 'FR','75001',  'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_b2b', 0], //VAT is valid
-            [10, 10, 'FR', '75001', 'GB', 'NE1 1AA', 'GB948561936944', 'uk_import_b2b', 0], //VAT is valid
-            //1 x 10ea = 10, Threshold is 40
-            [1, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
-            //5 x 10ea = 50 * 50% = 25, Threshold is 40
-            [5, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 50],
-            //10 x 10ea = 100, Threshold is 40
-            [10, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 0],
-            //10 x 10ea = 100 * 50% = 50, Threshold is 40
-            [10, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 50],
 
-            //EU VAT
-            [1, 10, 'IE', '', 'IE', '', '', 'eu_domestic', 0],
-            [1, 10, 'IE', '', 'IE', '', 'IE8256796U', 'eu_domestic', 0], //VAT is valid
-            [1, 10, 'DE', '', 'IE', '', 'IE8256796U', 'eu_intraeu_b2b', 0], //VAT is valid
-            [1, 10, 'GB', 'BT1 1AA', 'IE', '', 'IE8256796U', 'eu_intraeu_b2b', 0], //VAT is valid
-            [1, 10, 'DE', '', 'IE', '', 'IE8256796H', 'eu_intraeu_b2c', 0], //VAT is invalid
-            [1, 10, 'GB', 'BT1 1AA', 'IE', '', '', 'eu_intraeu_b2c', 0],
-            [1, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 0], //VAT is valid
-            //20 x 10ea = 200,  * 50% = 100, Threshold is 90
-            [20, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 50], //VAT is valid
-            //18 x 10ea = 180,  * 50% = 90, Threshold is 90
-            [18, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 50], //VAT is valid
-            //16 x 10ea = 160,  * 50% = 80, Threshold is 90
-            [16, 10, 'GB', '', 'IE', '','IE8256796U', 'eu_import_b2b', 50], //VAT is valid
-            [1, 10, 'BR', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 0], //VAT is valid
-            [1, 10, 'GB', '', 'FR', '75001', '', 'eu_import_taxed', 0],
-            [1, 10, 'GB', '', 'IE', '', '123456', 'eu_import_taxed', 0], //VAT is invalid
-            [1, 10, 'BR', '', 'IE', '', '', 'eu_import_taxed', 0],
-            //10 x 10ea = 100, Threshold is 90
-            [10, 10, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 0],
-            //20 x 10ea = 200 * 50% = 100, Threshold is 90
-            [20, 10, 'GB', '', 'FR', '75001', '', 'eu_import_untaxed', 50],
         ];
     }
 }

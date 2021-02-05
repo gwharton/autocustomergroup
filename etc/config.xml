@@ -13,6 +13,8 @@
                 <clientid></clientid>
                 <clientsecret></clientsecret>
                 <importthreshold>135</importthreshold>
+                <usemagentoexchangerate>1</usemagentoexchangerate>
+                <exchangerate>1</exchangerate>
                 <domestic>0</domestic>
                 <intraeub2b>0</intraeub2b>
                 <intraeub2c>0</intraeub2c>
@@ -26,6 +28,8 @@
                 <registrationnumber></registrationnumber>
                 <registrationcountry></registrationcountry>
                 <importthreshold>150</importthreshold>
+                <usemagentoexchangerate>1</usemagentoexchangerate>
+                <exchangerate>1</exchangerate>
                 <domestic>0</domestic>
                 <intraeub2b>0</intraeub2b>
                 <intraeub2c>0</intraeub2c>
@@ -38,6 +42,8 @@
                 <frontendprompt>Norwegian VAT Registered Businesses, please enter your VAT Number so we can apply the correct rate of VAT to your order.</frontendprompt>
                 <registrationnumber></registrationnumber>
                 <importthreshold>3000</importthreshold>
+                <usemagentoexchangerate>1</usemagentoexchangerate>
+                <exchangerate>1</exchangerate>
                 <domestic>0</domestic>
                 <importb2b>0</importb2b>
                 <importtaxed>0</importtaxed>
@@ -49,6 +55,8 @@
                 <apiguid></apiguid>
                 <registrationnumber></registrationnumber>
                 <importthreshold>1000</importthreshold>
+                <usemagentoexchangerate>1</usemagentoexchangerate>
+                <exchangerate>1</exchangerate>
                 <domestic>0</domestic>
                 <importb2b>0</importb2b>
                 <importtaxed>0</importtaxed>
@@ -59,6 +67,8 @@
                 <frontendprompt>GST Registered Businesses, please enter your GST Number so we can apply the correct rate of GST to your order..</frontendprompt>
                 <registrationnumber></registrationnumber>
                 <importthreshold>1000</importthreshold>
+                <usemagentoexchangerate>1</usemagentoexchangerate>
+                <exchangerate>1</exchangerate>
                 <domestic>0</domestic>
                 <importb2b>0</importb2b>
                 <importtaxed>0</importtaxed>

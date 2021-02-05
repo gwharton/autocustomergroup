@@ -1,17 +1,15 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
-use Psr\Log\LoggerInterface;
 use SoapClient;
 
 class AustraliaGst extends AbstractTaxScheme
 {
     const CODE = "australiagst";
+    const SCHEME_CURRENCY = 'AUD';
     protected $code = self::CODE;
     const ABN_VALIDATION_WSDL_URL = 'https://abr.business.gov.au/abrxmlsearch/ABRXMLSearch.asmx?WSDL';
 
@@ -21,28 +19,6 @@ class AustraliaGst extends AbstractTaxScheme
      * @var string[]
      */
     protected $schemeCountries = ['AU'];
-
-    /**
-     * @var DateTime
-     */
-    private $datetime;
-
-    /**
-     * @param ScopeConfigInterface $scopeConfig
-     * @param DateTime $datetime
-     * @param LoggerInterface $logger
-     */
-    public function __construct(
-        ScopeConfigInterface $scopeConfig,
-        DateTime $datetime,
-        LoggerInterface $logger
-    ) {
-        parent::__construct(
-            $scopeConfig,
-            $logger
-        );
-        $this->datetime = $datetime;
-    }
 
     /**
      * Get customer group based on Validation Result and Country of customer
@@ -64,11 +40,7 @@ class AustraliaGst extends AbstractTaxScheme
         $store = null
     ) {
         $merchantCountry = $this->getMerchantCountryCode();
-        $importThreshold = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/importthreshold",
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $importThreshold = $this->getThresholdInStoreCurrency($store);
         //Merchant Country is in Australia
         //Item shipped to Australia
         //Therefore Domestic
