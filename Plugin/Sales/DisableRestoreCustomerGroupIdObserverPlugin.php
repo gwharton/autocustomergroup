@@ -7,7 +7,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Sales\Observer\Frontend\RestoreCustomerGroupId;
 use Magento\Store\Model\StoreManagerInterface;
 
-class DisableRestoreCustomerGroupIdPlugin
+class DisableRestoreCustomerGroupIdObserverPlugin
 {
     /**
      * @var StoreManagerInterface
