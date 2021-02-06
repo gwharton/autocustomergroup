@@ -7,7 +7,7 @@ use Magento\Customer\Observer\BeforeAddressSaveObserver;
 use Magento\Framework\Event\Observer;
 use Magento\Store\Model\StoreManagerInterface;
 
-class DisableBeforeAddressSaveObserverPlugin
+class BeforeAddressSaveObserverPlugin
 {
     /**
      * @var StoreManagerInterface
