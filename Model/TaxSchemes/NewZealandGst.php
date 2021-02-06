@@ -24,7 +24,7 @@ class NewZealandGst extends AbstractTaxScheme
      * @param string $customerPostCode
      * @param DataObject $vatValidationResult
      * @param Quote $quote
-     * @param $store
+     * @param int|null $storeId
      * @return int|null
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -35,10 +35,10 @@ class NewZealandGst extends AbstractTaxScheme
         $customerPostCode,
         $vatValidationResult,
         $quote,
-        $store = null
+        $storeId
     ) {
-        $merchantCountry = $this->getMerchantCountryCode();
-        $importThreshold = $this->getThresholdInStoreCurrency($store);
+        $merchantCountry = $this->getMerchantCountryCode($storeId);
+        $importThreshold = $this->getThresholdInBaseCurrency($this->getWebsiteIdFromStoreId($storeId));
         //Merchant Country is in New Zealand
         //Item shipped to New Zealand
         //Therefore Domestic
@@ -47,7 +47,7 @@ class NewZealandGst extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is not in New Zealand
@@ -60,7 +60,7 @@ class NewZealandGst extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importb2b",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is not in New Zealand
@@ -69,11 +69,11 @@ class NewZealandGst extends AbstractTaxScheme
         //Therefore Import Taxed
         if (!$this->isSchemeCountry($merchantCountry) &&
             $this->isSchemeCountry($customerCountryCode) &&
-            ($this->getMostExpensiveItem($quote) <= $importThreshold)) {
+            ($this->getMostExpensiveItemBaseCurrency($quote) <= $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importtaxed",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is not in New Zealand
@@ -82,11 +82,11 @@ class NewZealandGst extends AbstractTaxScheme
         //Therefore Import Unaxed
         if (!$this->isSchemeCountry($merchantCountry) &&
             $this->isSchemeCountry($customerCountryCode) &&
-            ($this->getMostExpensiveItem($quote) > $importThreshold)) {
+            ($this->getMostExpensiveItemBaseCurrency($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         return null;

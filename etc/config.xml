@@ -3,8 +3,10 @@
     <default>
         <autocustomergroup>
             <general>
-                <frontendlabel>Tax Identifier</frontendlabel>
+                <enabled>0</enabled>
                 <enablecurrencydownload>0</enablecurrencydownload>
+                <validate_on_each_transaction>1</validate_on_each_transaction>
+                <frontendlabel>Tax Identifier</frontendlabel>
             </general>
             <ukvat>
                 <enabled>0</enabled>

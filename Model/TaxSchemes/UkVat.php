@@ -5,10 +5,10 @@ use GuzzleHttp\ClientFactory;
 use GuzzleHttp\Exception\BadResponseException;
 use Gw\AutoCustomerGroup\Model\Config\Source\Environment;
 use Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat;
+use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\FlagManager;
-use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Webapi\Rest\Request;
@@ -69,8 +69,8 @@ class UkVat extends AbstractTaxScheme
      * @param DateTime $datetime
      * @param LoggerInterface $logger
      * @param EuVat $euVat
-     * @param PriceCurrencyInterface $priceCurrency
      * @param StoreManagerInterface $storeManager
+     * @param CurrencyFactory $currencyFactory
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -81,14 +81,14 @@ class UkVat extends AbstractTaxScheme
         LoggerInterface $logger,
         EuVat $euVat,
         StoreManagerInterface $storeManager,
-        PriceCurrencyInterface $priceCurrency
+        CurrencyFactory $currencyFactory
     ) {
         parent::__construct(
             $scopeConfig,
             $logger,
             $storeManager,
-            $priceCurrency,
-            $datetime
+            $datetime,
+            $currencyFactory
         );
         $this->clientFactory = $clientFactory;
         $this->flagManager = $flagManager;
@@ -102,7 +102,7 @@ class UkVat extends AbstractTaxScheme
      * @param string $customerPostCode
      * @param DataObject $vatValidationResult
      * @param Quote $quote
-     * @param $store
+     * @param int|null $storeId
      * @return int|null
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -112,10 +112,10 @@ class UkVat extends AbstractTaxScheme
         $customerPostCode,
         $vatValidationResult,
         $quote,
-        $store = null
+        $storeId
     ) {
-        $merchantCountry = $this->getMerchantCountryCode();
-        $importThreshold = $this->getThresholdInStoreCurrency($store);
+        $merchantCountry = $this->getMerchantCountryCode($storeId);
+        $importThreshold = $this->getThresholdInBaseCurrency($this->getWebsiteIdFromStoreId($storeId));
         //Merchant Country is in the UK/IM
         //Item shipped to the UK/IM
         //Therefore Domestic
@@ -124,7 +124,7 @@ class UkVat extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is in the EU
@@ -137,7 +137,7 @@ class UkVat extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeub2b",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is in the EU
@@ -150,7 +150,7 @@ class UkVat extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeub2c",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is in the UK/IM
@@ -163,7 +163,7 @@ class UkVat extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importb2b",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is in the UK/IM
@@ -172,11 +172,11 @@ class UkVat extends AbstractTaxScheme
         //Therefore Import Taxed
         if (!$this->isSchemeCountry($merchantCountry) &&
             $this->isSchemeCountry($customerCountryCode) &&
-            ($this->getOrderTotal($quote) <= $importThreshold)) {
+            ($this->getOrderTotalBaseCurrency($quote) <= $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importtaxed",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is in the UK/IM
@@ -185,11 +185,11 @@ class UkVat extends AbstractTaxScheme
         //Therefore Import Unaxed
         if (!$this->isSchemeCountry($merchantCountry) &&
             $this->isSchemeCountry($customerCountryCode) &&
-            ($this->getOrderTotal($quote) > $importThreshold)) {
+            ($this->getOrderTotalBaseCurrency($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         return null;

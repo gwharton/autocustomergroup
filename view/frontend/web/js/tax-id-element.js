@@ -29,6 +29,7 @@ define([
             retry: false,
             retryText: $t('Check again'),
             schemes: [],
+            storeId: 0,
             patterns: {
                     'AT' : '(AT)U[0-9]{8}$',
                     'BE' : '(BE)0[0-9]{9}$',
@@ -189,7 +190,8 @@ define([
                 data: {
                     tax_id: taxId,
                     country_code: countryCode,
-                    form_key: formKey
+                    form_key: formKey,
+                    store_id: this.storeId
                 },
                 success: function (response) {
                     self.clearMessages();

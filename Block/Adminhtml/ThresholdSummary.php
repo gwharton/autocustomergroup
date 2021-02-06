@@ -7,6 +7,7 @@ use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class ThresholdSummary extends Field
 {
@@ -21,15 +22,22 @@ class ThresholdSummary extends Field
     protected $scopeConfig;
 
     /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
+
+    /**
      * @param Context $context
      * @param TaxScheme $taxScheme
      * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManager
      * @param array $data
      */
     public function __construct(
         Context $context,
         AbstractTaxScheme $taxScheme,
         ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager,
         array $data = []
     ) {
         parent::__construct(
@@ -38,6 +46,7 @@ class ThresholdSummary extends Field
         );
         $this->taxScheme = $taxScheme;
         $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -50,13 +59,16 @@ class ThresholdSummary extends Field
      */
     protected function _getElementHtml(AbstractElement $element)
     {
-        $storeCurrency = $this->scopeConfig->getValue(
-            "currency/options/default",
-            ScopeInterface::SCOPE_STORE
+        $websiteId = $this->getRequest()->getParam('website', null);
+        $baseCurrency = $this->scopeConfig->getValue(
+            "currency/options/base",
+            ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
-        $thresholdInStoreCurrency = $this->taxScheme->getThresholdInStoreCurrency();
+        $thresholdInBaseCurrency = $this->taxScheme->getThresholdInBaseCurrency($websiteId);
+
         return '<div class="thresholdsummary-wrapper">' .
-            '<div>' . sprintf("%.2f", $thresholdInStoreCurrency) . ' ' . $storeCurrency . '</div>' .
+            '<div>' . sprintf("%.2f", $thresholdInBaseCurrency) . ' ' . $baseCurrency . '</div>' .
             '</div>';
     }
 }

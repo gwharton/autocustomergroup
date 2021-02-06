@@ -17,7 +17,6 @@
                                                             <item name="shipping-address-fieldset" xsi:type="array">
                                                                 <item name="children" xsi:type="array">
                                                                     <item name="vat_id" xsi:type="array">
-                                                                        <item name="component" xsi:type="string">Gw_AutoCustomerGroup/js/tax-id-element</item>
                                                                         <item name="config" xsi:type="helper" helper="Gw\AutoCustomerGroup\Model\JSConfig::getComponentConfig"/>
                                                                     </item>
                                                                 </item>

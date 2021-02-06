@@ -3,20 +3,15 @@ namespace Gw\AutoCustomerGroup\Plugin\Quote;
 
 use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
 use Magento\Customer\Api\AddressRepositoryInterface;
-use Magento\Customer\Helper\Address as AddressHelper;
 use Magento\Customer\Model\Session;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\TotalsCollector;
+use Magento\Store\Model\StoreManagerInterface;
 
 class TotalsCollectorPlugin
 {
-    /**
-     * @var AddressHelper
-     */
-    private $customerAddressHelper;
-
     /**
      * @var AutoCustomerGroup
      */
@@ -33,17 +28,22 @@ class TotalsCollectorPlugin
     private $addressRepository;
 
     /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
+
+    /**
      */
     public function __construct(
-        AddressHelper $customerAddressHelper,
         Session $customerSession,
         AutoCustomerGroup $autoCustomerGroup,
-        AddressRepositoryInterface $addressRepository
+        AddressRepositoryInterface $addressRepository,
+        StoreManagerInterface $storeManager
     ) {
-        $this->customerAddressHelper = $customerAddressHelper;
         $this->customerSession = $customerSession;
         $this->autoCustomerGroup = $autoCustomerGroup;
         $this->addressRepository = $addressRepository;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -62,9 +62,9 @@ class TotalsCollectorPlugin
     ) {
         /** @var \Magento\Customer\Api\Data\CustomerInterface $customer */
         $customer = $quote->getCustomer();
-        $storeId = $customer->getStoreId();
+        $storeId = $this->storeManager->getStore()->getId();
 
-        if (!$this->customerAddressHelper->isVatValidationEnabled($storeId) ||
+        if (!$this->autoCustomerGroup->isModuleEnabled($storeId) ||
             $customer->getDisableAutoGroupChange() ||
             !$quote->getItemsCount()) {
             return $total;
@@ -85,13 +85,14 @@ class TotalsCollectorPlugin
 
         $validationResult = null;
         if (!empty($customerTaxId) &&
-            ($this->customerAddressHelper->hasValidateOnEachTransaction($storeId) ||
+            ($this->autoCustomerGroup->isValidateOnEachTransactionEnabled($storeId) ||
             $customerCountryCode != $address->getValidatedCountryCode() ||
             $customerTaxId != $address->getValidatedVatNumber())
         ) {
             $validationResult = $this->autoCustomerGroup->checkTaxId(
                 $customerCountryCode,
-                $customerTaxId
+                $customerTaxId,
+                $storeId
             );
             if ($validationResult) {
                 // Store validation results in corresponding quote address

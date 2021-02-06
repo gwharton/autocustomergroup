@@ -1,9 +1,10 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
+use Magento\Directory\Model\Currency;
+use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
-use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Information as StoreInformation;
@@ -30,11 +31,6 @@ abstract class AbstractTaxScheme
     protected $logger;
 
     /**
-     * @var PriceCurrencyInterface
-     */
-    protected $priceCurrency;
-
-    /**
      * @var StoreManagerInterface
      */
     protected $storeManager;
@@ -45,37 +41,43 @@ abstract class AbstractTaxScheme
     protected $datetime;
 
     /**
+     * @var CurrencyFactory
+     */
+    public $currencyFactory;
+
+    /**
      * @param ScopeConfigInterface $scopeConfig
      * @param LoggerInterface $logger
      * @param StoreManagerInterface $storeManager
-     * @param PriceCurrencyInterface $priceCurrency
      * @param DateTime $datetime
+     * @param CurrencyFactory $currencyFactory
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         LoggerInterface $logger,
         StoreManagerInterface $storeManager,
-        PriceCurrencyInterface $priceCurrency,
-        DateTime $datetime
+        DateTime $datetime,
+        CurrencyFactory $currencyFactory
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->logger = $logger;
         $this->storeManager = $storeManager;
-        $this->priceCurrency = $priceCurrency;
         $this->datetime = $datetime;
+        $this->currencyFactory = $currencyFactory;
     }
 
     /**
      * Check if this Tax Scheme is enabled in Config
      *
+     * @param int|null $storeId
      * @return boolean
      */
-    public function isEnabled($store = null)
+    public function isEnabled($storeId)
     {
         return $this->scopeConfig->isSetFlag(
             "autocustomergroup/" . $this->code . "/enabled",
             ScopeInterface::SCOPE_STORE,
-            $store
+            $storeId
         );
     }
 
@@ -111,31 +113,33 @@ abstract class AbstractTaxScheme
     }
 
     /**
-     * Get order total, including discounts
+     * Get order total, including discounts, in Base Currency
      *
      * @param Quote $quote
      * @return float
      */
-    protected function getOrderTotal($quote)
+    protected function getOrderTotalBaseCurrency($quote)
     {
         $orderTotal = 0.0;
+        $rate = $quote->getBaseToQuoteRate();
         foreach ($quote->getItemsCollection() as $item) {
-            $orderTotal += ($item->getRowTotal() - $item->getDiscountAmount());
+            $orderTotal += ($item->getBaseRowTotal() - ($item->getDiscountAmount()/$rate));
         }
         return $orderTotal;
     }
 
     /**
-     * Get most expensive item in order, including any discounts
+     * Get most expensive item in order, including any discounts, in Base Currency
      *
      * @param Quote $quote
      * @return float
      */
-    protected function getMostExpensiveItem($quote)
+    protected function getMostExpensiveItemBaseCurrency($quote)
     {
         $mostExpensive = 0.0;
+        $rate = $quote->getBaseToQuoteRate();
         foreach ($quote->getItemsCollection() as $item) {
-            $itemPrice = $item->getPrice() - ($item->getDiscountAmount() / $item->getQty());
+            $itemPrice = $item->getBasePrice() - (($item->getDiscountAmount()/$rate) / $item->getQty());
             if ($itemPrice > $mostExpensive) {
                 $mostExpensive = $itemPrice;
             }
@@ -157,10 +161,10 @@ abstract class AbstractTaxScheme
     /**
      * Retrieve merchant country code
      *
-     * @param Store|string|int|null $store
+     * @param int|null $storeId
      * @return string
      */
-    public function getMerchantCountryCode($storeId = null)
+    public function getMerchantCountryCode($storeId)
     {
         return (string)$this->scopeConfig->getValue(
             StoreInformation::XML_PATH_STORE_INFO_COUNTRY_CODE,
@@ -184,10 +188,10 @@ abstract class AbstractTaxScheme
     /**
      * Retrieve merchant Post Code
      *
-     * @param Store|string|int|null $store
+     * @param int|null $storeId
      * @return string
      */
-    public function getMerchantPostCode($storeId = null)
+    public function getMerchantPostCode($storeId)
     {
         return (string)$this->scopeConfig->getValue(
             StoreInformation::XML_PATH_STORE_INFO_POSTCODE,
@@ -197,47 +201,66 @@ abstract class AbstractTaxScheme
     }
 
     /**
-     * Get the Import Threshold in Store Currency
+     * Get Website Id from any given Store Id
      *
      * @param int $storeId
+     * @return int
+     */
+    public function getWebsiteIdFromStoreId($storeId)
+    {
+        return $this->storeManager->getStore($storeId)->getWebsiteId();
+    }
+
+    /**
+     * Get the Import Threshold in Base Currency
+     *
+     * @param int|null $websiteId
      * @return float
      */
-    public function getThresholdInStoreCurrency($storeId = null)
+    public function getThresholdInBaseCurrency($websiteId)
     {
         $importthreshold = $this->scopeConfig->getValue(
             "autocustomergroup/" . $this->getSchemeId() . "/importthreshold",
-            ScopeInterface::SCOPE_STORE,
-            $storeId
+            ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
         $usemagentoexchangerate = $this->scopeConfig->isSetFlag(
             "autocustomergroup/" . $this->getSchemeId() . '/usemagentoexchangerate',
-            ScopeInterface::SCOPE_STORE,
-            $storeId
+            ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
 
         if ($usemagentoexchangerate) {
-            return $this->priceCurrency->convert(
-                $importthreshold,
-                static::SCHEME_CURRENCY,
-                $this->storeManager->getStore($storeId)
+            $websiteBaseCurrency = $this->scopeConfig->getValue(
+                Currency::XML_PATH_CURRENCY_BASE,
+                ScopeInterface::SCOPE_WEBSITE,
+                $websiteId
             );
+            $exchangerate = $this->currencyFactory->create()
+                ->load(static::SCHEME_CURRENCY)
+                ->getAnyRate($websiteBaseCurrency);
+            if (!$exchangerate) {
+                $this->logger->critical("AutoCustomerGroup : No Magento Exchange Rate configured for " .
+                    static::SCHEME_CURRENCY . " to " . $websiteBaseCurrency . ". Using 1.0");
+                $exchangerate = 1.0;
+            }
         } else {
             $exchangerate = $this->scopeConfig->getValue(
                 "autocustomergroup/" . $this->getSchemeId() . "/exchangerate",
-                ScopeInterface::SCOPE_STORE,
-                $storeId
+                ScopeInterface::SCOPE_WEBSITE,
+                $websiteId
             );
-            return $exchangerate * $importthreshold;
         }
+        return $exchangerate * $importthreshold;
     }
 
     /**
      * Get the Import Threshold in Scheme Currency
      *
-     * @param int $storeId
+     * @param int|null $storeId
      * @return float
      */
-    public function getThresholdInSchemeCurrency($storeId = null)
+    public function getThresholdInSchemeCurrency($storeId)
     {
         return $this->scopeConfig->getValue(
             "autocustomergroup/" . $this->getSchemeId() . "/importthreshold",
@@ -259,10 +282,10 @@ abstract class AbstractTaxScheme
     /**
      * Retrieve Frontend prompt for scheme
      *
-     * @param Store|string|int|null $store
+     * @param int|null $storeId
      * @return string
      */
-    public function getFrontEndPrompt($storeId = null)
+    public function getFrontEndPrompt($storeId)
     {
         return (string)$this->scopeConfig->getValue(
             "autocustomergroup/" . $this->getSchemeId() . "/frontendprompt",
@@ -276,7 +299,7 @@ abstract class AbstractTaxScheme
         $customerPostCode,
         $vatValidationResult,
         $quote,
-        $store = null
+        $storeId
     );
     abstract public function checkTaxId(
         $countryCode,

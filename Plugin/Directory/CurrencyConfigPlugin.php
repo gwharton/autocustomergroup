@@ -1,22 +1,16 @@
 <?php
 namespace Gw\AutoCustomerGroup\Plugin\Directory;
 
+use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
 use Gw\AutoCustomerGroup\Model\TaxSchemes;
-use Magento\Customer\Helper\Address as AddressHelper;
 use Magento\Directory\Model\CurrencyConfig;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class CurrencyConfigPlugin
 {
     /**
-     * @var ScopeConfigInterface
+     * @var AutoCustomerGroup
      */
-    private $scopeConfig;
-
-    /**
-     * @var AddressHelper
-     */
-    private $customerAddressHelper;
+    private $autoCustomerGroup;
 
     /**
      * @var TaxSchemes
@@ -24,17 +18,14 @@ class CurrencyConfigPlugin
     private $taxSchemes;
 
     /**
-     * @param ScopeConfigInterface $scopeConfig
-     * @param AddressHelper $customerAddressHelper
+     * @param AutoCustomerGroup $autoCustomerGroup
      * @param TaxSchemes $taxSchemes
      */
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
-        AddressHelper $customerAddressHelper,
+        AutoCustomerGroup $autoCustomerGroup,
         TaxSchemes $taxSchemes
     ) {
-        $this->scopeConfig = $scopeConfig;
-        $this->customerAddressHelper = $customerAddressHelper;
+        $this->autoCustomerGroup = $autoCustomerGroup;
         $this->taxSchemes = $taxSchemes;
     }
 
@@ -53,12 +44,8 @@ class CurrencyConfigPlugin
         array $result,
         string $path
     ) {
-        if ($this->customerAddressHelper->isVatValidationEnabled() &&
-            $this->scopeConfig->isSetFlag(
-                "autocustomergroup/general/enablecurrencydownload",
-                ScopeConfigInterface::SCOPE_TYPE_DEFAULT
-            )) {
-            foreach ($this->taxSchemes->getEnabledTaxSchemes() as $taxScheme) {
+        if ($this->autoCustomerGroup->isCurrencyDownloadEnabled()) {
+            foreach ($this->taxSchemes->getTaxSchemes() as $taxScheme) {
                 $result[] = $taxScheme->getSchemeCurrencyCode();
             }
         }

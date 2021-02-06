@@ -17,28 +17,21 @@
                             rules that this module implement are not TAX advice. Please read and understand the scheme documentation yourself.</p>
                     </div>
                     ]]></comment>
-                <field id="default_group" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Default Group</label>
-                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
-                    <config_path>customer/create_account/default_group</config_path>
-                </field>
-                <field id="auto_group_assign" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="enabled" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable Automatic Assignment to Customer Group</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>customer/create_account/auto_group_assign</config_path>
                 </field>
-                <field id="viv_on_each_transaction" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="validate_on_each_transaction" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Validate on Each Transaction</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>customer/create_account/viv_on_each_transaction</config_path>
                     <depends>
-                        <field id="auto_group_assign">1</field>
+                        <field id="enabled">1</field>
                     </depends>
                 </field>
                 <field id="frontendlabel" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>VAT/Tax Identifier Frontend Label</label>
                     <depends>
-                        <field id="auto_group_assign">1</field>
+                        <field id="enabled">1</field>
                     </depends>
                 </field>
                 <field id="enablecurrencydownload" translate="label" type="select" sortOrder="60" showInDefault="1" canRestore="1">
@@ -46,9 +39,6 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>To enable currency conversion of Import Thresholds using Magento Currency Conversion subsystem, the scheme currencies need to be
                         configured as additional base currencies within Magento. Currency download will need to be triggered after enabling this setting.</comment>
-                    <depends>
-                        <field id="auto_group_assign">1</field>
-                    </depends>
                 </field>
             </group>
             <group id="ukvat" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -88,7 +78,7 @@
 </div>
                     ]]></comment>
                 <depends>
-                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                    <field id="autocustomergroup/general/enabled">1</field>
                 </depends>
                 <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enabled</label>
@@ -125,24 +115,24 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthreshold" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Import VAT Threshold (GBP)</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="exchangerate" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="exchangerate" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from GBP to Store Currency. It is recommended to use the UK HMRC exchange rates, which can be found on the 
+                        The exchange rate to convert from GBP to Store Base Currency. It is recommended to use the UK HMRC exchange rates, which can be found on the 
                         <a href="https://www.gov.uk/government/collections/exchange-rates-for-customs-and-vat" target="_blank">HMRC Website</a>.
                         ]]></comment>
                     <depends>
@@ -150,10 +140,10 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Import VAT Threshold (Store Currency)</label>
+                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
+                    <label>Import VAT Threshold (Store Base Currency)</label>
                     <comment>The order value (ex VAT) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</comment>
-                    <frontend_model>UkVatImportThresholdStoreCurrency</frontend_model>
+                    <frontend_model>UkVatImportThresholdStoreBaseCurrency</frontend_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -243,7 +233,7 @@
 </div>
                     ]]></comment>
                 <depends>
-                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                    <field id="autocustomergroup/general/enabled">1</field>
                 </depends>
                 <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enabled</label>
@@ -268,24 +258,24 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>  
-                <field id="importthreshold" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Import VAT Threshold (EUR)</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>  
-                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="exchangerate" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="exchangerate" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from EUR to Store Currency. It is recommended to use the EU InforEuro exchange rates, which can be found on the 
+                        The exchange rate to convert from EUR to Store Base Currency. It is recommended to use the EU InforEuro exchange rates, which can be found on the 
                         <a href="https://ec.europa.eu/info/funding-tenders/how-eu-funding-works/information-contractors-and-beneficiaries/exchange-rate-inforeuro_en" target="_blank">European Comission Website</a>.
                         ]]></comment>
                     <depends>
@@ -293,9 +283,9 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Import VAT Threshold (Store Currency)</label>
-                    <frontend_model>EuVatImportThresholdStoreCurrency</frontend_model>
+                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1">
+                    <label>Import VAT Threshold (Store Base Currency)</label>
+                    <frontend_model>EuVatImportThresholdStoreBaseCurrency</frontend_model>
                     <comment>The order value (ex VAT) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</comment>
                     <depends>
                         <field id="enabled">1</field>
@@ -387,7 +377,7 @@
 </div>
                     ]]></comment>
                 <depends>
-                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                    <field id="autocustomergroup/general/enabled">1</field>
                 </depends>
                 <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enabled</label>
@@ -405,24 +395,24 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>  
-                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Import VAT Threshold (NOK)</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>       
-                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="exchangerate" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="exchangerate" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from NOK to Store Currency. It is recommended to use the Norwegian Customs exchange rates, which can be found on the 
+                        The exchange rate to convert from NOK to Store Base Currency. It is recommended to use the Norwegian Customs exchange rates, which can be found on the 
                         <a href="https://www.toll.no/en/services/exchange-rates/" target="_blank">Norwegian Customs Website</a>. Note, the published rates
                         are for conversion to NOK, so will need to be converted (NOK to Store Currency = 1/Published Rate).
                         ]]></comment>
@@ -431,9 +421,9 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Import VAT Threshold (Store Currency)</label>
-                    <frontend_model>NoVatImportThresholdStoreCurrency</frontend_model>
+                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1">
+                    <label>Import VAT Threshold (Store Base Currency)</label>
+                    <frontend_model>NoVatImportThresholdStoreBaseCurrency</frontend_model>
                     <comment>If the price of any item within the order is above this value then no VAT should be charged on the order.</comment>
                     <depends>
                         <field id="enabled">1</field>
@@ -509,7 +499,7 @@
 </div>
                     ]]></comment>
                 <depends>
-                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                    <field id="autocustomergroup/general/enabled">1</field>
                 </depends>
                 <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enabled</label>
@@ -533,24 +523,24 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthreshold" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Import GST Threshold (AUD)</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>        
-                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="exchangerate" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="exchangerate" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from AUD to Store Currency. It is recommended to use the Australian Tax Office exchange rates, which can be found on the 
+                        The exchange rate to convert from AUD to Store Base Currency. It is recommended to use the Australian Tax Office exchange rates, which can be found on the 
                         <a href="https://www.ato.gov.au/Rates/Foreign-exchange-rates/?page=2#Monthly_rates" target="_blank">Australian Tax Office Website</a>.
                         ]]></comment>
                     <depends>
@@ -558,9 +548,9 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Import GST Threshold (Store Currency)</label>
-                    <frontend_model>AuGstImportThresholdStoreCurrency</frontend_model>
+                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1">
+                    <label>Import GST Threshold (Store Base Currency)</label>
+                    <frontend_model>AuGstImportThresholdStoreBaseCurrency</frontend_model>
                     <comment>The order value above which no GST should be charged. Calculated as the sum of all line items after discount ex Tax.</comment>
                     <depends>
                         <field id="enabled">1</field>
@@ -634,7 +624,7 @@
 </div>
                     ]]></comment>
                 <depends>
-                    <field id="autocustomergroup/general/auto_group_assign">1</field>
+                    <field id="autocustomergroup/general/enabled">1</field>
                 </depends>
                 <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enabled</label>
@@ -652,24 +642,24 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Import GST Threshold (NZD)</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>        
-                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="exchangerate" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="exchangerate" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from NZD to Store Currency. It is recommended to use the New Zealand Customs exchange rates, which can be found on the 
+                        The exchange rate to convert from NZD to Store Base Currency. It is recommended to use the New Zealand Customs exchange rates, which can be found on the 
                         <a href="https://www.customs.govt.nz/business/import/customs-exchange-rates/" target="_blank">New Zealand Customs Service Website</a>.
                         ]]></comment>
 
@@ -678,9 +668,9 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Import GST Threshold (Store Currency)</label>
-                    <frontend_model>NzGstImportThresholdStoreCurrency</frontend_model>
+                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1">
+                    <label>Import GST Threshold (Store Base Currency)</label>
+                    <frontend_model>NzGstImportThresholdStoreBaseCurrency</frontend_model>
                     <comment>If the price of any item within the order is above this value then no GST should be charged on the order.</comment>
                     <depends>
                         <field id="enabled">1</field>
@@ -718,18 +708,6 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-            </group>
-        </section>
-        <section id="customer">
-            <group id="create_account">
-                <field id="viv_domestic_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
-                <field id="viv_intra_union_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
-                <field id="viv_invalid_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
-                <field id="viv_error_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
-                <field id="auto_group_assign" showInDefault="0" showInWebsite="0" showInStore="0"/>
-                <field id="tax_calculation_address_type" showInDefault="0" showInWebsite="0" showInStore="0"/>
-                <field id="viv_on_each_transaction" showInDefault="0" showInWebsite="0" showInStore="0"/>
-                <field id="default_group" showInDefault="0" showInWebsite="0" showInStore="0"/>
             </group>
         </section>
     </system>

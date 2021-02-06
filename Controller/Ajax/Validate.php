@@ -74,6 +74,7 @@ class Validate implements HttpPostActionInterface
     {
         $taxIdToCheck = $this->request->getParam('tax_id');
         $countrycode = $this->request->getParam('country_code');
+        $storeId = (int)$this->request->getParam('store_id', 0);
         if (!$this->validator->validate($this->request) ||
             !$taxIdToCheck ||
             !$countrycode) {
@@ -84,13 +85,20 @@ class Validate implements HttpPostActionInterface
 
         $gatewayresponse = $this->autoCustomerGroup->checkTaxId(
             $countrycode,
-            $taxIdToCheck
+            $taxIdToCheck,
+            $storeId
         );
 
         $responsedata = [
-            'is_valid' => $gatewayresponse->getIsValid(),
-            'request_message' => $gatewayresponse->getRequestMessage(),
+            'is_valid' => false,
+            'request_message' => __('There was an error validating your Tax Id'),
         ];
+        if ($gatewayresponse) {
+            $responsedata = [
+                'is_valid' => $gatewayresponse->getIsValid(),
+                'request_message' => $gatewayresponse->getRequestMessage(),
+            ];
+        }
         /** @var Http $response */
         $response = $this->httpFactory->create();
         $response->setHeader('cache-control', 'no-store', true);

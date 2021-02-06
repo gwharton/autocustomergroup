@@ -1,25 +1,33 @@
 <h1>AutoCustomerGroup</h1>
 <p>Magento 2 Module - Auto Assign Customer Group based on Tax Scheme validation</p>
+<h2>Known Issues/Left to do</h2>
+<ul>
+<li>Need to test using logged in customers</li>
+<li>Create order in admin, validate VAT link not working</li>
+<li>Need more multi store/website testing with different currencies per store</li>
+<li>Need to test enabling and disabling the module. Does legacy still work when disabled</li>
+<li>Testing on frontend validation feedback</li>
+</ul>
 <h2>Overview</h2>
 <p>Changes introduced to both the UK and EU VAT Tax systems require changes to be made to the Magento Tax system. These changes are required URGENTLY, and while Magento consider the changes required and work towards a permanent solution, this module can be used as an interim measure.</p>
 <p>The module should be considered BETA. I encourage users to analyse the code, suggest improvements, generate PR's where applicable.</p>
 <p>Once customers have been placed in an appropriate group, tax rules can be configured to apply different taxes to each group, depending on what is required.</p>
-<p>The module completely replaces the current Magento 2 VIV subsystem. The old settings are removed from the admin panel and replaced with a new Admin screen.</p>
+<p>When enabled, this module replaces the existing Magento VIV functionality with a new, more extendable system. When the module is disabled, the existing Magento functionality is restored.</p>
+<p>The module allows different base currencies to be used per website, if the price scope is set per website.</p>
 <img src="images/menu.png">
 <h2>General</h2>
 <img src="images/general.png">
 <ul>
-<li><b>Default Group</b> - This is the default group that customers will be assigned to if they do not have a group assigned. Note that guest users are always assigned to the "NOT LOGGED IN" group.</li>
-<li><b>Enable Automatic Assignment to Customer Group</b> - This activates and deactivates the module. When turned off, all orders will be placed either in the "NOT LOGGED IN" group for guests, or the Default Group/Customer Group for logged in customers.</li>
+<li><b>Enable Automatic Assignment to Customer Group</b> - This activates and deactivates the module. When turned off, orders will be processed using the existing Magento settings ane the existing VAT control is used on the frontend.</li>
 <li><b>Validate on Each Transaction</b> - If the order is being placed by a customer that has existing Tax ID Validation data stored in their shipping address, then this can be re-used on each subsequent order, or it can be revalidated every time.</li>
 <li><b>VAT/Tax Identifier Frontend Label</b> - The label for the VAT/Tax Id Input Box at Checkout.</li>
-<li><b>Enable download of Additional Base Currencies</b> - Adds the Scheme Currencies (for enabled Schemes) to the list of Magento Base Currencies. This enables the downloading of the correct exchange rates for use in this module.</li>
+<li><b>Enable download of Additional Base Currencies</b> - Adds the Scheme Currencies (for enabled Schemes) to the list of Magento Base Currencies. This enables the downloading of the correct exchange rates for use in this module. This can be verified in Stores -> Currency Rates.</li>
 </ul>
 <h2>Frontend Validation Feedback</h2>
-<p>The module replaces the frontend Form Element for the VAT/Tax ID Input box. If the currently selected Country has a Tax Scheme
-associated with it, and is enabled, and a valid format VAT/Tax Id is input on the frontend, then the Id is validated by the relevant
+<p>When enabled, this module replaces the frontend Form Element for the VAT/Tax ID Input box. If the currently selected Country has a Tax Scheme
+associated with it, and the Tax Scheme enabled, and a valid format VAT/Tax Id is input on the frontend, then the Id is validated by the relevant
 Tax Scheme and the results displayed to the customer. As soon as a country is selected that has a valid Tax Scheme associated with
-it, the customer is presented with a note above the input field, notifying what they need to enter.</p>
+it, the customer is presented with a prompt above the input field, notifying what they need to enter.</p>
 <h4>Valid Irish VAT Number</h4>
 <img src="images/frontend1.png">
 <h3>Correct format but not valid</h3>
@@ -113,10 +121,4 @@ add them to config-global.php. The tests for UK (Sandbox), EU and Australia use 
 <li>autocustomergroup/ukvat/clientid'</li>
 <li>autocustomergroup/ukvat/clientsecret'</li>
 <li>autocustomergroup/australiagst/apiguid'</li>
-</ul>
-<h2>Known Issues</h2>
-<ul>
-<li>All testing sofar is done using Guest Orders. No Logged in orders have been tested.</li>
-<li>I've re-used some Magento settings in the module, like the global enable setting is the old VIV enable setting. Should I use my own settings??</li>
-<li>Create order in admin, validate VAT link not working</li>
 </ul>

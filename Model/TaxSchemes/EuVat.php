@@ -33,7 +33,7 @@ class EuVat extends AbstractTaxScheme
      * @param string $customerCountryCode
      * @param DataObject $vatValidationResult
      * @param Quote $quote
-     * @param $store
+     * @param int|null $storeId
      * @return int|null
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -45,11 +45,11 @@ class EuVat extends AbstractTaxScheme
         $customerPostCode,
         $vatValidationResult,
         $quote,
-        $store = null
+        $storeId
     ) {
-        $merchantCountry = $this->getMerchantCountryCode($store);
-        $merchantPostCode = $this->getMerchantPostCode($store);
-        $importThreshold = $this->getThresholdInStoreCurrency($store);
+        $merchantCountry = $this->getMerchantCountryCode($storeId);
+        $merchantPostCode = $this->getMerchantPostCode($storeId);
+        $importThreshold = $this->getThresholdInBaseCurrency($this->getWebsiteIdFromStoreId($storeId));
         //Merchant Country is in the EU
         //Item shipped to the EU
         //Both countries the same
@@ -60,7 +60,7 @@ class EuVat extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/domestic",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is in the EU or NI
@@ -76,7 +76,7 @@ class EuVat extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeub2b",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is in the EU or NI
@@ -92,7 +92,7 @@ class EuVat extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/intraeub2c",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is not in the EU
@@ -105,7 +105,7 @@ class EuVat extends AbstractTaxScheme
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importb2b",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is not in the EU
@@ -114,11 +114,11 @@ class EuVat extends AbstractTaxScheme
         //Therefore Import Taxed
         if (!$this->isSchemeCountry($merchantCountry) &&
             $this->isSchemeCountry($customerCountryCode) &&
-            ($this->getOrderTotal($quote) <= $importThreshold)) {
+            ($this->getOrderTotalBaseCurrency($quote) <= $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importtaxed",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         //Merchant Country is not in the EU
@@ -127,11 +127,11 @@ class EuVat extends AbstractTaxScheme
         //Therefore Import Unaxed
         if (!$this->isSchemeCountry($merchantCountry) &&
             $this->isSchemeCountry($customerCountryCode) &&
-            ($this->getOrderTotal($quote) > $importThreshold)) {
+            ($this->getOrderTotalBaseCurrency($quote) > $importThreshold)) {
             return $this->scopeConfig->getValue(
                 "autocustomergroup/" . self::CODE . "/importuntaxed",
                 ScopeInterface::SCOPE_STORE,
-                $store
+                $storeId
             );
         }
         return null;
@@ -142,8 +142,6 @@ class EuVat extends AbstractTaxScheme
      *
      * @param string $countryCode
      * @param string $vatNumber
-     * @param string $requesterCountryCode
-     * @param string $requesterVatNumber
      * @return DataObject
      */
     public function checkTaxId($countryCode, $vatNumber)

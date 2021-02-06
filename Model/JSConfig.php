@@ -1,25 +1,16 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model;
 
+use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
 use Gw\AutoCustomerGroup\Model\TaxSchemes;
-use Magento\Customer\Helper\Address;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 class JSConfig
 {
-    const XML_PATH_FRONTEND_LABEL = 'autocustomergroup/general/frontendlabel';
-
     /**
-     * @var ScopeConfigInterface
+     * @var AutoCustomerGroup
      */
-    private $scopeConfig;
-
-    /**
-     * @var Address
-     */
-    private $addressHelper;
+    private $autoCustomerGroup;
 
     /**
      * @var StoreManagerInterface
@@ -32,19 +23,16 @@ class JSConfig
     private $taxSchemes;
 
     /**
-     * @param ScopeConfigInterface $scopeConfig
-     * @param Address $addressHelper
+     * @param AutoCustomerGroup $autoCustomerGroup
      * @param StoreManagerInterface $storeManager
      * @param TaxSchemes $taxSchemes
      */
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
-        Address $addressHelper,
+        AutoCustomerGroup $autoCustomerGroup,
         StoreManagerInterface $storeManager,
         TaxSchemes $taxSchemes
     ) {
-        $this->scopeConfig = $scopeConfig;
-        $this->addressHelper = $addressHelper;
+        $this->autoCustomerGroup = $autoCustomerGroup;
         $this->storeManager = $storeManager;
         $this->taxSchemes = $taxSchemes;
     }
@@ -56,35 +44,29 @@ class JSConfig
      */
     public function getComponentConfig()
     {
-        $jsSchemes = [];
-        foreach ($this->taxSchemes->getEnabledTaxSchemes() as $taxScheme) {
-            $jsSchemes[$taxScheme->getSchemeId()] = [
-                'countries' => $taxScheme->getSchemeCountries(),
-                'prompt' => $taxScheme->getFrontEndPrompt()
-            ];
-        }
-        return [
-            'template' => 'Gw_AutoCustomerGroup/tax-id-element',
-            'label' => $this->geFrontendLabel(),
-            'additionalClasses' => 'autocustomergroup_tax_id',
-            'delay' => 1500,
-            'validationEnabled' => $this->addressHelper->isVatValidationEnabled($this->storeManager->getStore()),
-            'schemes' => $jsSchemes
-        ];
-    }
+        $storeId = $this->storeManager->getStore()->getId();
+        if ($this->autoCustomerGroup->isModuleEnabled($storeId)) {
+            $jsSchemes = [];
 
-    /**
-     * Retrieve Frontend Control Label
-     *
-     * @param Store|string|int|null $store
-     * @return string
-     */
-    public function geFrontendLabel($storeId = null)
-    {
-        return (string)$this->scopeConfig->getValue(
-            self::XML_PATH_FRONTEND_LABEL,
-            ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
+            foreach ($this->taxSchemes->getEnabledTaxSchemes($storeId) as $taxScheme) {
+                $jsSchemes[$taxScheme->getSchemeId()] = [
+                    'countries' => $taxScheme->getSchemeCountries(),
+                    'prompt' => $taxScheme->getFrontEndPrompt($storeId)
+                ];
+            }
+            return [
+                'template' => 'Gw_AutoCustomerGroup/tax-id-element',
+                'label' => $this->autoCustomerGroup->getFrontendLabel($storeId),
+                'additionalClasses' => 'autocustomergroup_tax_id',
+                'delay' => 1500,
+                'validationEnabled' => $this->autoCustomerGroup->isModuleEnabled($storeId),
+                'schemes' => $jsSchemes,
+                'storeId' => $storeId,
+                'component' => 'Gw_AutoCustomerGroup/js/tax-id-element'
+            ];
+        } else {
+            //Legacy config if module is disabled
+            return [];
+        }
     }
 }

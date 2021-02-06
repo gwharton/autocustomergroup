@@ -32,13 +32,14 @@ class TaxSchemes
     /**
      * Get list of enabled tax schemes
      *
+     * @param int|null $storeId
      * @return AbstractTaxScheme[]
      */
-    public function getEnabledTaxSchemes()
+    public function getEnabledTaxSchemes($storeId)
     {
         $enabledSchemes = [];
         foreach ($this->taxSchemes as $taxScheme) {
-            if ($taxScheme->isEnabled()) {
+            if ($taxScheme->isEnabled($storeId)) {
                 $enabledSchemes[] = $taxScheme;
             }
         }
