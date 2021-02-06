@@ -6,7 +6,7 @@
             <label>Automatic Customer Groups</label>
             <tab>customer</tab>
             <resource>Magento_Customer::config_customer</resource>
-           <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General</label>
                 <comment><![CDATA[
                     <div class="autocustomergroup-schemeoverview">
@@ -37,6 +37,15 @@
                 </field>
                 <field id="frontendlabel" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>VAT/Tax Identifier Frontend Label</label>
+                    <depends>
+                        <field id="auto_group_assign">1</field>
+                    </depends>
+                </field>
+                <field id="enablecurrencydownload" translate="label" type="select" sortOrder="60" showInDefault="1" canRestore="1">
+                    <label>Enable download of Additional Base Currencies</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>To enable currency conversion of Import Thresholds using Magento Currency Conversion subsystem, the scheme currencies need to be
+                        configured as additional base currencies within Magento. Currency download will need to be triggered after enabling this setting.</comment>
                     <depends>
                         <field id="auto_group_assign">1</field>
                     </depends>
@@ -138,6 +147,7 @@
                         ]]></comment>
                     <depends>
                         <field id="usemagentoexchangerate">0</field>
+                        <field id="enabled">1</field>
                     </depends>
                 </field>
                 <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -280,6 +290,7 @@
                         ]]></comment>
                     <depends>
                         <field id="usemagentoexchangerate">0</field>
+                        <field id="enabled">1</field>
                     </depends>
                 </field>
                 <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -417,6 +428,7 @@
                         ]]></comment>
                     <depends>
                         <field id="usemagentoexchangerate">0</field>
+                        <field id="enabled">1</field>
                     </depends>
                 </field>
                 <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -543,6 +555,7 @@
                         ]]></comment>
                     <depends>
                         <field id="usemagentoexchangerate">0</field>
+                        <field id="enabled">1</field>
                     </depends>
                 </field>
                 <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -662,6 +675,7 @@
 
                     <depends>
                         <field id="usemagentoexchangerate">0</field>
+                        <field id="enabled">1</field>
                     </depends>
                 </field>
                 <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">

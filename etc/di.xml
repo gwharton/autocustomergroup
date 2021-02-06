@@ -39,4 +39,7 @@
             <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\NewZealandGst</argument>
         </arguments>
     </virtualType>
+    <type name="Magento\Directory\Model\CurrencyConfig">
+        <plugin name="add_additional_base_currencies" type="Gw\AutoCustomerGroup\Plugin\Directory\CurrencyConfigPlugin" />
+    </type>
 </config>

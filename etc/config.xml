@@ -4,6 +4,7 @@
         <autocustomergroup>
             <general>
                 <frontendlabel>Tax Identifier</frontendlabel>
+                <enablecurrencydownload>0</enablecurrencydownload>
             </general>
             <ukvat>
                 <enabled>0</enabled>

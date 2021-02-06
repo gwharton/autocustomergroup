@@ -64,8 +64,8 @@ class TotalsCollectorPlugin
         $customer = $quote->getCustomer();
         $storeId = $customer->getStoreId();
 
-        if ($customer->getDisableAutoGroupChange() ||
-            !$this->customerAddressHelper->isVatValidationEnabled($storeId) ||
+        if (!$this->customerAddressHelper->isVatValidationEnabled($storeId) ||
+            $customer->getDisableAutoGroupChange() ||
             !$quote->getItemsCount()) {
             return $total;
         }
