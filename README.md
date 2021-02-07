@@ -1,5 +1,15 @@
 <h1>AutoCustomerGroup</h1>
 <p>Magento 2 Module - Auto Assign Customer Group based on Tax Scheme validation</p>
+<h2>Features</h2>
+<ul>
+<li>Operates on UK, EU, Norway VOEC, AU GST and NZ GST Schemes</li>
+<li>Validation of Customers Tax ID on frontend during checkout, including feedback of validation status to customer.</li>
+<li>Automatically change customer group during frontend orders based on order contents, Tax ID and Country.</li>
+<li>Admin Create Customer - Tax ID's are validated and saved with the order address, but group change functionality disabled (only available while placing orders).</li>
+<li>Admin Create Order - Tax ID's are validated using the "validate" link during order creation, and customer is assigned new group if applicable.</li>
+<li>Option to add scheme currencies to Base Currency list for automatic exchange rate download, or able to use hard coded exchange rates.</li>
+<li>Module can be disabled, where legacy Magento functionality is restored. Module can be enabled/disabled on a per store basis with legacy functionality on one store, and new functionality on another store.</li>
+</ul>
 <h2>Known Issues/Left to do</h2>
 <ul>
 <li>Need to test using logged in customers</li>
