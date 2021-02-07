@@ -12,7 +12,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\DataObject;
 use Magento\Store\Model\Store;
 
-class SystemConfigValidateVatPlugin
+class ValidatePlugin
 {
     /**
      * @var JsonFactory
@@ -80,37 +80,47 @@ class SystemConfigValidateVatPlugin
         Validate $subject,
         callable $proceed
     ) {
-        if ($this->autoCustomerGroup->isModuleEnabled(Store::DEFAULT_STORE_ID)) {
-            $country = $this->request->getParam('country');
-            if ($this->ukVat->isSchemeCountry($country)) {
-                $result = $this->ukVat->checkTaxId(
-                    $country,
-                    $this->request->getParam('vat')
+        $taxIdToCheck = $this->request->getParam('tax_id');
+        $countrycode = $this->request->getParam('country_code');
+        $storeId = (int)$this->request->getParam('store_id', Store::DEFAULT_STORE_ID);
+        if ($this->autoCustomerGroup->isModuleEnabled($storeId)) {
+            if ($this->ukVat->isSchemeCountry($countrycode)) {
+                $gatewayresponse = $this->ukVat->checkTaxId(
+                    $countrycode,
+                    $taxIdToCheck
                 );
-            } elseif ($this->euVat->isSchemeCountry($country)) {
-                $result = $this->euVat->checkTaxId(
-                    $country,
-                    $this->request->getParam('vat')
+            } elseif ($this->euVat->isSchemeCountry($countrycode)) {
+                $gatewayresponse = $this->euVat->checkTaxId(
+                    $countrycode,
+                    $taxIdToCheck
                 );
             } else {
-                $result = new DataObject(
+                $gatewayresponse = new DataObject(
                     [
                         'is_valid' => false,
-                        'request_message' => 'Only UK and EU VAT Numbers supported.'
+                        'request_message' => 'Only UK and EU VAT Numbers supported.',
+                        'request_success' => false
                     ]
                 );
             }
+            $result = [
+                'valid' => $gatewayresponse->getIsValid(),
+                'message' => $gatewayresponse->getRequestMessage(),
+                'success' => $gatewayresponse->getRequestSuccess()
+            ];
         } else {
-            $result = $this->vat->checkVatNumber(
-                $this->request->getParam('country'),
-                $this->request->getParam('vat')
+            $gatewayresponse = $this->vat->checkVatNumber(
+                $countrycode,
+                $taxIdToCheck
             );
+            $result = [
+                'valid' => $gatewayresponse->getIsValid(),
+                'message' => $gatewayresponse->getRequestMessage()
+            ];
         }
+
         /** @var Json $resultJson */
         $resultJson = $this->resultJsonFactory->create();
-        return $resultJson->setData([
-            'valid' => (int)$result->getIsValid(),
-            'message' => $result->getRequestMessage(),
-        ]);
+        return $resultJson->setData($result);
     }
 }

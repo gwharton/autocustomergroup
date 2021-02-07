@@ -3,7 +3,6 @@
 <h2>Known Issues/Left to do</h2>
 <ul>
 <li>Need to test using logged in customers</li>
-<li>Create order in admin, validate VAT link not working</li>
 <li>Need more multi store/website testing with different currencies per store</li>
 <li>Need to test enabling and disabling the module. Does legacy still work when disabled</li>
 <li>Testing on frontend validation feedback</li>

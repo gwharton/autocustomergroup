@@ -5,19 +5,13 @@ use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
 use Magento\Backend\Model\View\Result\RedirectFactory;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Response\Http;
-use Magento\Framework\App\Response\HttpFactory;
+use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Data\Form\FormKey\Validator;
-use Magento\Framework\Serialize\SerializerInterface;
 
 class Validate implements HttpPostActionInterface
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
     /**
      * @var Validator
      */
@@ -39,32 +33,29 @@ class Validate implements HttpPostActionInterface
     private $redirectFactory;
 
     /**
-     * @var HttpFactory
+     * @var JsonFactory
      */
-    private $httpFactory;
+    private $jsonFactory;
 
     /**
-     * @param SerializerInterface $serializer
      * @param Validator $validator
      * @param AutoCustomerGroup $autoCustomerGroup
      * @param RequestInterface $request
      * @param RedirectFactory $redirectFactory
-     * @param HttpFactory $httpFactory
+     * @param JsonFactory $jsonFactory
      */
     public function __construct(
-        SerializerInterface $serializer,
         Validator $validator,
         AutoCustomerGroup $autoCustomerGroup,
         RequestInterface $request,
         RedirectFactory $redirectFactory,
-        HttpFactory $httpFactory
+        JsonFactory $jsonFactory
     ) {
-        $this->serializer = $serializer;
         $this->validator = $validator;
         $this->autoCustomerGroup = $autoCustomerGroup;
         $this->request = $request;
         $this->redirectFactory = $redirectFactory;
-        $this->httpFactory = $httpFactory;
+        $this->jsonFactory = $jsonFactory;
     }
 
     /**
@@ -90,19 +81,19 @@ class Validate implements HttpPostActionInterface
         );
 
         $responsedata = [
-            'is_valid' => false,
-            'request_message' => __('There was an error validating your Tax Id'),
+            'valid' => false,
+            'message' => __('There was an error validating your Tax Id'),
+            'success' => false
         ];
         if ($gatewayresponse) {
             $responsedata = [
-                'is_valid' => $gatewayresponse->getIsValid(),
-                'request_message' => $gatewayresponse->getRequestMessage(),
+                'valid' => $gatewayresponse->getIsValid(),
+                'message' => $gatewayresponse->getRequestMessage(),
+                'success' => $gatewayresponse->getRequestSuccess()
             ];
         }
-        /** @var Http $response */
-        $response = $this->httpFactory->create();
-        $response->setHeader('cache-control', 'no-store', true);
-        $response->representJson($this->serializer->serialize($responsedata));
-        return $response;
+        /** @var Json $resultJson */
+        $resultJson = $this->jsonFactory->create();
+        return $resultJson->setData($responsedata);
     }
 }

@@ -55,6 +55,9 @@
         <plugin name="customer_observer_beforeaddresssave" type="Gw\AutoCustomerGroup\Plugin\Customer\BeforeAddressSaveObserverPlugin" />
     </type>
     <type name="Magento\Customer\Controller\Adminhtml\System\Config\Validatevat\Validate">
-        <plugin name="customer_system_config_vat_validate" type="Gw\AutoCustomerGroup\Plugin\Customer\SystemConfigValidateVatPlugin" />
+        <plugin name="customer_system_config_vat_validate" type="Gw\AutoCustomerGroup\Plugin\Customer\ValidatePlugin" />
+    </type>
+    <type name="Magento\Customer\Controller\Adminhtml\System\Config\Validatevat\ValidateAdvanced">
+        <plugin name="customer_system_config_vat_validate" type="Gw\AutoCustomerGroup\Plugin\Customer\ValidateAdvancedPlugin" />
     </type>
 </config>

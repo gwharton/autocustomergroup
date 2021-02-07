@@ -199,13 +199,13 @@ define([
                         var nullCarrier = {method_code: null, carrier_code: null};
                         quote.shippingMethod(nullCarrier);
                     }
-                    if (response.is_valid === true) {
-                        self.success(response.request_message);
+                    if (response.valid === true) {
+                        self.success(response.message);
                         self.bubble('success');
                         setShippingInformation();
                     } else {
                         self.retry = true;
-                        self.warn(response.request_message);
+                        self.warn(response.message);
                         self.bubble('warn');
                         setShippingInformation();
                     }
