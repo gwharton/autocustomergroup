@@ -123,6 +123,48 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, All items valued at or below the Import GST Threshold.</li>
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, One or more items in the order is valued above the Import GST Threshold.</li>
 </ul>
+<h2>Tax Rate to Tax Scheme Links</h2>
+<p>The module allows you to link each tax rate to a particular tax scheme. In post order functions, this allows you to query this module using order details, and obtain the list of tax rates applicable to the order, and return the TAX Scheme Registration Numbers linked to the order. This is useful
+when generating invoices for example.</p>
+<p>The links can be set under the existing Tax Zones and Rates Screens</p>
+<img src="images/taxrates.png">
+<p>An example of the use of this functionality can be seen below</p>
+<pre><code>
+
+    use Gw\AutoCustomerGroup\Model\TaxSchemes;
+    use Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme;
+
+    ...
+    ...
+    ...
+
+    /**
+     * @var TaxSchemes
+     */
+    protected $taxSchemes;
+
+    ...
+    ...
+    ...
+
+    //Multiple rates may be returned.
+    $schemeDetails = [];
+    foreach ($this->taxSchemes->getTaxRateIdsFromOrder($order) as $rateId) {
+        /** @var AbstractTaxScheme $taxScheme */
+        $taxScheme = $this->taxSchemes->getTaxSchemeFromTaxRate($rateId);
+        //Only add the scheme if it doesn't already exist
+        if ($taxScheme && (!in_array($taxScheme->getSchemeId(), array_column($schemeDetails, 'id')))) {
+            $schemeDetails[] = [
+                'number' => $taxScheme->getSchemeRegistrationNumber($order->getStoreId()),
+                'name' => $taxScheme->getSchemeName()
+            ];
+        }
+    }
+    foreach ($schemeDetails as $scheme) {
+        //Output to Invoice PDF
+        $outputtext = $scheme['name'] . " Registration Number : " . $scheme['number'];
+    }
+</code></pre>
 <h2>Integration Tests</h2>
 <p>To run the integration tests, you need your own credentials for the UK Sandbox and Australian ID Checker services. Please
 add them to config-global.php. The tests for UK (Sandbox), EU and Australia use the live API's</p>

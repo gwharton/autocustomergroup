@@ -174,6 +174,20 @@ abstract class AbstractTaxScheme
     }
 
     /**
+     * Return the Scheme Registration number
+     *
+     * @return string
+     */
+    public function getSchemeRegistrationNumber($storeId)
+    {
+        return (string)$this->scopeConfig->getValue(
+            "autocustomergroup/" . $this->getSchemeId() . "/registrationnumber",
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
      * Check whether specified Country and PostCode is within Northern Ireland
      *
      * @param string $country
@@ -305,4 +319,5 @@ abstract class AbstractTaxScheme
         $countryCode,
         $taxId
     );
+    abstract public function getSchemeName();
 }

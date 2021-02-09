@@ -358,4 +358,14 @@ class UkVat extends AbstractTaxScheme
             return "https://test-api.service.hmrc.gov.uk";
         }
     }
+
+    /**
+     * Get the scheme name
+     *
+     * @return string
+     */
+    public function getSchemeName()
+    {
+        return "UK VAT Scheme";
+    }
 }

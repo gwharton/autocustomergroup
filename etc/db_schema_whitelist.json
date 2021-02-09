@@ -1,0 +1,7 @@
+{
+    "tax_calculation_rate": {
+        "column": {
+            "tax_scheme_id": true
+        }
+    }
+}

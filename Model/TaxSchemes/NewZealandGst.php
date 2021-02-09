@@ -182,4 +182,14 @@ class NewZealandGst extends AbstractTaxScheme
         }
         return false;
     }
+
+    /**
+     * Get the scheme name
+     *
+     * @return string
+     */
+    public function getSchemeName()
+    {
+        return "New Zealand GST Scheme";
+    }
 }

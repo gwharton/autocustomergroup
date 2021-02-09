@@ -60,4 +60,10 @@
     <type name="Magento\Customer\Controller\Adminhtml\System\Config\Validatevat\ValidateAdvanced">
         <plugin name="customer_system_config_vat_validate" type="Gw\AutoCustomerGroup\Plugin\Customer\ValidateAdvancedPlugin" />
     </type>
+    <type name="Magento\Tax\Model\Calculation\Rate\Converter">
+        <plugin name="add_tax_scheme_to_taxrate_data" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRateDataPlugin" />
+    </type>
+    <type name="Magento\Tax\Model\Calculation\RateRepository">
+        <plugin name="updateTaxRateExtensionAttributes" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRateExtensionAttributesPlugin" />
+    </type>
 </config>

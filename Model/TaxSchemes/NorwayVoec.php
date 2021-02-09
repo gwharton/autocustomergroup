@@ -130,4 +130,14 @@ class NorwayVoec extends AbstractTaxScheme
         }
         return $gatewayResponse;
     }
+
+    /**
+     * Get the scheme name
+     *
+     * @return string
+     */
+    public function getSchemeName()
+    {
+        return "Norway VOEC Scheme";
+    }
 }

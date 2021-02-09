@@ -217,4 +217,14 @@ class AustraliaGst extends AbstractTaxScheme
         }
         return true;
     }
+
+    /**
+     * Get the scheme name
+     *
+     * @return string
+     */
+    public function getSchemeName()
+    {
+        return "Australia GST for Non Residents Scheme";
+    }
 }

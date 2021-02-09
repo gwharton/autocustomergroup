@@ -2,6 +2,7 @@
 namespace Gw\AutoCustomerGroup\Model;
 
 use Gw\AutoCustomerGroup\Model\TaxSchemes;
+
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
@@ -27,6 +28,10 @@ class AutoCustomerGroup
     /**
      * @param TaxSchemes $taxSchemes
      * @param ScopeConfigInterface $scopeConfig
+     * @param Calculation $calculation
+     * @param GroupRepositoryInterface $groupRepository
+     * @param ResourceCalculation $resourceCalculation
+     * @param ProductRepositoryInterface $productRepository
      */
     public function __construct(
         TaxSchemes $taxSchemes,

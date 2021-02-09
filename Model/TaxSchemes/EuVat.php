@@ -234,4 +234,14 @@ class EuVat extends AbstractTaxScheme
 
         return $countryCode === 'GR' ? 'EL' : $countryCode;
     }
+
+    /**
+     * Get the scheme name
+     *
+     * @return string
+     */
+    public function getSchemeName()
+    {
+        return "EU VAT OSS Scheme";
+    }
 }
