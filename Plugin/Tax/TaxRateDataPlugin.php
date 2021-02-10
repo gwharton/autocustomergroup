@@ -40,7 +40,7 @@ class TaxRateDataPlugin
         $taxScheme = $this->taxSchemes->getTaxScheme($taxSchemeId);
         if ($taxScheme) {
             $extensionAttributes = $result->getExtensionAttributes();
-            $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($taxSchemeId));
+            $extensionAttributes->setTaxScheme($taxScheme);
             $result->setExtensionAttributes($extensionAttributes);
         }
         return $result;
@@ -78,7 +78,7 @@ class TaxRateDataPlugin
      */
     private function extractFormData($formData, $fieldName)
     {
-        if (isset($formData[$fieldName])) {
+        if (isset($formData[$fieldName]) && !empty($formData[$fieldName])) {
             return $formData[$fieldName];
         }
         return null;

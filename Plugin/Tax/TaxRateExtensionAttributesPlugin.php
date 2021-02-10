@@ -63,6 +63,8 @@ class TaxRateExtensionAttributesPlugin
         $taxScheme = $extensionAttributes->getTaxScheme();
         if ($taxScheme) {
             $entity->setData('tax_scheme_id', $taxScheme->getSchemeId());
+        } else {
+            $entity->setData('tax_scheme_id', null);
         }
         return [$entity];
     }
