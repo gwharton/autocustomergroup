@@ -37,10 +37,13 @@ class TaxRateExtensionAttributesPlugin
         Rate $result,
         int $rateId
     ) {
-        $extensionAttributes = $result->getExtensionAttributes();
         $taxSchemeId = $result->getData('tax_scheme_id');
-        $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($taxSchemeId));
-        $result->setExtensionAttributes($extensionAttributes);
+        $taxScheme = $this->taxSchemes->getTaxScheme($taxSchemeId);
+        if ($taxScheme) {
+            $extensionAttributes = $result->getExtensionAttributes();
+            $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($taxSchemeId));
+            $result->setExtensionAttributes($extensionAttributes);
+        }
         return $result;
     }
 
@@ -58,8 +61,9 @@ class TaxRateExtensionAttributesPlugin
     ) {
         $extensionAttributes = $entity->getExtensionAttributes();
         $taxScheme = $extensionAttributes->getTaxScheme();
-        /** @var Rate $entity */
-        $entity->setData('tax_scheme_id', $taxScheme->getSchemeId());
+        if ($taxScheme) {
+            $entity->setData('tax_scheme_id', $taxScheme->getSchemeId());
+        }
         return [$entity];
     }
 
@@ -83,10 +87,12 @@ class TaxRateExtensionAttributesPlugin
         /** @var Rate $entity */
         foreach ($result->getItems() as $entity) {
             $taxSchemeId = $entity->getData('tax_scheme_id');
-            $extensionAttributes = $entity->getExtensionAttributes();
-            $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($taxSchemeId));
-            $entity->setExtensionAttributes($extensionAttributes);
-
+            $taxScheme = $this->taxSchemes->getTaxScheme($taxSchemeId);
+            if ($taxScheme) {
+                $extensionAttributes = $entity->getExtensionAttributes();
+                $extensionAttributes->setTaxScheme($taxScheme);
+                $entity->setExtensionAttributes($extensionAttributes);
+            }
             $taxRates[] = $entity;
         }
         $result->setItems($taxRates);

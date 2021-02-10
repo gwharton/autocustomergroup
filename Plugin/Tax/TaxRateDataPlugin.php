@@ -36,10 +36,13 @@ class TaxRateDataPlugin
         $result,
         $formData
     ) {
-        $extensionAttributes = $result->getExtensionAttributes();
         $taxSchemeId = $this->extractFormData($formData, 'tax_scheme_id');
-        $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($taxSchemeId));
-        $result->setExtensionAttributes($extensionAttributes);
+        $taxScheme = $this->taxSchemes->getTaxScheme($taxSchemeId);
+        if ($taxScheme) {
+            $extensionAttributes = $result->getExtensionAttributes();
+            $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($taxSchemeId));
+            $result->setExtensionAttributes($extensionAttributes);
+        }
         return $result;
     }
 
@@ -60,7 +63,9 @@ class TaxRateDataPlugin
         $returnNumericLogic = false
     ) {
         $taxScheme = $taxRate->getExtensionAttributes()->getTaxScheme();
-        $result['tax_scheme_id'] = $taxScheme->getSchemeId();
+        if ($taxScheme) {
+            $result['tax_scheme_id'] = $taxScheme->getSchemeId();
+        }
         return $result;
     }
 
