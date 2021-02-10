@@ -2,7 +2,6 @@
 namespace Gw\AutoCustomerGroup\Model;
 
 use Gw\AutoCustomerGroup\Model\TaxSchemes;
-
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;

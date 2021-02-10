@@ -1,6 +1,7 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
+use Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface;
 use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -12,7 +13,7 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
-abstract class AbstractTaxScheme
+abstract class AbstractTaxScheme implements TaxSchemeInterface
 {
     const XML_PATH_EU_COUNTRIES_LIST = 'general/country/eu_countries';
     const SCHEME_CURRENCY = '';
@@ -164,7 +165,7 @@ abstract class AbstractTaxScheme
      * @param int|null $storeId
      * @return string
      */
-    public function getMerchantCountryCode($storeId)
+    protected function getMerchantCountryCode($storeId)
     {
         return (string)$this->scopeConfig->getValue(
             StoreInformation::XML_PATH_STORE_INFO_COUNTRY_CODE,
@@ -194,7 +195,7 @@ abstract class AbstractTaxScheme
      * @param string $postCode
      * @return boolean
      */
-    public function isNI($country, $postCode)
+    protected function isNI($country, $postCode)
     {
         return ($country == "GB" && preg_match("/^[Bb][Tt].*$/", $postCode));
     }
@@ -205,7 +206,7 @@ abstract class AbstractTaxScheme
      * @param int|null $storeId
      * @return string
      */
-    public function getMerchantPostCode($storeId)
+    protected function getMerchantPostCode($storeId)
     {
         return (string)$this->scopeConfig->getValue(
             StoreInformation::XML_PATH_STORE_INFO_POSTCODE,
@@ -220,7 +221,7 @@ abstract class AbstractTaxScheme
      * @param int $storeId
      * @return int
      */
-    public function getWebsiteIdFromStoreId($storeId)
+    protected function getWebsiteIdFromStoreId($storeId)
     {
         return $this->storeManager->getStore($storeId)->getWebsiteId();
     }

@@ -1,5 +1,6 @@
 <h1>AutoCustomerGroup</h1>
 <p>Magento 2 Module - Auto Assign Customer Group based on Tax Scheme validation</p>
+
 <h2>Features</h2>
 <ul>
 <li>Operates on UK, EU, Norway VOEC, AU GST and NZ GST Schemes</li>
@@ -9,7 +10,10 @@
 <li>Admin Create Order - Tax ID's are validated using the "validate" link during order creation, and customer is assigned new group if applicable.</li>
 <li>Option to add scheme currencies to Base Currency list for automatic exchange rate download, or able to use hard coded exchange rates.</li>
 <li>Module can be disabled, where legacy Magento functionality is restored. Module can be enabled/disabled on a per store basis with legacy functionality on one store, and new functionality on another store.</li>
+<li>Extends Tax Rate functionality to allow linking of Tax Rates to Tax Schemes</li>
+<li>Includes Code to allow retieval of Order Tax Rates and linked Tax Schemes, for example when producing Invoice PDF's so the Tax Scheme details can be added to the PDF depending on which rates were used on the order. (example code below)</li>
 </ul>
+
 <h2>Known Issues/Left to do</h2>
 <ul>
 <li>Need to test using logged in customers</li>
@@ -17,6 +21,7 @@
 <li>Need to test enabling and disabling the module. Does legacy still work when disabled</li>
 <li>Testing on frontend validation feedback</li>
 </ul>
+
 <h2>Overview</h2>
 <p>Changes introduced to both the UK and EU VAT Tax systems require changes to be made to the Magento Tax system. These changes are required URGENTLY, and while Magento consider the changes required and work towards a permanent solution, this module can be used as an interim measure.</p>
 <p>The module should be considered BETA. I encourage users to analyse the code, suggest improvements, generate PR's where applicable.</p>
@@ -123,16 +128,27 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <li><b>Customer Group - Import Taxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, All items valued at or below the Import GST Threshold.</li>
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, One or more items in the order is valued above the Import GST Threshold.</li>
 </ul>
+
 <h2>Tax Rate to Tax Scheme Links</h2>
 <p>The module allows you to link each tax rate to a particular tax scheme. In post order functions, this allows you to query this module using order details, and obtain the list of tax rates applicable to the order, and return the TAX Scheme Registration Numbers linked to the order. This is useful
 when generating invoices for example.</p>
 <p>The links can be set under the existing Tax Zones and Rates Screens</p>
 <img src="images/taxrates.png">
+
+<h2>Getting Information on Tax Schemes used on Order</h2>
+<p>Magento does not store enough information about collected taxes with the order, therefore we have to compromise slightly when determining which tax rates were applied to the orders. Therefore, two slightly different methods have been implemented depending. Both methods implemented have identical parameters and return types. :</p>
+<ul>
+<li><b>getRatesByReProcessing</b> - This method takes the Shipping and Billing Address, Order Product Tax Classes, Customer Tax Class, Store Id, and reprocesses these for tax purposes returning an array of TaxRateInterface objects (including links to applicable Tax Schemes) used on the order. Note that if the Tax Rate is 0%, then this will be returned as a valid
+tax rate for the order, even though the 0% rates are filtered out, and the order will show as no tax. Additional logic is required if you use 0% rates for some reason. The downside of this method is that it will present the list of Tax Rates that are applicable to the order, should the order be placed now, and may not reflect the tax rates that were used when the order was placed.</li>
+<li><b>getRatesByLookup</b> - This method gets the list of applied Taxes that were saved with the order. It then uses the Tax Rate Codes for each tax rate and looks these up in the Tax Rates Table. If the Tax Rates are found, then the TaxRateInterface objects (including links to applicable Tax Schemes) are returned. Note, this only returns Tax Rates that were applied to the order and does not include any 0% rates filtered out by Magento. The downside of this method is, if the Tax Rule Codes are changed since the order was placed, this method will not
+identify the correct rates applied to the order.</li>
+</ul>
 <p>An example of the use of this functionality can be seen below</p>
 <pre><code>
 
+    use Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface;
+    use Gw\AutoCustomerGroup\Api\GetTaxRatesFromOrderInterface;
     use Gw\AutoCustomerGroup\Model\TaxSchemes;
-    use Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme;
 
     ...
     ...
@@ -141,7 +157,12 @@ when generating invoices for example.</p>
     /**
      * @var TaxSchemes
      */
-    protected $taxSchemes;
+    private $taxSchemes;
+
+    /**
+     * @var GetTaxRatesFromOrderInterface
+     */
+    private $getTaxRatesFromOrderInterface;
 
     ...
     ...
@@ -149,14 +170,15 @@ when generating invoices for example.</p>
 
     //Multiple rates may be returned.
     $schemeDetails = [];
-    foreach ($this->taxSchemes->getTaxRateIdsFromOrder($order) as $rateId) {
-        /** @var AbstractTaxScheme $taxScheme */
-        $taxScheme = $this->taxSchemes->getTaxSchemeFromTaxRate($rateId);
+    foreach ($this->getTaxRatesFromOrderInterface->getRatesByReProcessing($order) as $taxRate) {
+        /** @var TaxSchemeInterface $taxScheme */
+        $taxScheme = $taxRate->getExtensionAttributes()->getTaxScheme();
         //Only add the scheme if it doesn't already exist
         if ($taxScheme && (!in_array($taxScheme->getSchemeId(), array_column($schemeDetails, 'id')))) {
             $schemeDetails[] = [
                 'number' => $taxScheme->getSchemeRegistrationNumber($order->getStoreId()),
-                'name' => $taxScheme->getSchemeName()
+                'name' => $taxScheme->getSchemeName(),
+                'id' => $taxScheme->getSchemeId()
             ];
         }
     }

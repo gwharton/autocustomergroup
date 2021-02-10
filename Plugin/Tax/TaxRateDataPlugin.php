@@ -2,11 +2,26 @@
 
 namespace Gw\AutoCustomerGroup\Plugin\Tax;
 
+use Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Tax\Api\Data\TaxRateInterface;
 use Magento\Tax\Model\Calculation\Rate\Converter;
 
 class TaxRateDataPlugin
 {
+    /**
+     * @var TaxSchemes
+     */
+    private $taxSchemes;
+
+    /**
+     * @param TaxSchemes $taxSchemes
+     */
+    public function __construct(
+        TaxSchemes $taxSchemes
+    ) {
+        $this->taxSchemes = $taxSchemes;
+    }
+
     /**
      * Add the Tax Scheme Form data to Tax Rate Object
      *
@@ -22,7 +37,8 @@ class TaxRateDataPlugin
         $formData
     ) {
         $extensionAttributes = $result->getExtensionAttributes();
-        $extensionAttributes->setTaxSchemeId($this->extractFormData($formData, 'tax_scheme_id'));
+        $taxSchemeId = $this->extractFormData($formData, 'tax_scheme_id');
+        $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($taxSchemeId));
         $result->setExtensionAttributes($extensionAttributes);
         return $result;
     }
@@ -43,7 +59,8 @@ class TaxRateDataPlugin
         TaxRateInterface $taxRate,
         $returnNumericLogic = false
     ) {
-        $result['tax_scheme_id'] = $taxRate->getExtensionAttributes()->getTaxSchemeId();
+        $taxScheme = $taxRate->getExtensionAttributes()->getTaxScheme();
+        $result['tax_scheme_id'] = $taxScheme->getSchemeId();
         return $result;
     }
 
