@@ -55,8 +55,6 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>Environment</b> - Whether to use the Sandbox or Production servers for the HMRC VAT Validation Service.</li>
-<li><b>Client ID</b> - Client ID as provided by HMRC Developer Portal.</li>
-<li><b>Client Secret</b> - Client Secret as provided by HMRC Developer Portal.</li>
 <li><b>VAT Registration Number</b> - The UK VAT Registration Number for the Merchant. This will be provided to HMRC when all validation checks are made.</li>
 <li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>
 <li><b>Use Magento Exchange Rate</b> - To convert from GBP Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
@@ -148,16 +146,10 @@ identify the correct rates applied to the order.</li>
 
     use Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface;
     use Gw\AutoCustomerGroup\Api\GetTaxRatesFromOrderInterface;
-    use Gw\AutoCustomerGroup\Model\TaxSchemes;
 
     ...
     ...
     ...
-
-    /**
-     * @var TaxSchemes
-     */
-    private $taxSchemes;
 
     /**
      * @var GetTaxRatesFromOrderInterface
@@ -188,10 +180,8 @@ identify the correct rates applied to the order.</li>
     }
 </code></pre>
 <h2>Integration Tests</h2>
-<p>To run the integration tests, you need your own credentials for the UK Sandbox and Australian ID Checker services. Please
+<p>To run the integration tests, you need your own credentials for the Australian ID Checker services. Please
 add them to config-global.php. The tests for UK (Sandbox), EU and Australia use the live API's</p>
 <ul>
-<li>autocustomergroup/ukvat/clientid'</li>
-<li>autocustomergroup/ukvat/clientsecret'</li>
 <li>autocustomergroup/australiagst/apiguid'</li>
 </ul>

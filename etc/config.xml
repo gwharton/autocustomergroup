@@ -13,8 +13,6 @@
                 <frontendprompt>UK and Isle of Man VAT Registered Businesses, please enter your UK VAT Number (including Country Code), so we can apply the correct rate of VAT to your order.</frontendprompt>
                 <registrationnumber></registrationnumber>
                 <environment>sandbox</environment>
-                <clientid></clientid>
-                <clientsecret></clientsecret>
                 <importthreshold>135</importthreshold>
                 <usemagentoexchangerate>1</usemagentoexchangerate>
                 <exchangerate>1</exchangerate>

@@ -68,13 +68,12 @@
     target="_blank">here</a>) :</p>
 <ul>
     <li>Total Goods value is the sum of the sale price of all items sold (including any discounts)</li>
-    <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
-    <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
+    <li>When determining whether VAT should be charged (VAT Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
+    <li>When determining the amount of VAT to charge the Goods value does include Shipping and Insurance Costs.</li>
 </ul>
 <p>More information on the scheme can be found on the 
     <a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk" target="_blank">UK Government Website</a></p>
-<p>If the customer enters a valid format UK VAT number at checkout, the number will be validated with the UK HMRC VAT Number checker service. Credentials 
-    for the VAT Number Checker API can be obtained by signing up on the <a href="https://developer.service.hmrc.gov.uk" target="_blank">HMRC Developers Website</a>.</p>
+<p>If the customer enters a valid format UK VAT number at checkout, the number will be validated with the UK HMRC VAT Number checker service.</p>
 </div>
                     ]]></comment>
                 <depends>
@@ -93,18 +92,6 @@
                 <field id="environment" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Environment</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Environment</source_model>
-                    <depends>
-                        <field id="enabled">1</field>
-                    </depends>
-                </field>
-                <field id="clientid" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Client ID</label>
-                    <depends>
-                        <field id="enabled">1</field>
-                    </depends>
-                </field>
-                <field id="clientsecret" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Client Secret</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -224,8 +211,8 @@
     target="_blank">here</a> in Section 1.3.1) :</p>
 <ul>
     <li>Total Goods value is the sum of the sale price of all items sold (including any discounts)</li>
-    <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
-    <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
+    <li>When determining whether VAT should be charged (VAT Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
+    <li>When determining the amount of VAT to charge the Goods value does include Shipping and Insurance Costs.</li>
 </ul>
 <p>More information on the scheme can be found on the
     <a href="https://ec.europa.eu/taxation_customs/customs-procedures/customs-formalities-low-value-consignments_en" target="_blank">European Commission Website</a></p>
@@ -361,8 +348,8 @@
     <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf" 
     target="_blank">in Section 4.1</a>) :</p>
 <ul>
-    <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
-    <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
+    <li>When determining whether VAT should be charged (VAT Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
+    <li>When determining the amount of VAT to charge the Goods value does include Shipping and Insurance Costs.</li>
 </ul>
 <p>The <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf" 
     target="_blank">Online Stores and Marketplace Guidelines</a> refers to bundling in Section 4.2 where it states that multiple items can be shipped in a single shipment,

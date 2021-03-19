@@ -8,7 +8,6 @@ use Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
-use Magento\Framework\FlagManager;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Webapi\Rest\Request;
@@ -40,11 +39,6 @@ class UkVat extends AbstractTaxScheme
     protected $schemeCountries = ['GB','IM'];
 
     /**
-     * @var FlagManager
-     */
-    private $flagManager;
-
-    /**
      * @var ClientFactory
      */
     private $clientFactory;
@@ -59,12 +53,9 @@ class UkVat extends AbstractTaxScheme
      */
     private $euVat;
 
-    const ACCESS_TOKEN_PATH = 'autocustomergroup/hmrc/accesstoken';
-
     /**
      * @param ScopeConfigInterface $scopeConfig
      * @param ClientFactory $clientFactory
-     * @param FlagManager $flagManager
      * @param Json $serializer
      * @param DateTime $datetime
      * @param LoggerInterface $logger
@@ -75,7 +66,6 @@ class UkVat extends AbstractTaxScheme
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         ClientFactory $clientFactory,
-        FlagManager $flagManager,
         Json $serializer,
         DateTime $datetime,
         LoggerInterface $logger,
@@ -91,7 +81,6 @@ class UkVat extends AbstractTaxScheme
             $currencyFactory
         );
         $this->clientFactory = $clientFactory;
-        $this->flagManager = $flagManager;
         $this->serializer = $serializer;
         $this->euVat = $euVat;
     }
@@ -213,15 +202,6 @@ class UkVat extends AbstractTaxScheme
             'request_message' => __('Error during VAT Number verification.'),
         ]);
 
-        $accesstoken = $this->loadAccessToken();
-        if (!$accesstoken) {
-            $accesstoken = $this->getAccessToken();
-        }
-        if (!$accesstoken) {
-            $this->logger->critical("AutoCustomerGroup::UKVat No Access Token.");
-            return $gatewayResponse;
-        }
-
         $registrationNumber = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/registrationnumber",
             ScopeInterface::SCOPE_STORE
@@ -240,8 +220,7 @@ class UkVat extends AbstractTaxScheme
                     str_replace([' ', '-', 'GB'], ['', '', ''], $registrationNumber),
                 [
                     'headers' => [
-                        'Accept' => "application/vnd.hmrc.1.0+json",
-                        "Authorization" => 'Bearer ' . $accesstoken['access_token']
+                        'Accept' => "application/vnd.hmrc.1.0+json"
                     ]
                 ]
             );
@@ -273,73 +252,6 @@ class UkVat extends AbstractTaxScheme
             }
         }
         return $gatewayResponse;
-    }
-
-    /**
-     * Load access token from the flag database if one exists
-     *
-     * @return void|array
-     */
-    private function loadAccessToken()
-    {
-        if (!$this->flagManager->getFlagData(self::ACCESS_TOKEN_PATH)) {
-            return null;
-        }
-        $accesstoken = $this->serializer->unserialize(
-            $this->flagManager->getFlagData(self::ACCESS_TOKEN_PATH)
-        );
-        //Has access token expired
-        if (($accesstoken['access_token_issue_time'] + $accesstoken['expires_in'] - 10) <
-            $this->datetime->gmtTimestamp()
-        ) {
-            return null;
-        }
-        return $accesstoken;
-    }
-
-    /**
-     * Retrieve new access token from HMRC server
-     *
-     * @return void|array
-     */
-    private function getAccessToken()
-    {
-        $clientId = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/clientid",
-            ScopeInterface::SCOPE_STORE
-        );
-        $clientSecret = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/clientsecret",
-            ScopeInterface::SCOPE_STORE
-        );
-        if (!$clientId && !$clientSecret) {
-            $this->logger->critical("AutoCustomerGroup::UKVat ClientID and ClientSecret are not set.");
-            return null;
-        }
-        $client = $this->clientFactory->create();
-        try {
-            $response = $client->request(
-                Request::HTTP_METHOD_POST,
-                $this->getBaseUrl() . "/oauth/token",
-                [
-                    'headers' => [
-                        'Content-Type' => "application/x-www-form-urlencoded"
-                    ],
-                    'body' =>   'client_secret=' . $clientSecret . '&' .
-                                'client_id=' . $clientId . '&' .
-                                'grant_type=client_credentials&'
-                ]
-            );
-            $responseBody = $response->getBody();
-            $accesstoken = $this->serializer->unserialize($responseBody->getContents());
-            $ts = $this->datetime->gmtTimestamp();
-            $accesstoken['access_token_issue_time'] = $ts;
-            $this->flagManager->saveFlag(self::ACCESS_TOKEN_PATH, $this->serializer->serialize($accesstoken));
-            return $accesstoken;
-        } catch (BadResponseException $e) {
-            $this->logger->critical("AutoCustomerGroup::UKVat Unable to get Access Token from HMRC.");
-            return null;
-        }
     }
 
     /**
