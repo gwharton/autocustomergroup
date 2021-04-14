@@ -1,9 +1,11 @@
 {
     "name": "gwharton/autocustomergroup",
+    "license": "OSL-3.0",
     "description": "GWharton AutoCustomerGroup",
     "type": "magento2-module",
     "autoload": {
         "files": [
+
             "registration.php"
         ],
         "psr-4": {
