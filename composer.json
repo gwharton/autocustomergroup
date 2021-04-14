@@ -1,6 +1,6 @@
 {
-    "name": "gw/autocustomergroup",
-    "description": "GW AutoCustomerGroup",
+    "name": "gwharton/autocustomergroup",
+    "description": "GWharton AutoCustomerGroup",
     "type": "magento2-module",
     "autoload": {
         "files": [
