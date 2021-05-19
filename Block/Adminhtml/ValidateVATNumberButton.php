@@ -4,6 +4,7 @@ namespace Gw\AutoCustomerGroup\Block\Adminhtml;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Widget\Button;
 use Magento\Backend\Block\Widget\Form\Renderer\Fieldset\Element;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Helper\SecureHtmlRenderer;
@@ -28,24 +29,32 @@ class ValidateVATNumberButton extends Element
     protected $serializer;
 
     /**
+     * @var ObjectManager
+     */
+    private $objectManager;
+
+    /**
      * @var SecureHtmlRenderer
      */
-    private $secureRenderer;
+    private $secureRenderer = null;
 
     /**
      * @param Context $context
      * @param Json $serializer
-     * @param SecureHtmlRenderer $secureRenderer
+     * @param ObjectManager $objectManager
      * @param array $data
      */
     public function __construct(
         Context $context,
         Json $serializer,
-        SecureHtmlRenderer $secureRenderer,
+        ObjectManager $objectManager,
         array $data = []
     ) {
         $this->serializer = $serializer;
-        $this->secureRenderer = $secureRenderer;
+        $this->objectManager = $objectManager;
+        if (class_exists(SecureHtmlRenderer::class)) {
+            $this->secureRenderer = $this->objectManager->create(SecureHtmlRenderer::class);
+        }
         parent::__construct($context, $data);
     }
 
@@ -98,7 +107,12 @@ class ValidateVATNumberButton extends Element
 
             $optionsVarName = $this->getJsVariablePrefix() . 'Parameters';
             $scriptString = 'var ' . $optionsVarName . ' = ' . $validateOptions . ';';
-            $beforeHtml = $this->secureRenderer->renderTag('script', [], $scriptString, false);
+
+            if ($this->secureRenderer) {
+                $beforeHtml = $this->secureRenderer->renderTag('script', [], $scriptString, false);
+            } else {
+                $beforeHtml = "<script>" . $scriptString . "</script>";
+            }
 
             $block = $this->getLayout()->createBlock(
                 Button::class
