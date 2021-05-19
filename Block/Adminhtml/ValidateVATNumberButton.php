@@ -29,11 +29,6 @@ class ValidateVATNumberButton extends Element
     protected $serializer;
 
     /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
-    /**
      * @var SecureHtmlRenderer
      */
     private $secureRenderer = null;
@@ -41,19 +36,16 @@ class ValidateVATNumberButton extends Element
     /**
      * @param Context $context
      * @param Json $serializer
-     * @param ObjectManager $objectManager
      * @param array $data
      */
     public function __construct(
         Context $context,
         Json $serializer,
-        ObjectManager $objectManager,
         array $data = []
     ) {
         $this->serializer = $serializer;
-        $this->objectManager = $objectManager;
         if (class_exists(SecureHtmlRenderer::class)) {
-            $this->secureRenderer = $this->objectManager->create(SecureHtmlRenderer::class);
+            $this->secureRenderer = ObjectManager::getInstance()->get(SecureHtmlRenderer::class);
         }
         parent::__construct($context, $data);
     }

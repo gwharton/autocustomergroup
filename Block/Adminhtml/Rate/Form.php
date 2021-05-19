@@ -2,11 +2,12 @@
 namespace Gw\AutoCustomerGroup\Block\Adminhtml\Rate;
 
 use Gw\AutoCustomerGroup\Model\TaxSchemes;
-use Magento\Directory\Helper\Data as DirectoryHelper;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Tax\Controller\RegistryConstants;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Form extends \Magento\Tax\Block\Adminhtml\Rate\Form
 {
     /**
@@ -25,9 +26,8 @@ class Form extends \Magento\Tax\Block\Adminhtml\Rate\Form
      * @param \Magento\Tax\Api\TaxRateRepositoryInterface $taxRateRepository
      * @param \Magento\Tax\Model\TaxRateCollection $taxRateCollection
      * @param \Magento\Tax\Model\Calculation\Rate\Converter $taxRateConverter
-     * @param array $data
-     * @param DirectoryHelper|null $directoryHelper
      * @param TaxSchemes $taxSchemes
+     * @param array $data
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -42,8 +42,7 @@ class Form extends \Magento\Tax\Block\Adminhtml\Rate\Form
         \Magento\Tax\Model\TaxRateCollection $taxRateCollection,
         \Magento\Tax\Model\Calculation\Rate\Converter $taxRateConverter,
         TaxSchemes $taxSchemes,
-        array $data = [],
-        ?DirectoryHelper $directoryHelper = null
+        array $data = []
     ) {
         parent::__construct(
             $context,
@@ -56,8 +55,7 @@ class Form extends \Magento\Tax\Block\Adminhtml\Rate\Form
             $taxRateRepository,
             $taxRateCollection,
             $taxRateConverter,
-            $data,
-            $directoryHelper
+            $data
         );
         $this->taxSchemes = $taxSchemes;
     }
