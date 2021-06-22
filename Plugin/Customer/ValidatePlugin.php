@@ -7,8 +7,10 @@ use Gw\AutoCustomerGroup\Model\TaxSchemes\UkVat;
 use Magento\Customer\Controller\Adminhtml\System\Config\Validatevat\Validate;
 use Magento\Customer\Model\Vat;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\App\Response\RedirectInterface;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\DataObject;
 use Magento\Store\Model\Store;
 
@@ -17,7 +19,7 @@ class ValidatePlugin
     /**
      * @var JsonFactory
      */
-    private $resultJsonFactory;
+    private $jsonFactory;
 
     /**
      * @var Vat
@@ -45,7 +47,7 @@ class ValidatePlugin
     private $ukVat;
 
     /**
-     * @param JsonFactory $resultJsonFactory
+     * @param JsonFactory $jsonFactory
      * @param Vat $vat
      * @param RequestInterface $request
      * @param AutoCustomerGroup $autocustomergroup
@@ -53,14 +55,14 @@ class ValidatePlugin
      * @param UkVat $ukVat
      */
     public function __construct(
-        JsonFactory $resultJsonFactory,
+        JsonFactory $jsonFactory,
         Vat $vat,
         RequestInterface $request,
         AutoCustomerGroup $autoCustomerGroup,
         EuVat $euVat,
         UkVat $ukVat
     ) {
-        $this->resultJsonFactory = $resultJsonFactory;
+        $this->jsonFactory = $jsonFactory;
         $this->vat = $vat;
         $this->request = $request;
         $this->autoCustomerGroup = $autoCustomerGroup;
@@ -73,7 +75,7 @@ class ValidatePlugin
      *
      * @param Validate $subject
      * @param callable $proceed
-     * @return void
+     * @return ResponseInterface|RedirectInterface|ResultInterface|void
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function aroundExecute(
@@ -118,9 +120,7 @@ class ValidatePlugin
                 'message' => $gatewayresponse->getRequestMessage()
             ];
         }
-
-        /** @var Json $resultJson */
-        $resultJson = $this->resultJsonFactory->create();
+        $resultJson = $this->jsonFactory->create();
         return $resultJson->setData($result);
     }
 }

@@ -2,17 +2,14 @@
 namespace Gw\AutoCustomerGroup\Plugin\Customer;
 
 use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
-use Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat;
-use Gw\AutoCustomerGroup\Model\TaxSchemes\UkVat;
 use Magento\Backend\Model\Session\Quote as QuoteSession;
 use Magento\Customer\Controller\Adminhtml\System\Config\Validatevat\ValidateAdvanced;
 use Magento\Customer\Model\Vat;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\App\Response\RedirectInterface;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\DataObject;
-use Magento\Quote\Model\QuoteFactory;
-use Magento\Quote\Model\QuoteRepository;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Store\Model\Store;
 
 class ValidateAdvancedPlugin
@@ -20,7 +17,7 @@ class ValidateAdvancedPlugin
     /**
      * @var JsonFactory
      */
-    private $resultJsonFactory;
+    private $jsonFactory;
 
     /**
      * @var Vat
@@ -38,60 +35,28 @@ class ValidateAdvancedPlugin
     private $autoCustomerGroup;
 
     /**
-     * @var EuVat
-     */
-    private $euVat;
-
-    /**
-     * @var UkVat
-     */
-    private $ukVat;
-
-    /**
-     * @var QuoteRepository
-     */
-    private $quoteRepository;
-
-    /**
-     * @var QuoteFactory
-     */
-    private $quoteFactory;
-
-    /**
      * @var QuoteSession
      */
     private $quoteSession;
 
     /**
-     * @param JsonFactory $resultJsonFactory
+     * @param JsonFactory $jsonFactory
      * @param Vat $vat
      * @param RequestInterface $request
      * @param AutoCustomerGroup $autocustomergroup
-     * @param EuVat $euVat
-     * @param UkVat $ukVat
-     * @param QuoteRepository $quoteRepository
-     * @param QuoteFactory $quoteFactory
      * @param QuoteSession $quoteSession
      */
     public function __construct(
-        JsonFactory $resultJsonFactory,
+        JsonFactory $jsonFactory,
         Vat $vat,
         RequestInterface $request,
         AutoCustomerGroup $autoCustomerGroup,
-        EuVat $euVat,
-        UkVat $ukVat,
-        QuoteRepository $quoteRepository,
-        QuoteFactory $quoteFactory,
         QuoteSession $quoteSession
     ) {
-        $this->resultJsonFactory = $resultJsonFactory;
+        $this->jsonFactory = $jsonFactory;
         $this->vat = $vat;
         $this->request = $request;
         $this->autoCustomerGroup = $autoCustomerGroup;
-        $this->euVat = $euVat;
-        $this->ukVat = $ukVat;
-        $this->quoteRepository = $quoteRepository;
-        $this->quoteFactory = $quoteFactory;
         $this->quoteSession = $quoteSession;
     }
 
@@ -100,7 +65,7 @@ class ValidateAdvancedPlugin
      *
      * @param ValidateAdvanced $subject
      * @param callable $proceed
-     * @return void
+     * @return ResponseInterface|RedirectInterface|ResultInterface|void
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function aroundExecute(
@@ -158,8 +123,7 @@ class ValidateAdvancedPlugin
                 'success' => $gatewayresponse->getRequestSuccess()
             ];
         }
-        /** @var Json $resultJson */
-        $resultJson = $this->resultJsonFactory->create();
+        $resultJson = $this->jsonFactory->create();
         return $resultJson->setData($result);
     }
 }

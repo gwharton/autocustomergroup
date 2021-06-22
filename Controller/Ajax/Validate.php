@@ -5,7 +5,8 @@ use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
 use Magento\Backend\Model\View\Result\RedirectFactory;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\App\Response\RedirectInterface;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Data\Form\FormKey\Validator;
@@ -59,7 +60,7 @@ class Validate implements HttpPostActionInterface
     }
 
     /**
-     * @return ResultInterface
+     * @return ResponseInterface|RedirectInterface|ResultInterface|void
      */
     public function execute()
     {
@@ -69,7 +70,6 @@ class Validate implements HttpPostActionInterface
         if (!$this->validator->validate($this->request) ||
             !$taxIdToCheck ||
             !$countrycode) {
-            /** @var RedirectInterface $redirect */
             $redirect = $this->redirectFactory->create();
             return $redirect->setPath('*/*/');
         }
@@ -92,7 +92,6 @@ class Validate implements HttpPostActionInterface
                 'success' => $gatewayresponse->getRequestSuccess()
             ];
         }
-        /** @var Json $resultJson */
         $resultJson = $this->jsonFactory->create();
         return $resultJson->setData($responsedata);
     }
