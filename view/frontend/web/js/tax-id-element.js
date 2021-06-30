@@ -40,7 +40,6 @@ define([
                     'DK' : '(DK)[0-9]{8}$',
                     'EE' : '(EE)[0-9]{9}$',
                     'GR' : '(EL|GR)[0-9]{9}$',
-                    'EL' : '(EL|GR)[0-9]{9}$',
                     'ES' : '(ES)[0-9A-Z][0-9]{7}[0-9A-Z]$',
                     'FI' : '(FI)[0-9]{8}$',
                     'FR' : '(FR)[0-9A-Z]{2}[0-9]{9}$',
@@ -64,6 +63,37 @@ define([
                     'NO' : '(8|9)[0-9]{8}$',
                     'NZ' : '[0-9]{8,9}$',
                     'AU' : '[0-9]{11}$'
+            },
+            prefix: {
+                'AT' : 'AT',
+                'BE' : 'BE',
+                'BG' : 'BG',
+                'CY' : 'CY',
+                'CZ' : 'CZ',
+                'DE' : 'DE',
+                'DK' : 'DK',
+                'EE' : 'EE',
+                'GR' : 'EL',
+                'ES' : 'ES',
+                'FI' : 'FI',
+                'FR' : 'FR',
+                'HR' : 'HR',
+                'HU' : 'HU',
+                'IE' : 'IE',
+                'IT' : 'IT',
+                'LT' : 'LT',
+                'LU' : 'LU',
+                'LV' : 'LV',
+                'MT' : 'MT',
+                'NL' : 'NL',
+                'PL' : 'PL',
+                'PT' : 'PT',
+                'RO' : 'RO',
+                'SE' : 'SE',
+                'SI' : 'SI',
+                'SK' : 'SK',
+                'GB' : 'GB',
+                'IM' : 'GB'
             }
         },
 
@@ -127,8 +157,6 @@ define([
                 && !this.isChanging
             ) {
                 this.timeout = setTimeout(function () {
-                    value = value.replace(/[\W_]/g, "").toUpperCase().trim();
-                    self.value(value);
                     self.isChanging = true;
                     self.validate(value);
                     self.isChanging = false;
@@ -156,6 +184,23 @@ define([
             return country.value();
         },
 
+        sanitiseNumber: function (value) {
+            value = value.replace(/[\W_]/g, "").toUpperCase().trim();
+            this.value(value);
+            return value;
+        },
+
+        addPrefixIfRequired: function (value, countryCode) {
+            if (typeof(this.prefix[countryCode]) !== 'undefined') {
+                if (value.substring(0,2) !== this.prefix[countryCode]) {
+                    value = value.replace(/^[A-Za-z]+/, "").trim();
+                    value = this.prefix[countryCode] + value;
+                    this.value(value);
+                }
+            }
+            return value;
+        },
+
         validate: function (value) {
             this.clearMessages();
             var countryCode = this.getCountry();
@@ -165,6 +210,9 @@ define([
                 if (!this.isSupportedCountry(countryCode)) {
                     return;
                 }
+
+                value = this.sanitiseNumber(value);
+                value = this.addPrefixIfRequired(value, countryCode);
 
                 if (typeof(this.patterns[countryCode]) !== 'undefined') {
                     var regex = new RegExp(this.patterns[countryCode]);
