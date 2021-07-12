@@ -49,7 +49,7 @@ class EuVat extends AbstractTaxScheme
     ) {
         $merchantCountry = $this->getMerchantCountryCode($storeId);
         $merchantPostCode = $this->getMerchantPostCode($storeId);
-        $importThreshold = $this->getThresholdInBaseCurrency($this->getWebsiteIdFromStoreId($storeId));
+        $importThreshold = $this->getThresholdInBaseCurrency($storeId);
         //Merchant Country is in the EU
         //Item shipped to the EU
         //Both countries the same

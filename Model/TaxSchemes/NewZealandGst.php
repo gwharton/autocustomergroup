@@ -38,7 +38,7 @@ class NewZealandGst extends AbstractTaxScheme
         $storeId
     ) {
         $merchantCountry = $this->getMerchantCountryCode($storeId);
-        $importThreshold = $this->getThresholdInBaseCurrency($this->getWebsiteIdFromStoreId($storeId));
+        $importThreshold = $this->getThresholdInBaseCurrency($storeId);
         //Merchant Country is in New Zealand
         //Item shipped to New Zealand
         //Therefore Domestic

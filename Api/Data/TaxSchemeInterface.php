@@ -1,6 +1,8 @@
 <?php
 namespace Gw\AutoCustomerGroup\Api\Data;
 
+use Magento\Directory\Model\Currency;
+
 interface TaxSchemeInterface
 {
     /**
@@ -26,7 +28,7 @@ interface TaxSchemeInterface
      * @param string $customerPostCode
      * @param \Magento\Framework\DataObject $vatValidationResult
      * @param \Magento\Quote\Api\Data\QuoteInterface $quote
-     * @param int $storeId
+     * @param int|null $storeId
      * @return int|null
      */
     public function getCustomerGroup(
@@ -40,7 +42,7 @@ interface TaxSchemeInterface
     /**
      * Get the frontend prompt
      *
-     * @param int $storeId
+     * @param int|null $storeId
      * @return string
      */
     public function getFrontEndPrompt($storeId);
@@ -53,25 +55,32 @@ interface TaxSchemeInterface
     public function getSchemeCurrencyCode();
 
     /**
+     * Get the Scheme Currency
+     *
+     * @return Currency
+     */
+    public function getSchemeCurrency();
+
+    /**
      * Get the value of the import threshold in Scheme Currency
      *
-     * @param int $storeId
+     * @param int|null $storeId
      * @return float
      */
     public function getThresholdInSchemeCurrency($storeId);
 
     /**
-     * Get the value of the import threshold in Website Base Currency
+     * Get the value of the import threshold in Store Base Currency
      *
-     * @param int $websiteId
+     * @param int|null $storeId
      * @return float
      */
-    public function getThresholdInBaseCurrency($websiteId);
+    public function getThresholdInBaseCurrency($storeId);
 
     /**
      * Get the Scheme Registration Number
      *
-     * @param int $websiteId
+     * @param int|null $storeId
      * @return string
      */
     public function getSchemeRegistrationNumber($storeId);
@@ -101,8 +110,16 @@ interface TaxSchemeInterface
     /**
      * Is the scheme enabled for this store
      *
-     * @param int $storeId
+     * @param int|null $storeId
      * @return boolean
      */
     public function isEnabled($storeId);
+
+    /**
+     * Get the current Exchange Rate for this scheme
+     *
+     * @param int|null $storeId
+     * @return float
+     */
+    public function getSchemeExchangeRate($storeId);
 }

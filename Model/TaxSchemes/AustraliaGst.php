@@ -40,7 +40,7 @@ class AustraliaGst extends AbstractTaxScheme
         $storeId
     ) {
         $merchantCountry = $this->getMerchantCountryCode($storeId);
-        $importThreshold = $this->getThresholdInBaseCurrency($this->getWebsiteIdFromStoreId($storeId));
+        $importThreshold = $this->getThresholdInBaseCurrency($storeId);
         //Merchant Country is in Australia
         //Item shipped to Australia
         //Therefore Domestic

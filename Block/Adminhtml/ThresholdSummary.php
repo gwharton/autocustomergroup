@@ -59,13 +59,13 @@ class ThresholdSummary extends Field
      */
     protected function _getElementHtml(AbstractElement $element)
     {
-        $websiteId = $this->getRequest()->getParam('website', null);
+        $storeId = $this->getRequest()->getParam('store', null);
         $baseCurrency = $this->scopeConfig->getValue(
             "currency/options/base",
-            ScopeInterface::SCOPE_WEBSITE,
-            $websiteId
+            ScopeInterface::SCOPE_STORE,
+            $storeId
         );
-        $thresholdInBaseCurrency = $this->taxScheme->getThresholdInBaseCurrency($websiteId);
+        $thresholdInBaseCurrency = $this->taxScheme->getThresholdInBaseCurrency($storeId);
 
         return '<div class="thresholdsummary-wrapper">' .
             '<div>' . sprintf("%.2f", $thresholdInBaseCurrency) . ' ' . $baseCurrency . '</div>' .

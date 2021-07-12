@@ -216,57 +216,34 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
     }
 
     /**
-     * Get Website Id from any given Store Id
+     * Are we configured to use the Magento Exchange rate or not
      *
-     * @param int $storeId
-     * @return int
+     * @param int|null $storeId
+     * @return bool
      */
-    protected function getWebsiteIdFromStoreId($storeId)
+    private function useMagentoExchangeRate($storeId)
     {
-        return $this->storeManager->getStore($storeId)->getWebsiteId();
+        return $this->scopeConfig->isSetFlag(
+            "autocustomergroup/" . $this->getSchemeId() . '/usemagentoexchangerate',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     /**
      * Get the Import Threshold in Base Currency
      *
-     * @param int|null $websiteId
+     * @param int|null $storeId
      * @return float
      */
-    public function getThresholdInBaseCurrency($websiteId)
+    public function getThresholdInBaseCurrency($storeId)
     {
-        $importthreshold = $this->scopeConfig->getValue(
-            "autocustomergroup/" . $this->getSchemeId() . "/importthreshold",
-            ScopeInterface::SCOPE_WEBSITE,
-            $websiteId
-        );
-        $usemagentoexchangerate = $this->scopeConfig->isSetFlag(
-            "autocustomergroup/" . $this->getSchemeId() . '/usemagentoexchangerate',
-            ScopeInterface::SCOPE_WEBSITE,
-            $websiteId
-        );
-
-        if ($usemagentoexchangerate) {
-            $websiteBaseCurrency = $this->scopeConfig->getValue(
-                Currency::XML_PATH_CURRENCY_BASE,
-                ScopeInterface::SCOPE_WEBSITE,
-                $websiteId
+        return $this->getSchemeExchangeRate($storeId) *
+            $this->scopeConfig->getValue(
+                "autocustomergroup/" . $this->getSchemeId() . "/importthreshold",
+                ScopeInterface::SCOPE_STORE,
+                $storeId
             );
-            $exchangerate = $this->currencyFactory->create()
-                ->load(static::SCHEME_CURRENCY)
-                ->getAnyRate($websiteBaseCurrency);
-            if (!$exchangerate) {
-                $this->logger->critical("AutoCustomerGroup : No Magento Exchange Rate configured for " .
-                    static::SCHEME_CURRENCY . " to " . $websiteBaseCurrency . ". Using 1.0");
-                $exchangerate = 1.0;
-            }
-        } else {
-            $exchangerate = $this->scopeConfig->getValue(
-                "autocustomergroup/" . $this->getSchemeId() . "/exchangerate",
-                ScopeInterface::SCOPE_WEBSITE,
-                $websiteId
-            );
-        }
-        return $exchangerate * $importthreshold;
     }
 
     /**
@@ -292,6 +269,11 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
     public function getSchemeCurrencyCode()
     {
         return static::SCHEME_CURRENCY;
+    }
+
+    public function getSchemeCurrency()
+    {
+        return $this->currencyFactory->create()->load(static::SCHEME_CURRENCY);
     }
 
     /**
@@ -321,4 +303,32 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
         $taxId
     );
     abstract public function getSchemeName();
+
+    /**
+     * @param int|null $storeId
+     * @return float
+     */
+    public function getSchemeExchangeRate($storeId)
+    {
+        if ($this->useMagentoExchangeRate($storeId)) {
+            $websiteBaseCurrency = $this->scopeConfig->getValue(
+                Currency::XML_PATH_CURRENCY_BASE,
+                ScopeInterface::SCOPE_STORE,
+                $storeId
+            );
+            $exchangerate = $this->getSchemeCurrency()->getAnyRate($websiteBaseCurrency);
+            if (!$exchangerate) {
+                $this->logger->critical("AutoCustomerGroup : No Magento Exchange Rate configured for " .
+                    static::SCHEME_CURRENCY . " to " . $websiteBaseCurrency . ". Using 1.0");
+                $exchangerate = 1.0;
+            }
+            return $exchangerate;
+        }
+        $exchangerate = $this->scopeConfig->getValue(
+            "autocustomergroup/" . $this->getSchemeId() . "/exchangerate",
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+        return $exchangerate;
+    }
 }
