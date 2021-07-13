@@ -133,6 +133,14 @@ when generating invoices for example.</p>
 <p>The links can be set under the existing Tax Zones and Rates Screens</p>
 <img src="images/taxrates.png">
 
+<h2>Populating the sales_order_tax_scheme table from existing orders</h2>
+<p>php bin/magento autocustomergroup:sales-order-tax:populate</p>
+<p>The above command will inspect the sales_order_tax table and create the 
+corresponsing entries in the sales_order_tax_scheme table for all historical orders where
+tax has been collected.</p>
+<p>For this to succeed, all entries in the sales_order_tax table must have a "code" field
+that matches the "code" for a current tax rule.</p>
+<p>Entries in sales_order_tax_scheme are only created if the tax rule is linked to a tax scheme.</p>
 <h2>Getting Information on Tax Schemes used on Order</h2>
 <p>This module stores additional information into the sales_order_tax_scheme table whenever
 an order is placed that triggered a tax rule linked to a Tax Scheme.</p>

@@ -1,11 +1,12 @@
 <?php
 namespace Gw\AutoCustomerGroup\Plugin\Tax;
 
-use Gw\AutoCustomerGroup\Model\OrderTaxScheme;
+use Gw\AutoCustomerGroup\Model\OrderTaxSchemeFactory;
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Model\OrderRepository;
 use Magento\Tax\Api\TaxRateRepositoryInterface;
+use Magento\Tax\Model\Sales\Order\Tax;
 
 /**
  * Update the sales_order_tax_scheme table with details of tax scheme
@@ -97,27 +98,27 @@ class TaxPlugin
                 $percent = $subject->getPercent();
                 $storeToBase = $order->getStoreToBaseRate() == 0.0 ? 1.0 : $order->getStoreToBaseRate();
                 $data = [
-                    'tax_id' => $subject->getId(),
-                    'order_id' => $order->getEntityId(),
+                    'tax_id' => (int)$subject->getId(),
+                    'order_id' => (int)$order->getEntityId(),
                     'reference' => $taxScheme->getSchemeRegistrationNumber($storeId),
                     'name' => $taxScheme->getSchemeName(),
                     'code' => $subject->getCode(),
-                    'rate' => $percent,
+                    'rate' => (float)$percent,
                     'store_currency' => $order->getOrderCurrencyCode(),
                     'store_base_currency' => $order->getBaseCurrencyCode(),
                     'scheme_currency' => $taxScheme->getSchemeCurrencyCode(),
-                    'exchange_rate_store_to_store_base' => $storeToBase,
+                    'exchange_rate_store_to_store_base' => (float)$storeToBase,
                     'exchange_rate_store_base_to_scheme' => (float)$taxScheme->getSchemeExchangeRate($storeId),
-                    'import_threshold_store_base' => $taxScheme->getThresholdInBaseCurrency($storeId),
-                    'import_threshold_store' => $taxScheme->getThresholdInBaseCurrency($storeId) / $storeToBase,
+                    'import_threshold_store_base' => (float)$taxScheme->getThresholdInBaseCurrency($storeId),
+                    'import_threshold_store' => (float)$taxScheme->getThresholdInBaseCurrency($storeId) / $storeToBase,
                     'import_threshold_scheme' => (float)$taxScheme->getThresholdInSchemeCurrency($storeId),
-                    'taxable_amount_store_base' => $subject->getBaseAmount() * $percent,
-                    'taxable_amount_store' => $subject->getAmount()  * $percent,
-                    'taxable_amount_scheme' => $subject->getBaseAmount() * $percent /
+                    'taxable_amount_store_base' => (float)$subject->getBaseAmount() / ($percent / 100.0),
+                    'taxable_amount_store' => (float)$subject->getAmount() / ($percent / 100.0),
+                    'taxable_amount_scheme' => (float)$subject->getBaseAmount() / ($percent / 100.0) /
                         $taxScheme->getSchemeExchangeRate($storeId),
-                    'tax_amount_store_base' => $subject->getBaseAmount(),
-                    'tax_amount_store' => $subject->getAmount(),
-                    'tax_amount_scheme' => $subject->getBaseAmount() / $taxScheme->getSchemeExchangeRate($storeId)
+                    'tax_amount_store_base' => (float)$subject->getBaseAmount(),
+                    'tax_amount_store' => (float)$subject->getAmount(),
+                    'tax_amount_scheme' => (float)$subject->getBaseAmount() / $taxScheme->getSchemeExchangeRate($storeId)
                 ];
 
                 $orderTaxScheme = $this->orderTaxSchemeFactory->create();
