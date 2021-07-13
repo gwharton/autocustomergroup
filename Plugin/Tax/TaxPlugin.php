@@ -1,7 +1,7 @@
 <?php
 namespace Gw\AutoCustomerGroup\Plugin\Tax;
 
-use Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface;
+use Gw\AutoCustomerGroup\Model\OrderTaxScheme;
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Model\OrderRepository;
@@ -14,12 +14,12 @@ use Magento\Tax\Api\TaxRateRepositoryInterface;
 class TaxPlugin
 {
     /**
-     * @var \Gw\AutoCustomerGroup\Model\OrderTaxSchemeFactory
+     * @var OrderTaxSchemeFactory
      */
     private $orderTaxSchemeFactory;
 
     /**
-     * @var OrderRepository $orderRepository
+     * @var OrderRepository
      */
     private $orderRepository;
 
@@ -39,10 +39,14 @@ class TaxPlugin
     private $taxRateRepository;
 
     /**
-     * @param \Gw\AutoCustomerGroup\Model\OrderTaxSchemeFactory $orderTaxSchemeFactory
+     * @param OrderTaxSchemeFactory $orderTaxSchemeFactory
+     * @param OrderRepository $orderRepository
+     * @param FilterBuilder $filterBuilder
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param TaxRateRepositoryInterface $taxRateRepository
      */
     public function __construct(
-        \Gw\AutoCustomerGroup\Model\OrderTaxSchemeFactory $orderTaxSchemeFactory,
+        OrderTaxSchemeFactory $orderTaxSchemeFactory,
         OrderRepository $orderRepository,
         FilterBuilder $filterBuilder,
         SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -55,9 +59,14 @@ class TaxPlugin
         $this->taxRateRepository = $taxRateRepository;
     }
 
+    /**
+     * @param Tax $subject
+     * @param Tax $result
+     * @return $this|Tax
+     */
     public function afterSave(
-        \Magento\Tax\Model\Sales\Order\Tax $subject,
-        \Magento\Tax\Model\Sales\Order\Tax $result
+        Tax $subject,
+        Tax $result
     ) {
         try {
             $order = $this->orderRepository->get($subject->getOrderId());
@@ -111,7 +120,6 @@ class TaxPlugin
                     'tax_amount_scheme' => $subject->getBaseAmount() / $taxScheme->getSchemeExchangeRate($storeId)
                 ];
 
-                /** @var $orderTaxScheme \Gw\AutoCustomerGroup\Model\OrderTaxScheme */
                 $orderTaxScheme = $this->orderTaxSchemeFactory->create();
                 $orderTaxScheme->setData($data)->save();
             }

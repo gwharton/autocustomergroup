@@ -1,21 +1,26 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+use Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme as OrderTaxSchemeResource;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Gw\AutoCustomerGroup\Model\OrderTaxScheme;
+use Magento\Framework\DataObject;
+
+class Collection extends AbstractCollection
 {
     protected function _construct()
     {
         $this->_init(
-            \Gw\AutoCustomerGroup\Model\OrderTaxScheme::class,
-            \Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme::class
+            OrderTaxScheme::class,
+            OrderTaxSchemeResource::class
         );
     }
 
     /**
      * Retrieve order tax scheme collection by order identifier
      *
-     * @param \Magento\Framework\DataObject $order
-     * @return \Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme\Collection
+     * @param DataObject $order
+     * @return Collection
      */
     public function loadByOrder($order)
     {

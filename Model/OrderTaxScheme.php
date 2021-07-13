@@ -1,13 +1,16 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model;
 
-class OrderTaxScheme extends \Magento\Framework\Model\AbstractExtensibleModel
+use Magento\Framework\Model\AbstractExtensibleModel;
+use Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme as OrderTaxSchemeResource;
+
+class OrderTaxScheme extends AbstractExtensibleModel
 {
     /**
      * @return void
      */
     protected function _construct()
     {
-        $this->_init(\Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme::class);
+        $this->_init(OrderTaxSchemeResource::class);
     }
 }
