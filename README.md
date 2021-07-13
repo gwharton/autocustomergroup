@@ -139,13 +139,11 @@ an order is placed that triggered a tax rule linked to a Tax Scheme.</p>
 <p>This information can be easily accessed so that information on which tax schemes were
 used on an order, can be included on the Invoice PDF's for example.</p>
 <p>The following code shows how this can be achieved.</p>
-<pre><code>
-
+<pre>
+<code>
+    
     use Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme\CollectionFactory;
     use Magento\Directory\Model\CurrencyFactory;
-    ...
-    ...
-    ...
 
     /**
      * @var CollectionFactory
@@ -207,7 +205,8 @@ used on an order, can be included on the Invoice PDF's for example.</p>
             cell($storeCurrency->formatTxt($taxScheme->getTaxableAmountScheme(), ['precision' => 2]));
             cell($storeCurrency->formatTxt($taxScheme->getTaxAmountScheme(), ['precision' => 2]));
         }
-</code></pre>
+</code>
+</pre>
 <p>This will produce output similar to the following</p>
 <ul>
 <li>Scheme Currency is the same as Store currency.<br><img src="images/pdftaxscheme1.png"></li>
