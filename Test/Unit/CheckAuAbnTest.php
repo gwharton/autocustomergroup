@@ -36,14 +36,16 @@ class CheckAuAbnTest extends TestCase
      */
     public function isValidAbnDataProvider(): array
     {
-        //Really need more Test ABN numbers for this.
+        //Valid numbers from https://abr.business.gov.au/Search/ResultsActive?SearchText=example
         return [
-            ["72 629 951 766", true],
-            ["90929922193", true],
-            ["19621994018", true],
-            ["61215203421", true],
-            ["40 978 973 457", true],
+            ["50 110 219 460", true],
+            ["99 644 068 913", true],
+            ["36 643 591 119", true],
+            ["90 929 922 193", true],
+            ["58 630 144 375", true],
             ["oygyg", false],
+            ["98 765 432 111", false],
+            ["12 345 678 999", false],
             ["", false]
         ];
     }

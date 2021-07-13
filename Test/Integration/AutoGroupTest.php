@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Magento\Sales\Model\Order;
+namespace Gw\AutoCustomerGroup\Test\Integration;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ProductFactory;
@@ -135,32 +135,32 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @dataProvider dataProviderForTestAutoCustomerGroup
      * @magentoConfigFixture current_store autocustomergroup/general/enabled 1
      * @magentoConfigFixture current_store currency/options/default GBP
-     * @magentoConfigFixture current_website currency/options/base GBP
+     * @magentoConfigFixture current_store currency/options/base GBP
      * @magentoConfigFixture current_store autocustomergroup/ukvat/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/ukvat/registrationnumber GB553557881
      * @magentoConfigFixture current_store autocustomergroup/ukvat/environment sandbox
-     * @magentoConfigFixture current_website autocustomergroup/ukvat/usemagentoexchangerate 0
-     * @magentoConfigFixture current_website autocustomergroup/ukvat/exchangerate 1
-     * @magentoConfigFixture current_website autocustomergroup/ukvat/importthreshold 135
+     * @magentoConfigFixture current_store autocustomergroup/ukvat/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/ukvat/exchangerate 1
+     * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 135
      * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationcountry IE
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber IE3206488LH
-     * @magentoConfigFixture current_website autocustomergroup/euvat/usemagentoexchangerate 0
-     * @magentoConfigFixture current_website autocustomergroup/euvat/exchangerate 0.88603
-     * @magentoConfigFixture current_website autocustomergroup/euvat/importthreshold 150
+     * @magentoConfigFixture current_store autocustomergroup/euvat/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/euvat/exchangerate 0.88603
+     * @magentoConfigFixture current_store autocustomergroup/euvat/importthreshold 150
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/norwayvoec/registrationnumber 12345
-     * @magentoConfigFixture current_website autocustomergroup/norwayvoec/usemagentoexchangerate 0
-     * @magentoConfigFixture current_website autocustomergroup/norwayvoec/exchangerate 0.08540
-     * @magentoConfigFixture current_website autocustomergroup/norwayvoec/importthreshold 3000
+     * @magentoConfigFixture current_store autocustomergroup/norwayvoec/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/norwayvoec/exchangerate 0.08540
+     * @magentoConfigFixture current_store autocustomergroup/norwayvoec/importthreshold 3000
      * @magentoConfigFixture current_store autocustomergroup/australiagst/enabled 1
-     * @magentoConfigFixture current_website autocustomergroup/australiagst/usemagentoexchangerate 0
-     * @magentoConfigFixture current_website autocustomergroup/australiagst/exchangerate 0.5666
-     * @magentoConfigFixture current_website autocustomergroup/australiagst/importthreshold 1000
+     * @magentoConfigFixture current_store autocustomergroup/australiagst/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/australiagst/exchangerate 0.5666
+     * @magentoConfigFixture current_store autocustomergroup/australiagst/importthreshold 1000
      * @magentoConfigFixture current_store autocustomergroup/newzealandgst/enabled 1
-     * @magentoConfigFixture current_website autocustomergroup/newzealandgst/usemagentoexchangerate 0
-     * @magentoConfigFixture current_website autocustomergroup/newzealandgst/exchangerate 0.52
-     * @magentoConfigFixture current_website autocustomergroup/newzealandgst/importthreshold 1000
+     * @magentoConfigFixture current_store autocustomergroup/newzealandgst/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/newzealandgst/exchangerate 0.52
+     * @magentoConfigFixture current_store autocustomergroup/newzealandgst/importthreshold 1000
      * @magentoConfigFixture current_store general/region/state_required ""
      * @return void
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -422,7 +422,7 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             //Valid Business No, with GST registration
             [1, 4000, 'GB', 'NE1 1AA', 'AU', '1234', '72 629 951 766', 'australia_import_b2b', 0],
             //Valid Business No, but no GST registration
-            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '40 978 973 457', 'australia_import_taxed', 0],
+            [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '50 110 219 460', 'australia_import_taxed', 0],
             [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '1234', 'australia_import_taxed', 0], //Invalid Business No
             [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],
             [1, 10, 'GB', 'NE1 1AA', 'AU', '1234', '', 'australia_import_taxed', 0],

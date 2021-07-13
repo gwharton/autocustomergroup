@@ -6,6 +6,11 @@ use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 use SoapClient;
 
+/**
+ * Australian Test Numbers
+ * 50 110 219 460 - Company without GST
+ * 72 629 951 766 - Company with GST
+ */
 class AustraliaGst extends AbstractTaxScheme
 {
     const CODE = "australiagst";
