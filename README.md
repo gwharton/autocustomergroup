@@ -12,7 +12,7 @@
 <li>Module can be disabled, where legacy Magento functionality is restored. Module can be enabled/disabled on a per store basis with legacy functionality on one store, and new functionality on another store.</li>
 <li>Extends Tax Rate functionality to allow linking of Tax Rates to Tax Schemes</li>
 <li>Includes Code to allow retieval of Order Tax Rates and linked Tax Schemes, for example when producing Invoice PDF's so the Tax Scheme details can be added to the PDF depending on which rates were used on the order. (example code below)</li>
-</ul>
+<li>Records details of Tax Scheme used on orders to new table sales_order_tax_scheme.</li></ul>
 
 <h2>Known Issues/Left to do</h2>
 <ul>
@@ -134,51 +134,85 @@ when generating invoices for example.</p>
 <img src="images/taxrates.png">
 
 <h2>Getting Information on Tax Schemes used on Order</h2>
-<p>Magento does not store enough information about collected taxes with the order, therefore we have to compromise slightly when determining which tax rates were applied to the orders. Therefore, two slightly different methods have been implemented depending. Both methods implemented have identical parameters and return types. :</p>
-<ul>
-<li><b>getRatesByReProcessing</b> - This method takes the Shipping and Billing Address, Order Product Tax Classes, Customer Tax Class, Store Id, and reprocesses these for tax purposes returning an array of TaxRateInterface objects (including links to applicable Tax Schemes) used on the order. Note that if the Tax Rate is 0%, then this will be returned as a valid
-tax rate for the order, even though the 0% rates are filtered out, and the order will show as no tax. Additional logic is required if you use 0% rates for some reason. The downside of this method is that it will present the list of Tax Rates that are applicable to the order, should the order be placed now, and may not reflect the tax rates that were used when the order was placed.</li>
-<li><b>getRatesByLookup</b> - This method gets the list of applied Taxes that were saved with the order. It then uses the Tax Rate Codes for each tax rate and looks these up in the Tax Rates Table. If the Tax Rates are found, then the TaxRateInterface objects (including links to applicable Tax Schemes) are returned. Note, this only returns Tax Rates that were applied to the order and does not include any 0% rates filtered out by Magento. The downside of this method is, if the Tax Rule Codes are changed since the order was placed, this method will not
-identify the correct rates applied to the order.</li>
-</ul>
-<p>An example of the use of this functionality can be seen below</p>
+<p>This module stores additional information into the sales_order_tax_scheme table whenever
+an order is placed that triggered a tax rule linked to a Tax Scheme.</p>
+<p>This information can be easily accessed so that information on which tax schemes were
+used on an order, can be included on the Invoice PDF's for example.</p>
+<p>The following code shows how this can be achieved.</p>
 <pre><code>
 
-    use Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface;
-    use Gw\AutoCustomerGroup\Api\GetTaxRatesFromOrderInterface;
-
+    use Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme\CollectionFactory;
+    use Magento\Directory\Model\CurrencyFactory;
     ...
     ...
     ...
 
     /**
-     * @var GetTaxRatesFromOrderInterface
+     * @var CollectionFactory
      */
-    private $getTaxRatesFromOrderInterface;
+    private $orderTaxSchemeCollectionFactory;
 
+    /**
+     * @var CurrencyFactory
+     */
+    public $currencyFactory;
     ...
     ...
     ...
 
-    //Multiple rates may be returned.
-    $schemeDetails = [];
-    foreach ($this->getTaxRatesFromOrderInterface->getRatesByReProcessing($order) as $taxRate) {
-        /** @var TaxSchemeInterface $taxScheme */
-        $taxScheme = $taxRate->getExtensionAttributes()->getTaxScheme();
-        //Only add the scheme if it doesn't already exist
-        if ($taxScheme && (!in_array($taxScheme->getSchemeId(), array_column($schemeDetails, 'id')))) {
-            $schemeDetails[] = [
-                'number' => $taxScheme->getSchemeRegistrationNumber($order->getStoreId()),
-                'name' => $taxScheme->getSchemeName(),
-                'id' => $taxScheme->getSchemeId()
-            ];
+    $orderTaxSchemes = $this->orderTaxSchemeCollectionFactory->create()->loadByOrder($order);
+    foreach ($orderTaxSchemes as $taxScheme) {
+        $storeCurrency = $this->currencyFactory->create()->load($taxScheme->getStoreCurrency());
+        $schemeCurrency = $this->currencyFactory->create()->load($taxScheme->getSchemeCurrency());
+        $baseCurrency = $this->currencyFactory->create()->load($taxScheme->getBaseCurrency());
+
+        output("TAX Summary - " . $taxScheme->getName());
+
+        tableheading("Registration Number");
+        tableheading("Currency");
+        tableheading("Exchange Rate");
+        tableheading("TAX Rate");
+        tableheading("Taxable Total");
+        tableheading("TAX");
+
+        //Store Currency
+        cell($taxScheme->getReference());
+        cell($taxScheme->getStoreCurrency());
+        cell("");
+        cell(round($taxScheme->getRate(), 2) . "%");
+        cell($storeCurrency->formatTxt($taxScheme->getTaxableAmountStore(), ['precision' => 2]));
+        cell($storeCurrency->formatTxt($taxScheme->getTaxAmountStore(), ['precision' => 2]));
+
+        //Base Currency
+        if ($taxScheme->getStoreBaseCurrency() != $taxScheme->getStoreCurrency())
+        {
+            $exchangerate = $taxScheme->getExchangeRateStoreToStoreBase();
+            cell("");
+            cell($taxScheme->getStoreBaseCurrency());
+            cell($taxScheme->getStoreBaseCurrency() . " > " . $taxScheme->getStoreCurrency() . " = " . $exchangerate);
+            cell(round($taxScheme->getRate(), 2) . "%");
+            cell($storeCurrency->formatTxt($taxScheme->getTaxableAmountStoreBase(), ['precision' => 2]));
+            cell($storeCurrency->formatTxt($taxScheme->getTaxAmountStoreBase(), ['precision' => 2]));
         }
-    }
-    foreach ($schemeDetails as $scheme) {
-        //Output to Invoice PDF
-        $outputtext = $scheme['name'] . " Registration Number : " . $scheme['number'];
-    }
+
+        //Scheme Currency
+        if ($taxScheme->getSchemeCurrency() != $taxScheme->getStoreCurrency())
+        {
+            $exchangerate = $taxScheme->getExchangeRateStoreToStoreBase() *
+                    $taxScheme->getExchangeRateStoreBaseToScheme();
+            cell("");
+            cell($taxScheme->getSchemeCurrency());
+            cell($taxScheme->getSchemeCurrency() . " > " . $taxScheme->getStoreCurrency() . " = " . $exchangerate);
+            cell(round($taxScheme->getRate(), 2) . "%");
+            cell($storeCurrency->formatTxt($taxScheme->getTaxableAmountScheme(), ['precision' => 2]));
+            cell($storeCurrency->formatTxt($taxScheme->getTaxAmountScheme(), ['precision' => 2]));
+        }
 </code></pre>
+<p>This will produce output similar to the following</p>
+<ul>
+<li>Scheme Currency is the same as Store currency.<br><img src="images/pdftaxscheme1.png"></li>
+<li>Scheme Currency is different to Store currency.<br><img src="images/pdftaxscheme2.png"></li>
+</ul>
 <h2>Integration Tests</h2>
 <p>To run the integration tests, you need your own credentials for the Australian ID Checker services. Please
 add them to config-global.php. The tests for UK (Sandbox), EU and Australia use the live API's</p>

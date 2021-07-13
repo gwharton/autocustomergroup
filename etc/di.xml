@@ -66,8 +66,11 @@
     <type name="Magento\Tax\Model\Calculation\RateRepository">
         <plugin name="updateTaxRateExtensionAttributes" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRateExtensionAttributesPlugin" />
     </type>
-    <preference for="Gw\AutoCustomerGroup\Api\GetTaxRatesFromOrderInterface" 
+    <preference for="Gw\AutoCustomerGroup\Api\GetTaxRatesFromOrderInterface"
         type="Gw\AutoCustomerGroup\Model\GetTaxRatesFromOrder" />
-    <preference for="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface" 
+    <preference for="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface"
         type="Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme" />
+    <type name="Magento\Tax\Model\Sales\Order\Tax">
+        <plugin name="updateSalesOrderTaxSchemeTable" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxPlugin" />
+    </type>
 </config>

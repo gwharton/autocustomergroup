@@ -14,6 +14,9 @@ use Magento\Tax\Api\TaxRateRepositoryInterface;
 use Magento\Tax\Model\Calculation;
 use Magento\Tax\Model\ResourceModel\Calculation as ResourceCalculation;
 
+/**
+ * @deprecared Use alternative method as laid out in README
+ */
 class GetTaxRatesFromOrder implements GetTaxRatesFromOrderInterface
 {
     /**
