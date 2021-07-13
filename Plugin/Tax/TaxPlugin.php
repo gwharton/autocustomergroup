@@ -72,7 +72,7 @@ class TaxPlugin
         try {
             $order = $this->orderRepository->get($subject->getOrderId());
             if (!$order) {
-                return $this;
+                return $result;
             }
             $filter = $this->filterBuilder
                 ->setField('code')
@@ -86,12 +86,12 @@ class TaxPlugin
                 //Only process if there is an exact match, and only one match
                 $rate = $taxRates->getItems()[0];
                 if (!$rate) {
-                    return $this;
+                    return $result;
                 }
                 /** @var TaxSchemeInterface $taxScheme */
                 $taxScheme = $rate->getExtensionAttributes()->getTaxScheme();
                 if (!$taxScheme) {
-                    return $this;
+                    return $result;
                 }
                 //OK, we have $order, $rate and $taxScheme. Thats enough.
                 $storeId = $order->getStoreId();
@@ -127,6 +127,6 @@ class TaxPlugin
         } catch ( \Exception $e) {
 
         }
-        return $subject;
+        return $result;
     }
 }
