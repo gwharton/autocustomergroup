@@ -80,4 +80,12 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Tax\Model\Calculation\AbstractCalculator">
+        <plugin name="AddExtraTaxInfo"
+                type="Gw\AutoCustomerGroup\Plugin\AddExtraTaxInfoPlugin"/>
+    </type>
+    <type name="Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector">
+        <plugin name="CopyTaxDetailsPlugin"
+                type="Gw\AutoCustomerGroup\Plugin\CopyTaxDetailsPlugin"/>
+    </type>
 </config>

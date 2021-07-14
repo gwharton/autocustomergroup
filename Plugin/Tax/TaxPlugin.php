@@ -11,6 +11,7 @@ use Magento\Tax\Model\Sales\Order\Tax;
 /**
  * Update the sales_order_tax_scheme table with details of tax scheme
  * used for order
+ * @SuppressWarnings(PHPMD.LongVariable)
  */
 class TaxPlugin
 {
@@ -45,6 +46,7 @@ class TaxPlugin
      * @param FilterBuilder $filterBuilder
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param TaxRateRepositoryInterface $taxRateRepository
+     * @SuppressWarnings(PHPMD.LongVariable)
      */
     public function __construct(
         OrderTaxSchemeFactory $orderTaxSchemeFactory,
@@ -64,6 +66,8 @@ class TaxPlugin
      * @param Tax $subject
      * @param Tax $result
      * @return $this|Tax
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.EmptyCatchBlock)
      */
     public function afterSave(
         Tax $subject,
@@ -97,6 +101,21 @@ class TaxPlugin
                 $storeId = $order->getStoreId();
                 $percent = $subject->getPercent();
                 $storeToBase = $order->getStoreToBaseRate() == 0.0 ? 1.0 : $order->getStoreToBaseRate();
+                $orderItemAppliedTaxes = $order->getExtensionAttributes()->getItemAppliedTaxes();
+                $taxableAmountStoreBase = 0.0;
+                $taxableAmountStore = 0.0;
+                $taxableAmountScheme = 0.0;
+                foreach ($orderItemAppliedTaxes as $orderItemAppliedTax) {
+                    foreach ($orderItemAppliedTax->getAppliedTaxes() as $appliedTax) {
+                        $eatt = $appliedTax->getExtensionAttributes();
+                        if ($appliedTax->getTaxId() == $subject->getCode()) {
+                            $taxableAmountStoreBase += $eatt->getBaseTaxableAmount();
+                            $taxableAmountStore += $eatt->getTaxableAmount();
+                            $taxableAmountScheme += ($eatt->getBaseTaxableAmount() /
+                                $taxScheme->getSchemeExchangeRate($storeId));
+                        }
+                    }
+                }
                 $data = [
                     'tax_id' => (int)$subject->getId(),
                     'order_id' => (int)$order->getEntityId(),
@@ -110,22 +129,22 @@ class TaxPlugin
                     'exchange_rate_store_to_store_base' => (float)$storeToBase,
                     'exchange_rate_store_base_to_scheme' => (float)$taxScheme->getSchemeExchangeRate($storeId),
                     'import_threshold_store_base' => (float)$taxScheme->getThresholdInBaseCurrency($storeId),
-                    'import_threshold_store' => (float)$taxScheme->getThresholdInBaseCurrency($storeId) / $storeToBase,
+                    'import_threshold_store' => (float)$taxScheme->getThresholdInBaseCurrency($storeId) /
+                        $storeToBase,
                     'import_threshold_scheme' => (float)$taxScheme->getThresholdInSchemeCurrency($storeId),
-                    'taxable_amount_store_base' => (float)$subject->getBaseAmount() / ($percent / 100.0),
-                    'taxable_amount_store' => (float)$subject->getAmount() / ($percent / 100.0),
-                    'taxable_amount_scheme' => (float)$subject->getBaseAmount() / ($percent / 100.0) /
-                        $taxScheme->getSchemeExchangeRate($storeId),
+                    'taxable_amount_store_base' => (float)$taxableAmountStoreBase,
+                    'taxable_amount_store' => (float)$taxableAmountStore,
+                    'taxable_amount_scheme' => (float)$taxableAmountScheme,
                     'tax_amount_store_base' => (float)$subject->getBaseAmount(),
                     'tax_amount_store' => (float)$subject->getAmount(),
-                    'tax_amount_scheme' => (float)$subject->getBaseAmount() / $taxScheme->getSchemeExchangeRate($storeId)
+                    'tax_amount_scheme' => (float)$subject->getBaseAmount() /
+                        $taxScheme->getSchemeExchangeRate($storeId)
                 ];
-
                 $orderTaxScheme = $this->orderTaxSchemeFactory->create();
                 $orderTaxScheme->setData($data)->save();
             }
-        } catch ( \Exception $e) {
-
+            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock
+        } catch (\Exception $e) {
         }
         return $result;
     }

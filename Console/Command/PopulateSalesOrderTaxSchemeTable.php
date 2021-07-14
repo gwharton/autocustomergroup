@@ -5,7 +5,9 @@ use Gw\AutoCustomerGroup\Model\OrderTaxSchemeFactory;
 use Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface;
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\DataObject\Copy;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Quote\Model\QuoteFactory;
 use Magento\Sales\Model\OrderRepository;
 use Magento\Tax\Api\TaxRateRepositoryInterface;
 use Magento\Tax\Model\Sales\Order\Tax;
@@ -58,6 +60,16 @@ class PopulateSalesOrderTaxSchemeTable extends Command
     private $state;
 
     /**
+     * @var Copy
+     */
+    private $copyService;
+
+    /**
+     * @var QuoteFactory
+     */
+    private $quoteFactory;
+
+    /**
      * @param CollectionFactory $orderTaxCollectionFactory
      * @param OrderTaxSchemeFactory $orderTaxSchemeFactory
      * @param OrderRepository $orderRepository
@@ -65,6 +77,8 @@ class PopulateSalesOrderTaxSchemeTable extends Command
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param TaxRateRepositoryInterface $taxRateRepository
      * @param State $state
+     * @param Copy $copyService
+     * @param QuoteFactory $quoteFactory
      */
     public function __construct(
         CollectionFactory $orderTaxCollectionFactory,
@@ -73,7 +87,9 @@ class PopulateSalesOrderTaxSchemeTable extends Command
         FilterBuilder $filterBuilder,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         TaxRateRepositoryInterface $taxRateRepository,
-        State $state
+        State $state,
+        Copy $copyService,
+        QuoteFactory $quoteFactory
     ) {
         $this->orderTaxCollectionFactory = $orderTaxCollectionFactory;
         $this->orderTaxSchemeFactory = $orderTaxSchemeFactory;
@@ -82,6 +98,8 @@ class PopulateSalesOrderTaxSchemeTable extends Command
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->taxRateRepository = $taxRateRepository;
         $this->state = $state;
+        $this->copyService = $copyService;
+        $this->quoteFactory = $quoteFactory;
         parent::__construct();
     }
 
@@ -143,10 +161,10 @@ class PopulateSalesOrderTaxSchemeTable extends Command
                         'import_threshold_store' => (float)$taxScheme->getThresholdInBaseCurrency($storeId) /
                             $storeToBase,
                         'import_threshold_scheme' => (float)$taxScheme->getThresholdInSchemeCurrency($storeId),
-                        'taxable_amount_store_base' => (float)$tax->getBaseAmount() / ($percent / 100.0),
-                        'taxable_amount_store' => (float)$tax->getAmount() / ($percent / 100.0),
-                        'taxable_amount_scheme' => (float)($tax->getBaseAmount() /
-                                $taxScheme->getSchemeExchangeRate($storeId)) / ($percent / 100.0),
+                        'taxable_amount_store_base' => (float)$order->getBaseSubtotal(),
+                        'taxable_amount_store' => (float)$order->getSubtotal(),
+                        'taxable_amount_scheme' => (float)$order->getBaseSubtotal() /
+                                $taxScheme->getSchemeExchangeRate($storeId),
                         'tax_amount_store_base' => (float)$tax->getBaseAmount(),
                         'tax_amount_store' => (float)$tax->getAmount(),
                         'tax_amount_scheme' => (float)$tax->getBaseAmount() /
