@@ -141,6 +141,10 @@ tax has been collected.</p>
 <p>For this to succeed, all entries in the sales_order_tax table must have a "code" field
 that matches the "code" for a current tax rule.</p>
 <p>Entries in sales_order_tax_scheme are only created if the tax rule is linked to a tax scheme.</p>
+<p>This function has a limitation in that once an order is placed, it is no longer
+possible to determine the taxable_amounts, when the order contains a mix of different
+tax rates on the same order. The routine uses the order subtotals to generate what the
+taxable_amounts should be. If there are no mixed tax rates, it will be correct.</p>
 <h2>Getting Information on Tax Schemes used on Order</h2>
 <p>This module stores additional information into the sales_order_tax_scheme table whenever
 an order is placed that triggered a tax rule linked to a Tax Scheme.</p>
