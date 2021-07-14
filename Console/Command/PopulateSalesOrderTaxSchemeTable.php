@@ -145,6 +145,16 @@ class PopulateSalesOrderTaxSchemeTable extends Command
                 if ($taxScheme) {
                     $percent = $tax->getPercent();
                     $storeToBase = $order->getStoreToBaseRate() == 0.0 ? 1.0 : $order->getStoreToBaseRate();
+                    $subtotal = 0.0;
+                    $subtotalbase = 0.0;
+                    /** @var \Magento\Sales\Model\Order\Item $item */
+                    foreach ($order->getAllItems() as $item) {
+                        $subtotal += ($item->getRowTotal() - $item->getDiscountAmount());
+                        $subtotalbase += ($item->getBaseRowTotal() - $item->getBaseDiscountAmount());
+                    }
+                    $subtotal += $order->getShippingAmount();
+                    $subtotalbase += $order->getBaseShippingAmount();
+
                     $data = [
                         'tax_id' => (int)$tax->getId(),
                         'order_id' => (int)$tax->getOrderId(),
@@ -161,10 +171,9 @@ class PopulateSalesOrderTaxSchemeTable extends Command
                         'import_threshold_store' => (float)$taxScheme->getThresholdInBaseCurrency($storeId) /
                             $storeToBase,
                         'import_threshold_scheme' => (float)$taxScheme->getThresholdInSchemeCurrency($storeId),
-                        'taxable_amount_store_base' => (float)$order->getBaseSubtotal(),
-                        'taxable_amount_store' => (float)$order->getSubtotal(),
-                        'taxable_amount_scheme' => (float)$order->getBaseSubtotal() /
-                                $taxScheme->getSchemeExchangeRate($storeId),
+                        'taxable_amount_store_base' => (float)$subtotalbase,
+                        'taxable_amount_store' => (float)$subtotal,
+                        'taxable_amount_scheme' => (float)$subtotalbase / $taxScheme->getSchemeExchangeRate($storeId),
                         'tax_amount_store_base' => (float)$tax->getBaseAmount(),
                         'tax_amount_store' => (float)$tax->getAmount(),
                         'tax_amount_scheme' => (float)$tax->getBaseAmount() /
