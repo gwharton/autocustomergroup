@@ -60,19 +60,14 @@
     <type name="Magento\Customer\Controller\Adminhtml\System\Config\Validatevat\ValidateAdvanced">
         <plugin name="customer_system_config_vat_validate" type="Gw\AutoCustomerGroup\Plugin\Customer\ValidateAdvancedPlugin" />
     </type>
-    <type name="Magento\Tax\Model\Calculation\Rate\Converter">
-        <plugin name="add_tax_scheme_to_taxrate_data" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRateDataPlugin" />
+    <type name="Magento\Tax\Model\TaxRuleRepository">
+        <plugin name="taxRuleRepositoryPlugin" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRuleRepositoryPlugin" />
     </type>
-    <type name="Magento\Tax\Model\Calculation\RateRepository">
-        <plugin name="updateTaxRateExtensionAttributes" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRateExtensionAttributesPlugin" />
-    </type>
-    <preference for="Gw\AutoCustomerGroup\Api\GetTaxRatesFromOrderInterface"
-        type="Gw\AutoCustomerGroup\Model\GetTaxRatesFromOrder" />
-    <preference for="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface"
-        type="Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme" />
-    <type name="Magento\Tax\Model\Sales\Order\Tax">
+    <preference for="Gw\AutoCustomerGroup\Api\GetTaxRatesFromOrderInterface" type="Gw\AutoCustomerGroup\Model\GetTaxRatesFromOrder" />
+    <preference for="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface" type="Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme" />
+    <!--<type name="Magento\Tax\Model\Sales\Order\Tax">
         <plugin name="updateSalesOrderTaxSchemeTable" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxPlugin" />
-    </type>
+    </type>-->
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">
@@ -80,12 +75,11 @@
             </argument>
         </arguments>
     </type>
-    <type name="Magento\Tax\Model\Calculation\AbstractCalculator">
-        <plugin name="AddExtraTaxInfo"
-                type="Gw\AutoCustomerGroup\Plugin\AddExtraTaxInfoPlugin"/>
+    <!--<type name="Magento\Tax\Model\Calculation\AbstractCalculator">
+        <plugin name="AddExtraTaxInfo" type="Gw\AutoCustomerGroup\Plugin\AddExtraTaxInfoPlugin"/>
     </type>
     <type name="Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector">
-        <plugin name="CopyTaxDetailsPlugin"
-                type="Gw\AutoCustomerGroup\Plugin\CopyTaxDetailsPlugin"/>
-    </type>
+        <plugin name="CopyTaxDetailsPlugin" type="Gw\AutoCustomerGroup\Plugin\CopyTaxDetailsPlugin"/>
+    </type>-->
+    <preference for="Magento\Tax\Model\TaxRuleCollection" type="Gw\AutoCustomerGroup\Model\TaxRuleCollection"/>
 </config>

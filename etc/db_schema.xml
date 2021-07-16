@@ -1,22 +1,17 @@
 <?xml version="1.0"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    <table name="tax_calculation_rate">
+    <table name="tax_calculation_rule">
         <column xsi:type="varchar" name="tax_scheme_id" nullable="true" length="255" comment="Tax Scheme ID"/>
     </table>
     <table name="sales_order_tax_scheme" resource="sales" engine="innodb" comment="Sales Order Tax Scheme Table">
         <column xsi:type="int" name="order_tax_scheme_id" unsigned="true" nullable="false" identity="true"
                 comment="Order Tax Scheme ID"/>
-        <column xsi:type="int" name="tax_id" unsigned="true" nullable="false" identity="false"
-                comment="Tax ID"/>
         <column xsi:type="int" name="order_id" unsigned="true" nullable="false" identity="false"
                 comment="Order ID"/>
 
         <column xsi:type="varchar" name="reference" nullable="true" length="255" comment="Reference"/>
         <column xsi:type="varchar" name="name" nullable="true" length="255" comment="Name"/>
-        <column xsi:type="varchar" name="code" nullable="true" length="255" comment="Code"/>
-        <column xsi:type="decimal" name="rate" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Tax Rate"/>
 
         <column xsi:type="varchar" name="store_currency" nullable="true" length="255" comment="Store Currency"/>
         <column xsi:type="varchar" name="store_base_currency" nullable="true" length="255" comment="Store Base Currency"/>
@@ -34,26 +29,9 @@
         <column xsi:type="decimal" name="import_threshold_scheme" scale="4" precision="12" unsigned="false" nullable="true"
                 comment="Import Threshold in Scheme Currency"/>
 
-        <column xsi:type="decimal" name="taxable_amount_store" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Taxable Amount in Store Currency"/>
-        <column xsi:type="decimal" name="taxable_amount_store_base" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Taxable Amount in Store Base Currency"/>
-        <column xsi:type="decimal" name="taxable_amount_scheme" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Taxable Amount in Scheme Currency"/>
-
-        <column xsi:type="decimal" name="tax_amount_store" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Tax Amount in Store Currency"/>
-        <column xsi:type="decimal" name="tax_amount_store_base" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Tax Amount in Store Base Currency"/>
-        <column xsi:type="decimal" name="tax_amount_scheme" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Tax Amount in Scheme Currency"/>
-
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="order_tax_scheme_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="SALES_ORDER_TAX_SCHEME_TAX_ID_SALES_ORDER_TAX_TAX_ID"
-                    table="sales_order_tax_scheme" column="tax_id" referenceTable="sales_order_tax"
-                    referenceColumn="tax_id" onDelete="CASCADE"/>
         <constraint xsi:type="foreign" referenceId="SALES_ORDER_TAX_SCHEME_ORDER_ID_SALES_ORDER_ORDER_ID"
                     table="sales_order_tax_scheme" column="order_id" referenceTable="sales_order"
                     referenceColumn="entity_id" onDelete="CASCADE"/>

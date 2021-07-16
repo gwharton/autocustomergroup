@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
-    <extension_attributes for="Magento\Tax\Api\Data\TaxRateInterface">
+    <extension_attributes for="Magento\Tax\Api\Data\TaxRuleInterface">
         <attribute code="tax_scheme" type="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface" />
     </extension_attributes>
     <extension_attributes for="Magento\Tax\Api\Data\OrderTaxDetailsAppliedTaxInterface">

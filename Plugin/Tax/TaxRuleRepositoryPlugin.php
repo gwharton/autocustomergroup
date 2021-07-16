@@ -2,12 +2,12 @@
 namespace Gw\AutoCustomerGroup\Plugin\Tax;
 
 use Gw\AutoCustomerGroup\Model\TaxSchemes;
-use Magento\Tax\Api\Data\TaxRateInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Tax\Api\Data\TaxRuleSearchResultsInterface;
-use Magento\Tax\Api\TaxRateRepositoryInterface;
-use Magento\Tax\Model\Calculation\Rate;
+use Magento\Tax\Model\Calculation\Rule;
+use Magento\Tax\Model\TaxRuleRepository;
 
-class TaxRateExtensionAttributesPlugin
+class TaxRuleRepositoryPlugin
 {
     /**
      * @var TaxSchemes
@@ -26,17 +26,17 @@ class TaxRateExtensionAttributesPlugin
     /**
      * Restore the value of tax_scheme_id to extension attribute
      *
-     * @param TaxRateRepositoryInterface $subject
-     * @param Rate $result
-     * @param int $rateId
-     * @return TaxRateInterface
+     * @param TaxRuleRepository $subject
+     * @param Rule $result
+     * @param int $ruleId
+     * @return Rule
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGet(
-        TaxRateRepositoryInterface $subject,
-        Rate $result,
-        int $rateId
-    ) {
+        TaxRuleRepository $subject,
+        Rule $result,
+        int $ruleId
+    ): Rule {
         $taxSchemeId = $result->getData('tax_scheme_id');
         $taxScheme = $this->taxSchemes->getTaxScheme($taxSchemeId);
         if ($taxScheme) {
@@ -50,15 +50,15 @@ class TaxRateExtensionAttributesPlugin
     /**
      * Save the value of tax_scheme_id from extension attribute
      *
-     * @param TaxRateRepositoryInterface $subject
-     * @param TaxRateInterface $entity
-     * @return TaxRateInterface
+     * @param TaxRuleRepository $subject
+     * @param Rule $entity
+     * @return Rule[]
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function beforeSave(
-        TaxRateRepositoryInterface $subject,
-        Rate $entity
-    ) {
+        TaxRuleRepository $subject,
+        Rule $entity
+    ): array {
         $extensionAttributes = $entity->getExtensionAttributes();
         $taxScheme = $extensionAttributes->getTaxScheme();
         if ($taxScheme) {
@@ -72,21 +72,19 @@ class TaxRateExtensionAttributesPlugin
     /**
      * Restore the value of tax_scheme_id to extension attribute
      *
-     * Why $tresult as TaxRuleSearchResultsInterface No idea. Tax Rate Admin Grid
-     * bugs out if I use TaxRateSearchResultsInterface. Suspect Magento Bug
-     *
-     * @param TaxRateRepositoryInterface $subject
+     * @param TaxRuleRepository $subject
      * @param TaxRuleSearchResultsInterface $result
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @return void
+     * @param SearchCriteriaInterface $searchCriteria
+     * @return TaxRuleSearchResultsInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGetList(
-        TaxRateRepositoryInterface $subject,
-        TaxRuleSearchResultsInterface $result
+        TaxRuleRepository $subject,
+        TaxRuleSearchResultsInterface $result,
+        SearchCriteriaInterface $searchCriteria
     ) {
-        $taxRates = [];
-        /** @var Rate $entity */
+        $taxRules = [];
+        /** @var Rule $entity */
         foreach ($result->getItems() as $entity) {
             $taxSchemeId = $entity->getData('tax_scheme_id');
             $taxScheme = $this->taxSchemes->getTaxScheme($taxSchemeId);
@@ -95,9 +93,9 @@ class TaxRateExtensionAttributesPlugin
                 $extensionAttributes->setTaxScheme($taxScheme);
                 $entity->setExtensionAttributes($extensionAttributes);
             }
-            $taxRates[] = $entity;
+            $taxRules[] = $entity;
         }
-        $result->setItems($taxRates);
+        $result->setItems($taxRules);
         return $result;
     }
 }

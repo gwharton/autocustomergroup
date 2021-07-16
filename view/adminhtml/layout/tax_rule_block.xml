@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="adminhtml.block.tax.rule.container">
+            <referenceBlock name="adminhtml.block.tax.rule.grid">
+                <referenceBlock name="adminhtml.block.tax.rule.columnSet">
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" name="adminhtml.block.tax.rule.columnSet.tax_scheme_id" as="tax_scheme_id">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Tax Scheme ID</argument>
+                            <argument name="sortable" xsi:type="string">0</argument>
+                            <argument name="index" xsi:type="string">tax_scheme_id</argument>
+                            <argument name="type" xsi:type="string">options</argument>
+                            <argument name="options" xsi:type="options" model="Gw\AutoCustomerGroup\Model\Source\TaxSchemes"/>
+                        </arguments>
+                    </block>
+                </referenceBlock>
+            </referenceBlock>
+        </referenceBlock>
+    </body>
+</page>
