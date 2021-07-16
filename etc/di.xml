@@ -68,13 +68,13 @@
     <!--<type name="Magento\Tax\Model\Sales\Order\Tax">
         <plugin name="updateSalesOrderTaxSchemeTable" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxPlugin" />
     </type>-->
-    <type name="Magento\Framework\Console\CommandListInterface">
+    <!--<type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="populate_sales_order_tax_scheme" xsi:type="object">Gw\AutoCustomerGroup\Console\Command\PopulateSalesOrderTaxSchemeTable</item>
             </argument>
         </arguments>
-    </type>
+    </type>-->
     <!--<type name="Magento\Tax\Model\Calculation\AbstractCalculator">
         <plugin name="AddExtraTaxInfo" type="Gw\AutoCustomerGroup\Plugin\AddExtraTaxInfoPlugin"/>
     </type>
