@@ -2,6 +2,8 @@
 namespace Gw\AutoCustomerGroup\Api\Data;
 
 use Magento\Directory\Model\Currency;
+use Magento\Framework\DataObject;
+use Magento\Quote\Model\Quote;
 
 interface TaxSchemeInterface
 {
@@ -17,7 +19,7 @@ interface TaxSchemeInterface
      *
      * @param string $countryCode
      * @param string $taxId
-     * @return \Magento\Framework\DataObject
+     * @return DataObject
      */
     public function checkTaxId($countryCode, $taxId);
 
@@ -26,8 +28,8 @@ interface TaxSchemeInterface
      *
      * @param string $customerCountryCode
      * @param string $customerPostCode
-     * @param \Magento\Framework\DataObject $vatValidationResult
-     * @param \Magento\Quote\Api\Data\QuoteInterface $quote
+     * @param DataObject $vatValidationResult
+     * @param Quote $quote
      * @param int|null $storeId
      * @return int|null
      */

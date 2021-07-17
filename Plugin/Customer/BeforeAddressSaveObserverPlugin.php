@@ -5,6 +5,7 @@ namespace Gw\AutoCustomerGroup\Plugin\Customer;
 use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
 use Magento\Customer\Observer\BeforeAddressSaveObserver;
 use Magento\Framework\Event\Observer;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 
 class BeforeAddressSaveObserverPlugin
@@ -36,7 +37,9 @@ class BeforeAddressSaveObserverPlugin
      *
      * @param BeforeAddressSaveObserver $subject
      * @param callable $proceed
+     * @param Observer $observer
      * @return void
+     * @throws NoSuchEntityException
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function aroundExecute(

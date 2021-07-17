@@ -1,6 +1,7 @@
 <?php
 namespace Gw\AutoCustomerGroup\Plugin;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
 /**
@@ -11,18 +12,20 @@ class ConvertAppliedTaxesPlugin
 {
     /**
      * @param CommonTaxCollector $subject
-     * @param $result
+     * @param array $result
      * @param AppliedTaxInterface[] $appliedTaxes
      * @param AppliedTaxInterface[] $baseAppliedTaxes
      * @param array $extraInfo
+     * @return array
+     * @throws NoSuchEntityException
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterConvertAppliedTaxes(
         CommonTaxCollector $subject,
-        $result,
-        $appliedTaxes,
-        $baseAppliedTaxes,
-        $extraInfo = []
+        array $result,
+        array $appliedTaxes,
+        array $baseAppliedTaxes,
+        array $extraInfo = []
     ) {
         foreach ($result as $index1 => $appliedTax) {
             foreach ($appliedTax['rates'] as $index2 => $rate) {

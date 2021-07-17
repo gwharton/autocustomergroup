@@ -1,7 +1,6 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model;
 
-use Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
@@ -13,6 +12,7 @@ class AutoCustomerGroup
     const XML_PATH_ENABLE_CURRENCY_DOWNLOAD = 'autocustomergroup/general/enablecurrencydownload';
     const XML_PATH_MODULE_ENABLED = 'autocustomergroup/general/enabled';
     const XML_PATH_VALIDATE_ON_EACH = 'autocustomergroup/general/validate_on_each_transaction';
+    const XML_PATH_SALES_ORDER_TAX_SCHEME = 'autocustomergroup/general/enable_sales_order_tax_scheme_table';
 
     /**
      * @var TaxSchemes
@@ -27,10 +27,6 @@ class AutoCustomerGroup
     /**
      * @param TaxSchemes $taxSchemes
      * @param ScopeConfigInterface $scopeConfig
-     * @param Calculation $calculation
-     * @param GroupRepositoryInterface $groupRepository
-     * @param ResourceCalculation $resourceCalculation
-     * @param ProductRepositoryInterface $productRepository
      */
     public function __construct(
         TaxSchemes $taxSchemes,
@@ -47,10 +43,10 @@ class AutoCustomerGroup
      * @return DataObject|null
      */
     public function checkTaxId(
-        $countryCode,
-        $taxId,
-        $storeId
-    ) {
+        string $countryCode,
+        string $taxId,
+        ?int $storeId
+    ): ?DataObject {
         if ($this->isModuleEnabled($storeId)) {
             foreach ($this->taxSchemes->getEnabledTaxSchemes($storeId) as $taxScheme) {
                 if ($taxScheme->isSchemeCountry($countryCode)) {
@@ -64,25 +60,25 @@ class AutoCustomerGroup
     /**
      * @param string $customerCountryCode
      * @param string $customerPostCode
-     * @param DataObject $taxIdValidationResults
+     * @param DataObject $validationResults
      * @param Quote $quote
      * @param int $storeId
      * @return int|null
      */
     public function getCustomerGroup(
-        $customerCountryCode,
-        $customerPostCode,
-        $taxIdValidationResults,
-        $quote,
-        $storeId
-    ) {
+        string $customerCountryCode,
+        string $customerPostCode,
+        DataObject $validationResults,
+        Quote $quote,
+        int $storeId
+    ): ?int {
         if ($this->isModuleEnabled($storeId)) {
             foreach ($this->taxSchemes->getEnabledTaxSchemes($storeId) as $taxScheme) {
                 if ($taxScheme->isSchemeCountry($customerCountryCode)) {
                     return $taxScheme->getCustomerGroup(
                         $customerCountryCode,
                         $customerPostCode,
-                        $taxIdValidationResults,
+                        $validationResults,
                         $quote,
                         $storeId
                     );
@@ -98,10 +94,25 @@ class AutoCustomerGroup
      * @param int|null $storeId
      * @return boolean
      */
-    public function isModuleEnabled($storeId)
+    public function isModuleEnabled(?int $storeId): bool
     {
         return $this->scopeConfig->isSetFlag(
             self::XML_PATH_MODULE_ENABLED,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Check if sales_order_tax_scheme table is enabled
+     *
+     * @param int|null $storeId
+     * @return boolean
+     */
+    public function isSalesOrderTaxSchemeEnabled(?int $storeId): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_SALES_ORDER_TAX_SCHEME,
             ScopeInterface::SCOPE_STORE,
             $storeId
         );
@@ -112,11 +123,10 @@ class AutoCustomerGroup
      *
      * @return boolean
      */
-    public function isCurrencyDownloadEnabled()
+    public function isCurrencyDownloadEnabled(): bool
     {
         return $this->scopeConfig->isSetFlag(
-            self::XML_PATH_ENABLE_CURRENCY_DOWNLOAD,
-            ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+            self::XML_PATH_ENABLE_CURRENCY_DOWNLOAD
         );
     }
 
@@ -126,7 +136,7 @@ class AutoCustomerGroup
      * @param int $storeId
      * @return string
      */
-    public function getFrontendLabel($storeId)
+    public function getFrontendLabel(int $storeId): string
     {
         return (string)$this->scopeConfig->getValue(
             self::XML_PATH_FRONTEND_LABEL,
@@ -141,7 +151,7 @@ class AutoCustomerGroup
      * @param int $storeId
      * @return string
      */
-    public function isValidateOnEachTransactionEnabled($storeId)
+    public function isValidateOnEachTransactionEnabled(int $storeId): string
     {
         return (string)$this->scopeConfig->getValue(
             self::XML_PATH_VALIDATE_ON_EACH,

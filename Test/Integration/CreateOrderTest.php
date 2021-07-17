@@ -129,6 +129,7 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      * @magentoConfigFixture current_store autocustomergroup/general/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/general/enable_sales_order_tax_scheme_table 1
      * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
      *
      * @magentoConfigFixture current_store autocustomergroup/ukvat/enabled 1
@@ -153,9 +154,9 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         $algorithm,
         $grandtotal,
         $totalTaxStore,
-        $totalTaxStoreBase,
-        $totalTaxTaxSchemeUK,
-        $totalTaxTaxSchemeEU,
+        $totalTaxBase,
+        $totalTaxSchemeUK,
+        $totalTaxSchemeEU,
         $taxinprice
     ): void {
         $storeId = $this->storeManager->getStore()->getId();
@@ -282,43 +283,43 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($grandtotal, $order->getGrandTotal());
         $this->assertEquals($totalTaxStore, $order->getTaxAmount());
-        $this->assertEquals($totalTaxStoreBase, $order->getBaseTaxAmount());
+        $this->assertEquals($totalTaxBase, $order->getBaseTaxAmount());
 
         $orderTaxSchemes = $this->orderTaxSchemeCollectionFactory->create()->loadByOrder($order);
         $orderTaxScheme = $orderTaxSchemes->getItemByColumnValue('name', "UK VAT Scheme");
         $this->assertNotNull($orderTaxScheme);
         $this->assertEquals(
-            $totalTaxTaxSchemeUK,
-            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateStoreBaseToScheme(),2)
+            $totalTaxSchemeUK,
+            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateSchemeToBase(),2)
         );
         $this->assertEquals($order->getEntityId(), $orderTaxScheme->getOrderId());
         $this->assertEquals("GB553557881", $orderTaxScheme->getReference());
         $this->assertEquals("UK VAT Scheme", $orderTaxScheme->getName());
         $this->assertEquals("USD", $orderTaxScheme->getStoreCurrency());
-        $this->assertEquals("USD", $orderTaxScheme->getStoreBaseCurrency());
+        $this->assertEquals("USD", $orderTaxScheme->getBaseCurrency());
         $this->assertEquals("GBP", $orderTaxScheme->getSchemeCurrency());
-        $this->assertEquals(1.0, (float)$orderTaxScheme->getExchangeRateStoreToStoreBase());
-        $this->assertEquals(0.5, (float)$orderTaxScheme->getExchangeRateStoreBaseToScheme());
+        $this->assertEquals(1.0, (float)$orderTaxScheme->getExchangeRateBaseToStore());
+        $this->assertEquals(0.5, (float)$orderTaxScheme->getExchangeRateSchemeToBase());
         $this->assertEquals(5000.0, (float)$orderTaxScheme->getImportThresholdStore());
-        $this->assertEquals(5000.0, (float)$orderTaxScheme->getImportThresholdStoreBase());
+        $this->assertEquals(5000.0, (float)$orderTaxScheme->getImportThresholdBase());
         $this->assertEquals(10000.0, (float)$orderTaxScheme->getImportThresholdScheme());
 
         $orderTaxScheme = $orderTaxSchemes->getItemByColumnValue('name', "EU VAT OSS Scheme");
         $this->assertNotNull($orderTaxScheme);
         $this->assertEquals(
-            $totalTaxTaxSchemeEU,
-            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateStoreBaseToScheme(),2)
+            $totalTaxSchemeEU,
+            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateSchemeToBase(),2)
         );
         $this->assertEquals($order->getEntityId(), $orderTaxScheme->getOrderId());
         $this->assertEquals("IE6388047V", $orderTaxScheme->getReference());
         $this->assertEquals("EU VAT OSS Scheme", $orderTaxScheme->getName());
         $this->assertEquals("USD", $orderTaxScheme->getStoreCurrency());
-        $this->assertEquals("USD", $orderTaxScheme->getStoreBaseCurrency());
+        $this->assertEquals("USD", $orderTaxScheme->getBaseCurrency());
         $this->assertEquals("EUR", $orderTaxScheme->getSchemeCurrency());
-        $this->assertEquals(1.0, (float)$orderTaxScheme->getExchangeRateStoreToStoreBase());
-        $this->assertEquals(0.75, (float)$orderTaxScheme->getExchangeRateStoreBaseToScheme());
+        $this->assertEquals(1.0, (float)$orderTaxScheme->getExchangeRateBaseToStore());
+        $this->assertEquals(0.75, (float)$orderTaxScheme->getExchangeRateSchemeToBase());
         $this->assertEquals(15000.0, (float)$orderTaxScheme->getImportThresholdStore());
-        $this->assertEquals(15000.0, (float)$orderTaxScheme->getImportThresholdStoreBase());
+        $this->assertEquals(15000.0, (float)$orderTaxScheme->getImportThresholdBase());
         $this->assertEquals(20000.0, (float)$orderTaxScheme->getImportThresholdScheme());
     }
 
@@ -330,7 +331,7 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         //Tax Calc Method
         //Grand Total
         //Total Tax Store
-        //Total Tax Store Base
+        //Total Tax Base
         //Total Tax Scheme UK
         //Total Tax Scheme EU
         //Tax In Price

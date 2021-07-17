@@ -1,6 +1,7 @@
 <?php
 namespace Gw\AutoCustomerGroup\Observer;
 
+use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Sales\Model\Order;
@@ -10,6 +11,11 @@ use Exception;
 
 class CheckoutSubmitAllAfter implements ObserverInterface
 {
+    /**
+     * @var AutoCustomerGroup
+     */
+    private $autoCustomerGroup;
+
     /**
      * @var TaxRuleRepository
      */
@@ -23,14 +29,18 @@ class CheckoutSubmitAllAfter implements ObserverInterface
     /**
      * @param TaxRuleRepository $taxRuleRepository
      * @param OrderTaxSchemeInterfaceFactory $otsFactory
+     * @param AutoCustomerGroup $autoCustomerGroup
      */
     public function __construct(
         TaxRuleRepository $taxRuleRepository,
-        OrderTaxSchemeInterfaceFactory $otsFactory
+        OrderTaxSchemeInterfaceFactory $otsFactory,
+        AutoCustomerGroup $autoCustomerGroup
     ) {
         $this->taxRuleRepository = $taxRuleRepository;
         $this->otsFactory = $otsFactory;
+        $this->autoCustomerGroup = $autoCustomerGroup;
     }
+
     /**
      * @param Observer $observer
      * @return void
@@ -40,6 +50,10 @@ class CheckoutSubmitAllAfter implements ObserverInterface
         //Loop through the applied taxes on the order and extract the Tax Rule IDs that have been triggered
         /** @var Order $order */
         $order = $observer->getData('order');
+        $storeId = $order->getStoreId();
+        if (!$this->autoCustomerGroup->isSalesOrderTaxSchemeEnabled($storeId)) {
+            return;
+        }
         $orderEA = $order->getExtensionAttributes();
         $orderrules = [];
         if ($orderEA) {

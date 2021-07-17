@@ -13,7 +13,7 @@
                         <p><b>LEGAL DISCLAIMER</b> - The author of this module accepts no responsibility for any errors caused by this module. It is up to you
                             as the store owner/manager/exporter to ensure you are compliant with the laws in place in the countries that you ship to, and it is your
                             responsibility to ensure that your store is implementing those rules and laws correctly. The author does not make any guarantees as to whether
-                            this module implements the rules and laws correctly. That is for you to determine. The statements given in the descriptions below and the 
+                            this module implements the rules and laws correctly. That is for you to determine. The statements given in the descriptions below and the
                             rules that this module implement are not TAX advice. Please read and understand the scheme documentation yourself.</p>
                     </div>
                     ]]></comment>
@@ -40,6 +40,10 @@
                     <comment>To enable currency conversion of Import Thresholds using Magento Currency Conversion subsystem, the scheme currencies need to be
                         configured as additional base currencies within Magento. Currency download will need to be triggered after enabling this setting.</comment>
                 </field>
+                <field id="enable_sales_order_tax_scheme_table" translate="label" type="select" sortOrder="70" showInDefault="1" canRestore="1">
+                    <label>Enable recording of Tax Scheme details to sales_order_tax_scheme table</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="ukvat" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>UK VAT Scheme</label>
@@ -52,26 +56,26 @@
 <p>The module assumes the following rules :</p>
 <ul>
     <li><b>Domestic</b> - For shipments wthin the UK/IM, normal UK VAT rules apply.</li>
-    <li><b>Intra-EU B2B</b> - For shipments from the EU to NI and the buyer presents a validated UK VAT 
+    <li><b>Intra-EU B2B</b> - For shipments from the EU to NI and the buyer presents a validated UK VAT
         number, then the sale can be zero rated for UK VAT. Zero Rate notice to be included on Invoice.</li>
-    <li><b>Intra-EU B2C</b> - For shipments from the EU to NI and the buyer does not present a validated UK VAT 
+    <li><b>Intra-EU B2C</b> - For shipments from the EU to NI and the buyer does not present a validated UK VAT
         number UK VAT should be charged.</li>
-    <li><b>Import B2B</b> - For shipments from outside of the UK/IM to the UK/IM and the buyer presents a 
+    <li><b>Import B2B</b> - For shipments from outside of the UK/IM to the UK/IM and the buyer presents a
         validated UK VAT number, then VAT should not be charged. Reverse Charge notice to be included on Invoice.</li>
-    <li><b>Import Taxed</b> - For shipments from outside of the UK/IM to the UK/IM and the total goods value is equal to or below 135 GBP, then 
+    <li><b>Import Taxed</b> - For shipments from outside of the UK/IM to the UK/IM and the total goods value is equal to or below 135 GBP, then
         VAT should be charged.</li>
-    <li><b>Import Untaxed</b> - For shipments from outside of the UK/IM to the UK/IM, if the total goods value is above 135 GBP, then VAT should 
+    <li><b>Import Untaxed</b> - For shipments from outside of the UK/IM to the UK/IM, if the total goods value is above 135 GBP, then VAT should
         NOT be charged and instead will be collected at the UK/IM border along with any duties due.</li>
 </ul>
-<p>For the UK VAT Scheme, the following applies (This can be confirmed 
-    <a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk#goods-that-are-outside-the-uk-at-the-point-of-sal" 
+<p>For the UK VAT Scheme, the following applies (This can be confirmed
+    <a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk#goods-that-are-outside-the-uk-at-the-point-of-sal"
     target="_blank">here</a>) :</p>
 <ul>
     <li>Total Goods value is the sum of the sale price of all items sold (including any discounts)</li>
     <li>When determining whether VAT should be charged (VAT Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
     <li>When determining the amount of VAT to charge the Goods value does include Shipping and Insurance Costs.</li>
 </ul>
-<p>More information on the scheme can be found on the 
+<p>More information on the scheme can be found on the
     <a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk" target="_blank">UK Government Website</a></p>
 <p>If the customer enters a valid format UK VAT number at checkout, the number will be validated with the UK HMRC VAT Number checker service.</p>
 </div>
@@ -119,7 +123,7 @@
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from GBP to Store Base Currency. It is recommended to use the UK HMRC exchange rates, which can be found on the 
+                        The exchange rate to convert from GBP to Store Base Currency. It is recommended to use the UK HMRC exchange rates, which can be found on the
                         <a href="https://www.gov.uk/government/collections/exchange-rates-for-customs-and-vat" target="_blank">HMRC Website</a>.
                         ]]></comment>
                     <depends>
@@ -142,7 +146,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>       
+                </field>
                 <field id="intraeub2b" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -158,7 +162,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>     
+                </field>
                 <field id="importb2b" translate="label" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -190,24 +194,24 @@
 <div class="autocustomergroup-schemeoverview">
 <p>This Scheme applies to shipments being sent from anywhere in the world to the EU. Note special procedures
     apply for shipments from Northern Ireland (NI, Part of UK) to the EU.</p>
-<p>As of 1st July 2021, all sellers must register for the EU OSS scheme in an EU country of their choice, and collect the 
+<p>As of 1st July 2021, all sellers must register for the EU OSS scheme in an EU country of their choice, and collect the
     appropriate EU VAT at the point of sale and remit to the EU.</p>
 <p>The module assumes the following rules :</p>
 <ul>
     <li><b>Domestic</b> - For shipments within a single EU country, normal EU VAT rules apply.</li>
-    <li><b>Intra-EU B2B</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer presents a validated EU VAT number, then 
+    <li><b>Intra-EU B2B</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer presents a validated EU VAT number, then
         the sale can be zero rated for EU VAT. Zero Rate notice to be included on Invoice.</li>
-    <li><b>Intra-EU B2C</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer does NOT present a validated EU VAT number, then 
+    <li><b>Intra-EU B2C</b> - For shipments between different countries within the EU, or from NI to the EU and the buyer does NOT present a validated EU VAT number, then
         Destination Country VAT should be charged.</li>
-    <li><b>Import B2B</b> - For shipments from outside of the EU to within the EU and the buyer presents a validated EU VAT number, then 
+    <li><b>Import B2B</b> - For shipments from outside of the EU to within the EU and the buyer presents a validated EU VAT number, then
         VAT should not be charged. Reverse Charge notice to be included on Invoice.</li>
-    <li><b>Import Taxed</b> - For shipments from outside of the EU to the EU and the total goods value is equal to or below 150 EUR, then 
+    <li><b>Import Taxed</b> - For shipments from outside of the EU to the EU and the total goods value is equal to or below 150 EUR, then
         Destination Country VAT should be charged.</li>
-    <li><b>Import Untaxed</b> - For shipments from outside of the EU to the EU and the total goods value is above 150 EUR, then VAT should 
+    <li><b>Import Untaxed</b> - For shipments from outside of the EU to the EU and the total goods value is above 150 EUR, then VAT should
         NOT be charged and instead will be collected at the EU border along with any duties due.</li>
 </ul>
-<p>For the EU OSS VAT Scheme, the following applies (This can be confirmed 
-    <a href="https://ec.europa.eu/taxation_customs/sites/taxation/files/guidance_on_import_and_export_of_low_value_consignments_final.pdf" 
+<p>For the EU OSS VAT Scheme, the following applies (This can be confirmed
+    <a href="https://ec.europa.eu/taxation_customs/sites/taxation/files/guidance_on_import_and_export_of_low_value_consignments_final.pdf"
     target="_blank">here</a> in Section 1.3.1) :</p>
 <ul>
     <li>Total Goods value is the sum of the sale price of all items sold (including any discounts)</li>
@@ -244,13 +248,13 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>  
+                </field>
                 <field id="importthreshold" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Import VAT Threshold (EUR)</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>  
+                </field>
                 <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -262,7 +266,7 @@
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from EUR to Store Base Currency. It is recommended to use the EU InforEuro exchange rates, which can be found on the 
+                        The exchange rate to convert from EUR to Store Base Currency. It is recommended to use the EU InforEuro exchange rates, which can be found on the
                         <a href="https://ec.europa.eu/info/funding-tenders/how-eu-funding-works/information-contractors-and-beneficiaries/exchange-rate-inforeuro_en" target="_blank">European Comission Website</a>.
                         ]]></comment>
                     <depends>
@@ -277,7 +281,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>      
+                </field>
                 <field id="domestic" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -285,7 +289,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>           
+                </field>
                 <field id="intraeub2b" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -332,32 +336,32 @@
                 <comment><![CDATA[
 <div class="autocustomergroup-schemeoverview">
 <p>This Scheme applies to shipments being sent from anywhere in the world to Consumers (Not B2B transactions) in Norway.</p>
-<p>As of 1st April 2020, all sellers must (if their turnover to Norway exceeds 50,000 NOK) register for the Norway VOEC scheme, 
+<p>As of 1st April 2020, all sellers must (if their turnover to Norway exceeds 50,000 NOK) register for the Norway VOEC scheme,
     and collect Norwegian VAT for B2C transactions at the point of sale and remit to the Norwegian Government.</p>
 <p>The module assumes the following rules :</p>
 <ul>
     <li><b>Domestic</b> - For shipments within Norway, normal Norway VAT rules apply.</li>
-    <li><b>Import B2B</b> - For shipments from outside of Norway to Norway and the buyer presents a Norway Business Number, then 
+    <li><b>Import B2B</b> - For shipments from outside of Norway to Norway and the buyer presents a Norway Business Number, then
         VAT should not be charged.</li>
-    <li><b>Import Taxed</b> - For imports into Norway, where the value of each individual item is below or equal to 3,000 NOK, then 
+    <li><b>Import Taxed</b> - For imports into Norway, where the value of each individual item is below or equal to 3,000 NOK, then
         Norway VAT should be charged.</li>
-    <li><b>Import Untaxed</b> - For imports into Norway, where one or more individual items value is above 3,000 NOK, then VAT should 
+    <li><b>Import Untaxed</b> - For imports into Norway, where one or more individual items value is above 3,000 NOK, then VAT should
         NOT be charged and instead will be collected at the Norwegian border along with any duties due.</li>
 </ul>
-<p>For the Norway VOEC Scheme, the following applies (This can be confirmed 
-    <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf" 
+<p>For the Norway VOEC Scheme, the following applies (This can be confirmed
+    <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf"
     target="_blank">in Section 4.1</a>) :</p>
 <ul>
     <li>When determining whether VAT should be charged (VAT Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
     <li>When determining the amount of VAT to charge the Goods value does include Shipping and Insurance Costs.</li>
 </ul>
-<p>The <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf" 
+<p>The <a href="https://www.skatteetaten.no/globalassets/bedrift-og-organisasjon/voec/sell-charge-and-ship-to-norway---guidelines-for-online-stores-and-marketplaces.pdf"
     target="_blank">Online Stores and Marketplace Guidelines</a> refers to bundling in Section 4.2 where it states that multiple items can be shipped in a single shipment,
     and it is the cost of each item that determines whether VAT should be charged on each item, so a consignment of 10 items, each sold for
-    1,000 NOK, should still have VAT charged at the point of sale even though the total order value exceeds 3,000 NOK. The guidance recommends if an order contains a mix 
+    1,000 NOK, should still have VAT charged at the point of sale even though the total order value exceeds 3,000 NOK. The guidance recommends if an order contains a mix
     of above and below threshold items, that the order is split into separate orders. <b>Because of this, this module assumes that if
     any one single item in a shipment is above the threshold in value, then the entire order does not have VAT applied. Orders sent in
-    this way will be processed at the Norwegian border with VAT being charged as appropriate. This is still in accordance with Section 4.2 of the above guidance.</b> 
+    this way will be processed at the Norwegian border with VAT being charged as appropriate. This is still in accordance with Section 4.2 of the above guidance.</b>
 <p>More information on the scheme can be found on the
     <a href="https://www.skatteetaten.no/en/business-and-organisation/vat-and-duties/vat/foreign/e-commerce-voec/" target="_blank">Norwegian Tax Administration Website</a></p>
 <p>Norwegian Business Numbers are verified by a simple test that they are 9 digit numbers beginning with 8 or 9. No online lookups are performed.</p>
@@ -381,13 +385,13 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>  
+                </field>
                 <field id="importthreshold" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Import VAT Threshold (NOK)</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>       
+                </field>
                 <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -399,7 +403,7 @@
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from NOK to Store Base Currency. It is recommended to use the Norwegian Customs exchange rates, which can be found on the 
+                        The exchange rate to convert from NOK to Store Base Currency. It is recommended to use the Norwegian Customs exchange rates, which can be found on the
                         <a href="https://www.toll.no/en/services/exchange-rates/" target="_blank">Norwegian Customs Website</a>. Note, the published rates
                         are for conversion to NOK, so will need to be converted (NOK to Store Currency = 1/Published Rate).
                         ]]></comment>
@@ -415,7 +419,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>      
+                </field>
                 <field id="domestic" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -423,7 +427,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>           
+                </field>
                 <field id="importb2b" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -454,34 +458,34 @@
                 <comment><![CDATA[
 <div class="autocustomergroup-schemeoverview">
 <p>This Scheme applies to shipments being sent from anywhere in the world to Consumers (Not B2B transactions) in Australia.</p>
-<p>As of 1st July 2017, all sellers must (if their turnover to Australia exceeds 75,000 AUD) register for the Australia GST for Non Residents scheme, 
+<p>As of 1st July 2017, all sellers must (if their turnover to Australia exceeds 75,000 AUD) register for the Australia GST for Non Residents scheme,
     and collect GST for B2C transactions at the point of sale and remit to the Australian Government.</p>
 <p>The module assumes the following rules :</p>
 <ul>
     <li><b>Domestic</b> - For shipments within Australia, normal Australia GST rules apply.</li>
-    <li><b>Import B2B</b> - For shipments from outside of Australia to Australia and the buyer presents a validated for GST ABN number, then 
+    <li><b>Import B2B</b> - For shipments from outside of Australia to Australia and the buyer presents a validated for GST ABN number, then
         GST should not be charged.</li>
-    <li><b>Import Taxed</b> - For imports into Australia, where the total goods value is equal to or below 1,000 AUD, then 
+    <li><b>Import Taxed</b> - For imports into Australia, where the total goods value is equal to or below 1,000 AUD, then
         GST should be charged.</li>
-    <li><b>Import Untaxed</b> - For imports into Australia, where the total goods value is above 1,000 AUD, then GST should 
+    <li><b>Import Untaxed</b> - For imports into Australia, where the total goods value is above 1,000 AUD, then GST should
         NOT be charged and instead will be collected at the Australia border along with any duties due.</li>
 </ul>
-<p>For the Australia GST for Non Residents Scheme, the following applies (This can be confirmed 
-    <a href="https://www.ato.gov.au/business/international-tax-for-business/gst-on-low-value-imported-goods/terms-we-use/#Lowvaluegoods" 
+<p>For the Australia GST for Non Residents Scheme, the following applies (This can be confirmed
+    <a href="https://www.ato.gov.au/business/international-tax-for-business/gst-on-low-value-imported-goods/terms-we-use/#Lowvaluegoods"
     target="_blank">here</a>) :</p>
 <ul>
     <li>Total Goods value is the sum of the sale price of all items sold (including any discounts)</li>
     <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
     <li>When determining the amount of GST to charge the Goods value does include Shipping and Insurance Costs.</li>
 </ul>
-<p>The <a href="https://www.ato.gov.au/business/international-tax-for-business/gst-on-low-value-imported-goods/when-to-charge-gst/?anchor=ExceptionformultiplegoodsthattotaloverA1#ExceptionformultiplegoodsthattotaloverA1" target="_blank">When To Charge GST</a> 
+<p>The <a href="https://www.ato.gov.au/business/international-tax-for-business/gst-on-low-value-imported-goods/when-to-charge-gst/?anchor=ExceptionformultiplegoodsthattotaloverA1#ExceptionformultiplegoodsthattotaloverA1" target="_blank">When To Charge GST</a>
     guide details how to handle shipments that contain multiple low value items that will be shipped together, that when combined present an order
     value that is above 1,000 AUD. In this case, even though individual items may be classed as low value items and would attract GST, the value
     of the entire shipment is above the threshold and VAT should not be charged at the point of sale.</p>
 <p>More information on the scheme can be found on the
     <a href="https://www.ato.gov.au/business/international-tax-for-business/in-detail/doing-business-in-australia/australian-gst-registration-for-non-residents/" target="_blank">Australian Tax Office Website</a></p>
     <p>Credentials for the Australian Tax Office ABN checker API can be obtained by signing up on the <a href="https://abr.business.gov.au/Tools/WebServices" target="_blank">Australian Business Register Website</a>.</p>
-<p>If the customer enters a valid format AU ABN number at checkout, the number will be validated with the Australian Business Register. Credentials 
+<p>If the customer enters a valid format AU ABN number at checkout, the number will be validated with the Australian Business Register. Credentials
     for the Australian Business Register API can be obtained by signing up on the <a href="https://abr.business.gov.au/" target="_blank">Australian Business Register Website</a>.</p>
 </div>
                     ]]></comment>
@@ -515,7 +519,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>        
+                </field>
                 <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -527,7 +531,7 @@
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from AUD to Store Base Currency. It is recommended to use the Australian Tax Office exchange rates, which can be found on the 
+                        The exchange rate to convert from AUD to Store Base Currency. It is recommended to use the Australian Tax Office exchange rates, which can be found on the
                         <a href="https://www.ato.gov.au/Rates/Foreign-exchange-rates/?page=2#Monthly_rates" target="_blank">Australian Tax Office Website</a>.
                         ]]></comment>
                     <depends>
@@ -542,7 +546,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field> 
+                </field>
                 <field id="domestic" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -550,7 +554,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>           
+                </field>
                 <field id="importb2b" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -581,20 +585,20 @@
                 <comment><![CDATA[
 <div class="autocustomergroup-schemeoverview">
 <p>This Scheme applies to shipments being sent from anywhere in the world to Consumers (Not B2B transactions) in New Zealand.</p>
-<p>As of 1st December 2019, all sellers must (if their turnover to New Zealand exceeds 60,000 NZD) register for the New Zealand GST scheme, 
+<p>As of 1st December 2019, all sellers must (if their turnover to New Zealand exceeds 60,000 NZD) register for the New Zealand GST scheme,
     and collect GST for B2C transactions at the point of sale and remit to the New Zealand Government.</p>
 <p>The module assumes the following rules :</p>
 <ul>
     <li><b>Domestic</b> - For shipments within New Zealand, normal New Zealand GST rules apply.</li>
-    <li><b>Import B2B</b> - For shipments from outside of New Zealand to New Zealand and the buyer presents their GST Number, then 
+    <li><b>Import B2B</b> - For shipments from outside of New Zealand to New Zealand and the buyer presents their GST Number, then
         GST should not be charged.</li>
-    <li><b>Import Taxed</b> - For imports into New Zealand, where the value of each individual item is below or equal to 1,000 NZD, then 
+    <li><b>Import Taxed</b> - For imports into New Zealand, where the value of each individual item is below or equal to 1,000 NZD, then
         GST should be charged on the order.</li>
-    <li><b>Import Untaxed</b> - For imports into New Zealand, where one or more individual items value is above 1,000 NZD, then GST should 
+    <li><b>Import Untaxed</b> - For imports into New Zealand, where one or more individual items value is above 1,000 NZD, then GST should
         NOT be charged and instead will be collected at the New Zealand border along with any duties due.</li>
 </ul>
-<p>For the New Zealand GST Scheme, the following applies (This can be confirmed 
-    <a href="https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir200---ir299/ad264/ad264-2019.pdf" 
+<p>For the New Zealand GST Scheme, the following applies (This can be confirmed
+    <a href="https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir200---ir299/ad264/ad264-2019.pdf"
     target="_blank">here</a>) : </p>
 <ul>
     <li>When determining whether GST should be charged (GST Threshold) Shipping or Insurance Costs are not included in the value of the goods.</li>
@@ -603,8 +607,8 @@
 <p>The <a href="https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir200---ir299/ad264/ad264-2019.pdf" target="_blank">Selling goods to consumers
     in New Zealand Guide</a> provides information on what to do where an order contains a mixture of items below and above the threshold. It recommends to charge
     GST on the low value items and not charge GST on the high value items. This situation is too complex for this module to handle at present, therefore
-    if any single item on the order is above the GST Threshold, then no GST will be charged on the order, and the correct GST will be charged at the 
-    New Zealand border.</p> 
+    if any single item on the order is above the GST Threshold, then no GST will be charged on the order, and the correct GST will be charged at the
+    New Zealand border.</p>
 <p>More information on the scheme can be found on the
     <a href="https://www.ird.govt.nz/gst/gst-for-overseas-businesses/gst-on-low-value-imported-goods" target="_blank">New Zealand Inland Revenue Website</a></p>
 <p>GST Number Verification is performed by checking the number format and mathematical check digit. No online lookups are performed.</p>
@@ -634,7 +638,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>        
+                </field>
                 <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -646,7 +650,7 @@
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
-                        The exchange rate to convert from NZD to Store Base Currency. It is recommended to use the New Zealand Customs exchange rates, which can be found on the 
+                        The exchange rate to convert from NZD to Store Base Currency. It is recommended to use the New Zealand Customs exchange rates, which can be found on the
                         <a href="https://www.customs.govt.nz/business/import/customs-exchange-rates/" target="_blank">New Zealand Customs Service Website</a>.
                         ]]></comment>
 
@@ -662,7 +666,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field> 
+                </field>
                 <field id="domestic" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
@@ -670,7 +674,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                </field>           
+                </field>
                 <field id="importb2b" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
