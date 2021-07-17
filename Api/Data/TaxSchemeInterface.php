@@ -93,6 +93,14 @@ interface TaxSchemeInterface
     public function getSchemeId();
 
     /**
+     * Returns the Tax Scheme code. Can be used in comparing tax schemes, e.g
+     * when performing array_unique.
+     *
+     * @return string
+     */
+    public function __toString();
+
+    /**
      * Does this Scheme handle this country
      *
      * @param string $countryId

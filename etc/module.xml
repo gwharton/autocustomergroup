@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Gw_AutoCustomerGroup"/>
+    <module name="Gw_AutoCustomerGroup">
+        <sequence>
+            <module name="Magento_Tax"/>
+        </sequence>
+    </module>
 </config>

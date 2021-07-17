@@ -83,6 +83,15 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
     }
 
     /**
+     * Get Scheme Code
+     *
+     * @return string
+     */
+    public function __toString() {
+        return $this->getSchemeId();
+    }
+
+    /**
      * Return an array of Country ID's that this Scheme Supports
      *
      * @return string[]

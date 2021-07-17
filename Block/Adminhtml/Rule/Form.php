@@ -5,13 +5,18 @@ use Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Data\FormFactory;
 use Magento\Framework\Registry;
+use Magento\Tax\Api\Data\TaxRuleInterface;
 use Magento\Tax\Api\TaxClassRepositoryInterface;
 use Magento\Tax\Api\TaxRuleRepositoryInterface;
+use Magento\Tax\Block\Adminhtml\Rule\Edit\Form as RuleForm;
 use Magento\Tax\Model\Rate\Source;
 use Magento\Tax\Model\TaxClass\Source\Customer;
 use Magento\Tax\Model\TaxClass\Source\Product;
 
-class Form extends \Magento\Tax\Block\Adminhtml\Rule\Edit\Form
+/**
+ * Add additional dropdown box for Tax Scheme to the Tax Rule Form
+ */
+class Form extends RuleForm
 {
     /**
      * @var TaxSchemes
@@ -25,10 +30,11 @@ class Form extends \Magento\Tax\Block\Adminhtml\Rule\Edit\Form
      * @param Source $rateSource
      * @param TaxRuleRepositoryInterface $ruleService
      * @param TaxClassRepositoryInterface $taxClassService
-     * @param Customer $customerTaxClassSource
-     * @param Product $productTaxClassSource
+     * @param Customer $ctcSource
+     * @param Product $ptcSource
      * @param TaxSchemes $taxSchemes
      * @param array $data
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Context $context,
@@ -37,8 +43,8 @@ class Form extends \Magento\Tax\Block\Adminhtml\Rule\Edit\Form
         Source $rateSource,
         TaxRuleRepositoryInterface $ruleService,
         TaxClassRepositoryInterface $taxClassService,
-        Customer $customerTaxClassSource,
-        Product $productTaxClassSource,
+        Customer $ctcSource,
+        Product $ptcSource,
         TaxSchemes $taxSchemes,
         array $data = []
     ) {
@@ -49,16 +55,14 @@ class Form extends \Magento\Tax\Block\Adminhtml\Rule\Edit\Form
             $rateSource,
             $ruleService,
             $taxClassService,
-            $customerTaxClassSource,
-            $productTaxClassSource,
+            $ctcSource,
+            $ptcSource,
             $data
         );
         $this->taxSchemes = $taxSchemes;
     }
 
     /**
-     * Prepare form before rendering HTML.
-     *
      * @return $this
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -90,7 +94,11 @@ class Form extends \Magento\Tax\Block\Adminhtml\Rule\Edit\Form
         return $this;
     }
 
-    protected function extractTaxRuleData($taxRule)
+    /**
+     * @param TaxRuleInterface $taxRule
+     * @return array
+     */
+    protected function extractTaxRuleData($taxRule): array
     {
         $taxRuleData = parent::extractTaxRuleData($taxRule);
         $taxScheme = $taxRule->getExtensionAttributes()->getTaxScheme();

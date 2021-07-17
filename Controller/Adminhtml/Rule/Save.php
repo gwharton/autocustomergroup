@@ -1,5 +1,4 @@
 <?php
-
 namespace Gw\AutoCustomerGroup\Controller\Adminhtml\Rule;
 
 use Magento\Backend\App\Action\Context;
@@ -9,6 +8,10 @@ use Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Tax\Api\Data\TaxRuleInterfaceFactory;
 use Magento\Tax\Api\TaxRuleRepositoryInterface;
 
+/**
+ * When saving Tax Rules, ensure that if a tax scheme is linked, that
+ * it is saved into the extension attributes for the TaxRule.
+ */
 class Save extends \Magento\Tax\Controller\Adminhtml\Rule\Save
 {
     /**
@@ -42,7 +45,7 @@ class Save extends \Magento\Tax\Controller\Adminhtml\Rule\Save
     protected function populateTaxRule($postData): TaxRuleInterface
     {
         $taxRule = parent::populateTaxRule($postData);
-        if (isset($postData['tax_scheme_id']) && $postData['tax_scheme_id'] != "" ) {
+        if (isset($postData['tax_scheme_id']) && $postData['tax_scheme_id'] != "") {
             $ea = $taxRule->getExtensionAttributes();
             $ea->setTaxScheme($this->taxSchemes->getTaxScheme($postData['tax_scheme_id']));
             $taxRule->setExtensionAttributes($ea);

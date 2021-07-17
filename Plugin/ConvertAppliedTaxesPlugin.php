@@ -3,7 +3,11 @@ namespace Gw\AutoCustomerGroup\Plugin;
 
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
-class CopyTaxDetailsPlugin
+/**
+ * Ensure that the Extension Attributes for Tax Rule Ids that were set are copied over to the
+ * applied taxes object that the order will use.
+ */
+class ConvertAppliedTaxesPlugin
 {
     /**
      * @param CommonTaxCollector $subject
@@ -20,14 +24,10 @@ class CopyTaxDetailsPlugin
         $baseAppliedTaxes,
         $extraInfo = []
     ) {
-        foreach ($appliedTaxes as $code => $appliedTax) {
-            $taxableAmount = $appliedTax->getTaxableAmount();
-            $taxableBaseAmount = $baseAppliedTaxes[$code]->getTaxableAmount();
-            foreach ($result as $index => $res) {
-                if ($res['id'] == $code) {
-                    $result[$index]['extension_attributes']['taxable_amount'] = $taxableAmount;
-                    $result[$index]['extension_attributes']['base_taxable_amount'] = $taxableBaseAmount;
-                }
+        foreach ($result as $index1 => $appliedTax) {
+            foreach ($appliedTax['rates'] as $index2 => $rate) {
+                $extAtt = $appliedTaxes[$appliedTax['id']]->getRates()[$rate['code']]->getExtensionAttributes();
+                $result[$index1]['rates'][$index2]['extension_attributes']['tax_rule_ids'] = $extAtt->getTaxRuleIds() ?? [];
             }
         }
         return $result;

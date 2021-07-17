@@ -3,10 +3,15 @@ namespace Gw\AutoCustomerGroup\Plugin\Tax;
 
 use Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Tax\Api\Data\TaxRuleInterface;
 use Magento\Tax\Api\Data\TaxRuleSearchResultsInterface;
 use Magento\Tax\Model\Calculation\Rule;
 use Magento\Tax\Model\TaxRuleRepository;
 
+/**
+ * Ensure that the TaxScheme extension attribute is loaded and saved by the
+ * TaxRuleRepository.
+ */
 class TaxRuleRepositoryPlugin
 {
     /**
@@ -44,6 +49,7 @@ class TaxRuleRepositoryPlugin
             $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($taxSchemeId));
             $result->setExtensionAttributes($extensionAttributes);
         }
+        $result->unsetData('tax_scheme_id');
         return $result;
     }
 
@@ -51,20 +57,21 @@ class TaxRuleRepositoryPlugin
      * Save the value of tax_scheme_id from extension attribute
      *
      * @param TaxRuleRepository $subject
-     * @param Rule $entity
-     * @return Rule[]
+     * @param TaxRuleInterface $entity
+     * @return TaxRuleInterface[]
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function beforeSave(
         TaxRuleRepository $subject,
-        Rule $entity
+        TaxRuleInterface $entity
     ): array {
         $extensionAttributes = $entity->getExtensionAttributes();
         $taxScheme = $extensionAttributes->getTaxScheme();
+        /** @var Rule $entity */
         if ($taxScheme) {
             $entity->setData('tax_scheme_id', $taxScheme->getSchemeId());
         } else {
-            $entity->setData('tax_scheme_id', null);
+            $entity->setData('tax_scheme_id');
         }
         return [$entity];
     }
@@ -82,10 +89,10 @@ class TaxRuleRepositoryPlugin
         TaxRuleRepository $subject,
         TaxRuleSearchResultsInterface $result,
         SearchCriteriaInterface $searchCriteria
-    ) {
+    ): TaxRuleSearchResultsInterface {
         $taxRules = [];
-        /** @var Rule $entity */
         foreach ($result->getItems() as $entity) {
+            /** @var Rule $entity */
             $taxSchemeId = $entity->getData('tax_scheme_id');
             $taxScheme = $this->taxSchemes->getTaxScheme($taxSchemeId);
             if ($taxScheme) {

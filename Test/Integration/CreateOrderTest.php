@@ -130,13 +130,20 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
      * @return void
      * @magentoConfigFixture current_store autocustomergroup/general/enabled 1
      * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
+     *
      * @magentoConfigFixture current_store autocustomergroup/ukvat/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/ukvat/registrationnumber GB553557881
-     * @magentoConfigFixture current_store autocustomergroup/ukvat/name UK VAT Scheme
      * @magentoConfigFixture current_store autocustomergroup/ukvat/environment sandbox
      * @magentoConfigFixture current_store autocustomergroup/ukvat/usemagentoexchangerate 0
      * @magentoConfigFixture current_store autocustomergroup/ukvat/exchangerate 0.5
      * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 10000
+     *
+     * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber IE6388047V
+     * @magentoConfigFixture current_store autocustomergroup/euvat/usemagentoexchangerate 0
+     * @magentoConfigFixture current_store autocustomergroup/euvat/exchangerate 0.75
+     * @magentoConfigFixture current_store autocustomergroup/euvat/importthreshold 20000
+     *
      * @magentoConfigFixture current_store general/store_information/country_id US
      * @magentoConfigFixture current_store general/store_information/postcode 12345
      * @dataProvider dataProviderForTest
@@ -147,12 +154,13 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         $grandtotal,
         $totalTaxStore,
         $totalTaxStoreBase,
-        $totalTaxScheme,
-        $totalTaxableStore,
-        $totalTaxableStoreBase,
-        $totalTaxableScheme
+        $totalTaxTaxSchemeUK,
+        $totalTaxTaxSchemeEU,
+        $taxinprice
     ): void {
         $storeId = $this->storeManager->getStore()->getId();
+        $this->config->setValue('tax/calculation/price_includes_tax', $taxinprice, ScopeInterface::SCOPE_STORE);
+        $this->config->setValue('tax/calculation/shipping_includes_tax', $taxinprice, ScopeInterface::SCOPE_STORE);
         $this->config->setValue('tax/calculation/algorithm', $algorithm, ScopeInterface::SCOPE_STORE);
         $product1 = $this->productFactory->create();
         $product1->setTypeId('simple')
@@ -199,26 +207,47 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         $groupId = $this->groupRepository->save($groupDataObject)->getId();
         $this->config->setValue('autocustomergroup/ukvat/uk_import_taxed', $groupId, ScopeInterface::SCOPE_STORE);
 
-        $taxRate = [
+        $taxRate1 = [
             'tax_country_id' => 'GB',
             'tax_region_id' => '0',
             'tax_postcode' => '*',
             'code' => 'UK VAT',
-            'rate' => '20.0000',
-            'tax_scheme_id' => 'ukvat'
-        ];
-        $rate = $this->objectManager->create(\Magento\Tax\Model\Calculation\Rate::class)->setData($taxRate)->save();
+            'rate' => '20.0000'
+       ];
+        $rate1 = $this->objectManager->create(\Magento\Tax\Model\Calculation\Rate::class)->setData($taxRate1)->save();
 
-        $ruleData = [
+        $taxRate2 = [
+            'tax_country_id' => 'GB',
+            'tax_region_id' => '0',
+            'tax_postcode' => '*',
+            'code' => 'UK Reduced Rate',
+            'rate' => '5.0000'
+        ];
+        $rate2 = $this->objectManager->create(\Magento\Tax\Model\Calculation\Rate::class)->setData($taxRate2)->save();
+
+        $ruleData1 = [
             'code' => 'UK VAT Rule',
             'priority' => '0',
             'position' => '0',
             'customer_tax_class_ids' => [3],
             'product_tax_class_ids' => [2],
-            'tax_rate_ids' => [$rate->getId()],
-            'tax_rates_codes' => [$rate->getId() => $rate->getCode()],
+            'tax_rate_ids' => [$rate1->getId()],
+            'tax_rates_codes' => [$rate1->getId() => $rate1->getCode()],
+            'tax_scheme_id' => 'ukvat'
         ];
-        $this->objectManager->create(\Magento\Tax\Model\Calculation\Rule::class)->setData($ruleData)->save();
+        $this->objectManager->create(\Magento\Tax\Model\Calculation\Rule::class)->setData($ruleData1)->save();
+
+        $ruleData2 = [
+            'code' => 'EU Reduced VAT Rule',
+            'priority' => '0',
+            'position' => '0',
+            'customer_tax_class_ids' => [3],
+            'product_tax_class_ids' => [2],
+            'tax_rate_ids' => [$rate2->getId()],
+            'tax_rates_codes' => [$rate2->getId() => $rate2->getCode()],
+            'tax_scheme_id' => 'euvat'
+        ];
+        $this->objectManager->create(\Magento\Tax\Model\Calculation\Rule::class)->setData($ruleData2)->save();
 
         $shippingAddress = $this->addressFactory->create(['data' => $addressData]);
         $shippingAddress->setAddressType('shipping');
@@ -256,9 +285,12 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($totalTaxStoreBase, $order->getBaseTaxAmount());
 
         $orderTaxSchemes = $this->orderTaxSchemeCollectionFactory->create()->loadByOrder($order);
-        $orderTaxScheme = $orderTaxSchemes->getFirstItem();
+        $orderTaxScheme = $orderTaxSchemes->getItemByColumnValue('name', "UK VAT Scheme");
         $this->assertNotNull($orderTaxScheme);
-
+        $this->assertEquals(
+            $totalTaxTaxSchemeUK,
+            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateStoreBaseToScheme(),2)
+        );
         $this->assertEquals($order->getEntityId(), $orderTaxScheme->getOrderId());
         $this->assertEquals("GB553557881", $orderTaxScheme->getReference());
         $this->assertEquals("UK VAT Scheme", $orderTaxScheme->getName());
@@ -270,6 +302,24 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(5000.0, (float)$orderTaxScheme->getImportThresholdStore());
         $this->assertEquals(5000.0, (float)$orderTaxScheme->getImportThresholdStoreBase());
         $this->assertEquals(10000.0, (float)$orderTaxScheme->getImportThresholdScheme());
+
+        $orderTaxScheme = $orderTaxSchemes->getItemByColumnValue('name', "EU VAT OSS Scheme");
+        $this->assertNotNull($orderTaxScheme);
+        $this->assertEquals(
+            $totalTaxTaxSchemeEU,
+            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateStoreBaseToScheme(),2)
+        );
+        $this->assertEquals($order->getEntityId(), $orderTaxScheme->getOrderId());
+        $this->assertEquals("IE6388047V", $orderTaxScheme->getReference());
+        $this->assertEquals("EU VAT OSS Scheme", $orderTaxScheme->getName());
+        $this->assertEquals("USD", $orderTaxScheme->getStoreCurrency());
+        $this->assertEquals("USD", $orderTaxScheme->getStoreBaseCurrency());
+        $this->assertEquals("EUR", $orderTaxScheme->getSchemeCurrency());
+        $this->assertEquals(1.0, (float)$orderTaxScheme->getExchangeRateStoreToStoreBase());
+        $this->assertEquals(0.75, (float)$orderTaxScheme->getExchangeRateStoreBaseToScheme());
+        $this->assertEquals(15000.0, (float)$orderTaxScheme->getImportThresholdStore());
+        $this->assertEquals(15000.0, (float)$orderTaxScheme->getImportThresholdStoreBase());
+        $this->assertEquals(20000.0, (float)$orderTaxScheme->getImportThresholdScheme());
     }
 
     /**
@@ -281,11 +331,13 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         //Grand Total
         //Total Tax Store
         //Total Tax Store Base
-        //Total Tax Scheme
+        //Total Tax Scheme UK
+        //Total Tax Scheme EU
+        //Tax In Price
         return [
-            ['UNIT_BASE_CALCULATION', 1006.14, 167.67, 167.67, 335.34, 838.47, 838.47, 1676.94]//,
-            //['ROW_BASE_CALCULATION', 1006.16, 167.69, 167.69, 335.38, 838.47, 838.47, 1676.94],
-            //['TOTAL_BASE_CALCULATION', 1006.16, 167.69, 167.69, 335.38, 838.47, 838.47, 1676.94]
+            ['UNIT_BASE_CALCULATION', 1048.08, 209.61, 209.61, 419.22, 279.48, 0],
+            ['ROW_BASE_CALCULATION', 1048.09, 209.62, 209.62, 419.24, 279.49, 0],
+            ['TOTAL_BASE_CALCULATION', 1048.09, 209.62, 209.62, 419.24, 279.49, 0]
         ];
     }
 }

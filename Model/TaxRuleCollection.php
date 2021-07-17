@@ -2,11 +2,20 @@
 
 namespace Gw\AutoCustomerGroup\Model;
 
+use Magento\Framework\DataObject;
 use Magento\Tax\Api\Data\TaxRuleInterface;
 
+/**
+ * TaxRuleCollection is used by the Tax Rule Admin Grid. We add the
+ * tax_scheme_id data item so it can be displayed in the grid.
+ */
 class TaxRuleCollection extends \Magento\Tax\Model\TaxRuleCollection
 {
-    protected function createTaxRuleCollectionItem(TaxRuleInterface $taxRule)
+    /**
+     * @param TaxRuleInterface $taxRule
+     * @return DataObject
+     */
+    protected function createTaxRuleCollectionItem(TaxRuleInterface $taxRule): DataObject
     {
         $collectionItem = parent::createTaxRuleCollectionItem($taxRule);
         $taxScheme = $taxRule->getExtensionAttributes()->getTaxScheme();
@@ -15,7 +24,7 @@ class TaxRuleCollection extends \Magento\Tax\Model\TaxRuleCollection
                 'extension_attributes',
                 $taxRule->getExtensionAttributes()
             );
-            $collectionItem->setTaxSchemeId($taxScheme->getSchemeId());
+            $collectionItem->setData('tax_scheme_id', $taxScheme->getSchemeId());
         }
         return $collectionItem;
     }

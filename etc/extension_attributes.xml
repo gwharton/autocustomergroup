@@ -11,4 +11,7 @@
         <attribute code="taxable_amount" type="float" />
         <attribute code="base_taxable_amount" type="float" />
     </extension_attributes>
+    <extension_attributes for="Magento\Tax\Api\Data\AppliedTaxRateInterface">
+        <attribute code="tax_rule_ids" type="int[]" />
+    </extension_attributes>
 </config>
