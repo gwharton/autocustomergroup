@@ -82,7 +82,9 @@ class TotalsCollectorPlugin
             $address->setCountryId($customerCountryCode);
             $address->setVatId($customerTaxId);
         }
-
+        if (empty($customerCountryCode)) {
+            return $total;
+        }
         $validationResult = null;
         if (!empty($customerTaxId) &&
             ($this->autoCustomerGroup->isValidateOnEachTransactionEnabled($storeId) ||
