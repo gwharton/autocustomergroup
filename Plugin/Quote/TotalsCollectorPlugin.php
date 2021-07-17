@@ -62,7 +62,7 @@ class TotalsCollectorPlugin
     ) {
         /** @var \Magento\Customer\Api\Data\CustomerInterface $customer */
         $customer = $quote->getCustomer();
-        $storeId = $this->storeManager->getStore()->getId();
+        $storeId = $quote->getStoreId();
 
         if (!$this->autoCustomerGroup->isModuleEnabled($storeId) ||
             $customer->getDisableAutoGroupChange() ||
@@ -82,7 +82,7 @@ class TotalsCollectorPlugin
             $address->setCountryId($customerCountryCode);
             $address->setVatId($customerTaxId);
         }
-        if (empty($customerCountryCode)) {
+        if (empty($customerCountryCode) || !$storeId) {
             return $total;
         }
         $validationResult = null;

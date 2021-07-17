@@ -39,13 +39,13 @@ class AutoCustomerGroup
     /**
      * @param string $countryCode
      * @param string $taxId
-     * @param int|null $storeId
+     * @param int $storeId
      * @return DataObject|null
      */
     public function checkTaxId(
         string $countryCode,
         string $taxId,
-        ?int $storeId
+        int $storeId
     ): ?DataObject {
         if ($this->isModuleEnabled($storeId)) {
             foreach ($this->taxSchemes->getEnabledTaxSchemes($storeId) as $taxScheme) {

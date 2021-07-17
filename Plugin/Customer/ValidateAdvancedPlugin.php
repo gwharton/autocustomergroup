@@ -72,17 +72,21 @@ class ValidateAdvancedPlugin
         ValidateAdvanced $subject,
         callable $proceed
     ) {
-        $countrycode = $this->request->getParam('country');
         $storeId = (int)$this->request->getParam('store_id', Store::DEFAULT_STORE_ID);
         if ($this->autoCustomerGroup->isModuleEnabled($storeId)) {
+            $countrycode = $this->request->getParam('country');
             $quote = $this->quoteSession->getQuote();
             $postcode = $this->request->getParam('postcode');
             $taxIdToCheck = $this->request->getParam('tax');
-            $gatewayresponse = $this->autoCustomerGroup->checkTaxId(
-                $countrycode,
-                $taxIdToCheck,
-                $storeId
-            );
+
+            $gatewayresponse = null;
+            if (!empty($countrycode) && !empty($taxIdToCheck) && $storeId) {
+                $gatewayresponse = $this->autoCustomerGroup->checkTaxId(
+                    $countrycode,
+                    $taxIdToCheck,
+                    $storeId
+                );
+            }
 
             $result = [
                 'valid' => false,

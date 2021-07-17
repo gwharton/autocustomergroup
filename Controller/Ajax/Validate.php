@@ -67,18 +67,19 @@ class Validate implements HttpPostActionInterface
         $taxIdToCheck = $this->request->getParam('tax_id');
         $countrycode = $this->request->getParam('country_code');
         $storeId = (int)$this->request->getParam('store_id', 0);
-        if (!$this->validator->validate($this->request) ||
-            !$taxIdToCheck ||
-            !$countrycode) {
+        if (!$this->validator->validate($this->request)) {
             $redirect = $this->redirectFactory->create();
             return $redirect->setPath('*/*/');
         }
 
-        $gatewayresponse = $this->autoCustomerGroup->checkTaxId(
-            $countrycode,
-            $taxIdToCheck,
-            $storeId
-        );
+        $gatewayresponse = null;
+        if (!empty($countrycode) && !empty($taxIdToCheck) && $storeId) {
+            $gatewayresponse = $this->autoCustomerGroup->checkTaxId(
+                $countrycode,
+                $taxIdToCheck,
+                $storeId
+            );
+        }
 
         $responsedata = [
             'valid' => false,

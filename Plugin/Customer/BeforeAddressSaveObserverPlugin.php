@@ -63,7 +63,9 @@ class BeforeAddressSaveObserverPlugin
             //We only validate the VAT Number and store the results. We do not change the
             //Customer group at this stage, as the this depends on order value, which we
             //Don't have at this stage.
-            if (!empty($customerAddress->getVatId())) {
+            if (!empty($customerAddress->getVatId()) &&
+                !empty($customerAddress->getVatId()) &&
+                $customer->getStore()->getId()) {
                 $validationResult = $this->autoCustomerGroup->checkTaxId(
                     $customerAddress->getCountryId(),
                     $customerAddress->getVatId(),
