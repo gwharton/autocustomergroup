@@ -29,7 +29,7 @@ class RowBaseCalculator extends CalculationRowBaseCalculator
      * @param AppliedTaxRateInterfaceFactory $appliedTaxRateFac
      * @param Calculation $calculationTool
      * @param Config $config
-     * @param $storeId
+     * @param int $storeId
      * @param TaxRuleExtractor $taxRuleExtractor
      * @param DataObject|null $addressRateRequest
      */
@@ -40,7 +40,7 @@ class RowBaseCalculator extends CalculationRowBaseCalculator
         AppliedTaxRateInterfaceFactory $appliedTaxRateFac,
         Calculation $calculationTool,
         Config $config,
-        $storeId,
+        int $storeId,
         TaxRuleExtractor $taxRuleExtractor,
         DataObject $addressRateRequest = null
     ) {
