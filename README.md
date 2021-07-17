@@ -133,18 +133,6 @@ when generating invoices for example.</p>
 <p>The links can be set under the existing Tax Zones and Rates Screens</p>
 <img src="images/taxrates.png">
 
-<h2>Populating the sales_order_tax_scheme table from existing orders</h2>
-<p>php bin/magento autocustomergroup:sales-order-tax:populate</p>
-<p>The above command will inspect the sales_order_tax table and create the 
-corresponsing entries in the sales_order_tax_scheme table for all historical orders where
-tax has been collected.</p>
-<p>For this to succeed, all entries in the sales_order_tax table must have a "code" field
-that matches the "code" for a current tax rule.</p>
-<p>Entries in sales_order_tax_scheme are only created if the tax rule is linked to a tax scheme.</p>
-<p>This function has a limitation in that once an order is placed, it is no longer
-possible to determine the taxable_amounts, when the order contains a mix of different
-tax rates on the same order. The routine uses the order subtotals to generate what the
-taxable_amounts should be. If there are no mixed tax rates, it will be correct.</p>
 <h2>Getting Information on Tax Schemes used on Order</h2>
 <p>This module stores additional information into the sales_order_tax_scheme table whenever
 an order is placed that triggered a tax rule linked to a Tax Scheme.</p>
@@ -155,75 +143,27 @@ used on an order, can be included on the Invoice PDF's for example.</p>
 <code>
     
     use Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme\CollectionFactory;
-    use Magento\Directory\Model\CurrencyFactory;
 
     /**
      * @var CollectionFactory
      */
     private $orderTaxSchemeCollectionFactory;
 
-    /**
-     * @var CurrencyFactory
-     */
-    public $currencyFactory;
     ...
     ...
     ...
 
     $orderTaxSchemes = $this->orderTaxSchemeCollectionFactory->create()->loadByOrder($order);
-    foreach ($orderTaxSchemes as $taxScheme) {
-        $storeCurrency = $this->currencyFactory->create()->load($taxScheme->getStoreCurrency());
-        $schemeCurrency = $this->currencyFactory->create()->load($taxScheme->getSchemeCurrency());
-        $baseCurrency = $this->currencyFactory->create()->load($taxScheme->getBaseCurrency());
+    foreach ($orderTaxSchemes as $orderTaxScheme) {
+        $storeCurrency = $this->currencyFactory->create()->load($orderTaxScheme->getStoreCurrency());
+        $schemeCurrency = $this->currencyFactory->create()->load($orderTaxScheme->getSchemeCurrency());
+        $baseCurrency = $this->currencyFactory->create()->load($orderTaxScheme->getBaseCurrency());
 
-        output("TAX Summary - " . $taxScheme->getName());
-
-        tableheading("Registration Number");
-        tableheading("Currency");
-        tableheading("Exchange Rate");
-        tableheading("TAX Rate");
-        tableheading("Taxable Total");
-        tableheading("TAX");
-
-        //Store Currency
-        cell($taxScheme->getReference());
-        cell($taxScheme->getStoreCurrency());
-        cell("");
-        cell(round($taxScheme->getRate(), 2) . "%");
-        cell($storeCurrency->formatTxt($taxScheme->getTaxableAmountStore(), ['precision' => 2]));
-        cell($storeCurrency->formatTxt($taxScheme->getTaxAmountStore(), ['precision' => 2]));
-
-        //Base Currency
-        if ($taxScheme->getStoreBaseCurrency() != $taxScheme->getStoreCurrency())
-        {
-            $exchangerate = $taxScheme->getExchangeRateStoreToStoreBase();
-            cell("");
-            cell($taxScheme->getStoreBaseCurrency());
-            cell($taxScheme->getStoreBaseCurrency() . " > " . $taxScheme->getStoreCurrency() . " = " . $exchangerate);
-            cell(round($taxScheme->getRate(), 2) . "%");
-            cell($storeCurrency->formatTxt($taxScheme->getTaxableAmountStoreBase(), ['precision' => 2]));
-            cell($storeCurrency->formatTxt($taxScheme->getTaxAmountStoreBase(), ['precision' => 2]));
-        }
-
-        //Scheme Currency
-        if ($taxScheme->getSchemeCurrency() != $taxScheme->getStoreCurrency())
-        {
-            $exchangerate = $taxScheme->getExchangeRateStoreToStoreBase() *
-                    $taxScheme->getExchangeRateStoreBaseToScheme();
-            cell("");
-            cell($taxScheme->getSchemeCurrency());
-            cell($taxScheme->getSchemeCurrency() . " > " . $taxScheme->getStoreCurrency() . " = " . $exchangerate);
-            cell(round($taxScheme->getRate(), 2) . "%");
-            cell($storeCurrency->formatTxt($taxScheme->getTaxableAmountScheme(), ['precision' => 2]));
-            cell($storeCurrency->formatTxt($taxScheme->getTaxAmountScheme(), ['precision' => 2]));
-        }
+        output("TAX Summary - " . $orderTaxScheme->getName());
+        output("Registration Number - " . $orderTaxScheme->getReference());
+    }
 </code>
 </pre>
-<p>This will produce output similar to the following</p>
-<ul>
-<li>Scheme Currency is the same as Store currency.<br><img src="images/pdftaxscheme1.png"></li>
-<li>Scheme Currency is different to Store currency.<br><img src="images/pdftaxscheme2.png"></li>
-</ul>
 <h2>Integration Tests</h2>
 <p>To run the integration tests, you need your own credentials for the Australian ID Checker services. Please
 add them to config-global.php. The tests for UK (Sandbox), EU and Australia use the live API's</p>

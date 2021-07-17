@@ -1,15 +1,9 @@
 <?php
 namespace Gw\AutoCustomerGroup\Console\Command;
 
-use Gw\AutoCustomerGroup\Model\OrderTaxSchemeFactory;
-use Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface;
-use Magento\Framework\Api\FilterBuilder;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\DataObject\Copy;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Quote\Model\QuoteFactory;
+use Gw\AutoCustomerGroup\Api\Data\OrderTaxSchemeInterfaceFactory;
+use Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Sales\Model\OrderRepository;
-use Magento\Tax\Api\TaxRateRepositoryInterface;
 use Magento\Tax\Model\Sales\Order\Tax;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,6 +12,7 @@ use Magento\Framework\Console\Cli;
 use Magento\Tax\Model\ResourceModel\Sales\Order\Tax\CollectionFactory;
 use Magento\Framework\App\State;
 use Magento\Framework\App\Area;
+use Exception;
 
 class PopulateSalesOrderTaxSchemeTable extends Command
 {
@@ -30,9 +25,14 @@ class PopulateSalesOrderTaxSchemeTable extends Command
     private $orderTaxCollectionFactory;
 
     /**
-     * @var OrderTaxSchemeFactory
+     * @var OrderTaxSchemeInterfaceFactory
      */
-    private $orderTaxSchemeFactory;
+    private $otsFactory;
+
+    /**
+     * @var TaxSchemes
+     */
+    private $taxSchemes;
 
     /**
      * @var OrderRepository
@@ -40,67 +40,30 @@ class PopulateSalesOrderTaxSchemeTable extends Command
     private $orderRepository;
 
     /**
-     * @var FilterBuilder
-     */
-    private $filterBuilder;
-
-    /**
-     * @var SearchCriteriaBuilder
-     */
-    private $searchCriteriaBuilder;
-
-    /**
-     * @var TaxRateRepositoryInterface
-     */
-    private $taxRateRepository;
-
-    /**
      * @var State
      */
     private $state;
 
     /**
-     * @var Copy
-     */
-    private $copyService;
-
-    /**
-     * @var QuoteFactory
-     */
-    private $quoteFactory;
-
-    /**
      * @param CollectionFactory $orderTaxCollectionFactory
-     * @param OrderTaxSchemeFactory $orderTaxSchemeFactory
+     * @param OrderTaxSchemeInterfaceFactory $otsFactory
      * @param OrderRepository $orderRepository
-     * @param FilterBuilder $filterBuilder
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param TaxRateRepositoryInterface $taxRateRepository
      * @param State $state
-     * @param Copy $copyService
-     * @param QuoteFactory $quoteFactory
+     * @param TaxSchemes $taxSchemes
      */
     public function __construct(
         CollectionFactory $orderTaxCollectionFactory,
-        OrderTaxSchemeFactory $orderTaxSchemeFactory,
+        OrderTaxSchemeInterfaceFactory $otsFactory,
         OrderRepository $orderRepository,
-        FilterBuilder $filterBuilder,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        TaxRateRepositoryInterface $taxRateRepository,
         State $state,
-        Copy $copyService,
-        QuoteFactory $quoteFactory
+        TaxSchemes $taxSchemes
     ) {
         $this->orderTaxCollectionFactory = $orderTaxCollectionFactory;
-        $this->orderTaxSchemeFactory = $orderTaxSchemeFactory;
+        $this->otsFactory = $otsFactory;
         $this->orderRepository = $orderRepository;
-        $this->filterBuilder = $filterBuilder;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->taxRateRepository = $taxRateRepository;
         $this->state = $state;
-        $this->copyService = $copyService;
-        $this->quoteFactory = $quoteFactory;
         parent::__construct();
+        $this->taxSchemes = $taxSchemes;
     }
 
     protected function configure()
@@ -119,86 +82,32 @@ class PopulateSalesOrderTaxSchemeTable extends Command
             foreach ($this->orderTaxCollectionFactory->create() as $tax) {
                 /** @var Tax $tax */
                 $output->writeln('<info>Processing Tax ID ' . $tax->getId() . '</info>');
-
+                $taxScheme = $this->taxSchemes->getTaxScheme('ukvat');
                 $order = $this->orderRepository->get($tax->getOrderId());
-                if (!$order) {
-                    throw new LocalizedException(__('Failed to Load Order.'));
-                }
                 $storeId = $order->getStoreId();
-                $filter = $this->filterBuilder
-                    ->setField('code')
-                    ->setConditionType('eq')
-                    ->setValue($tax->getCode())
-                    ->create();
-                $this->searchCriteriaBuilder->addFilters([$filter]);
-                $searchCriteria = $this->searchCriteriaBuilder->create();
-                $taxRates = $this->taxRateRepository->getList($searchCriteria);
-                if ($taxRates->getTotalCount() != 1) {
-                    throw new LocalizedException(__('Unable to locate Tax Rate from Tax Code.' . $tax->getCode()));
-                }
-                $rate = $taxRates->getItems()[0];
-                if (!$rate) {
-                    throw new LocalizedException(__('Invalid Tax Rate.'));
-                }
-                /** @var TaxSchemeInterface $taxScheme */
-                $taxScheme = $rate->getExtensionAttributes()->getTaxScheme();
-                if ($taxScheme) {
-                    $percent = $tax->getPercent();
-                    $storeToBase = $order->getStoreToBaseRate() == 0.0 ? 1.0 : $order->getStoreToBaseRate();
-                    $subtotal = 0.0;
-                    $subtotalbase = 0.0;
-                    /** @var \Magento\Sales\Model\Order\Item $item */
-                    foreach ($order->getAllItems() as $item) {
-                        $subtotal += ($item->getRowTotal() - $item->getDiscountAmount());
-                        $subtotalbase += ($item->getBaseRowTotal() - $item->getBaseDiscountAmount());
-                    }
-                    $subtotal += $order->getShippingAmount();
-                    $subtotalbase += $order->getBaseShippingAmount();
-
-                    $data = [
-                        'tax_id' => (int)$tax->getId(),
-                        'order_id' => (int)$tax->getOrderId(),
-                        'reference' => $taxScheme->getSchemeRegistrationNumber($storeId),
-                        'name' => $taxScheme->getSchemeName(),
-                        'code' => $tax->getCode(),
-                        'rate' => (float)$percent,
-                        'store_currency' => $order->getOrderCurrencyCode(),
-                        'store_base_currency' => $order->getBaseCurrencyCode(),
-                        'scheme_currency' => $taxScheme->getSchemeCurrencyCode(),
-                        'exchange_rate_store_to_store_base' => (float)$storeToBase,
-                        'exchange_rate_store_base_to_scheme' => (float)$taxScheme->getSchemeExchangeRate($storeId),
-                        'import_threshold_store_base' => (float)$taxScheme->getThresholdInBaseCurrency($storeId),
-                        'import_threshold_store' => (float)$taxScheme->getThresholdInBaseCurrency($storeId) /
-                            $storeToBase,
-                        'import_threshold_scheme' => (float)$taxScheme->getThresholdInSchemeCurrency($storeId),
-                        'taxable_amount_store_base' => (float)$subtotalbase,
-                        'taxable_amount_store' => (float)$subtotal,
-                        'taxable_amount_scheme' => (float)$subtotalbase / $taxScheme->getSchemeExchangeRate($storeId),
-                        'tax_amount_store_base' => (float)$tax->getBaseAmount(),
-                        'tax_amount_store' => (float)$tax->getAmount(),
-                        'tax_amount_scheme' => (float)$tax->getBaseAmount() /
-                            $taxScheme->getSchemeExchangeRate($storeId)
-                    ];
-
-                    $orderTaxScheme = $this->orderTaxSchemeFactory->create();
-                    $orderTaxScheme->setData($data)->save();
-                    $output->writeln('<info>Saving Tax Scheme</info>');
-                }
+                $baseToStore = 1 / ($order->getStoreToBaseRate() == 0.0 ? 1.0 : $order->getStoreToBaseRate());
+                $orderTaxScheme = $this->otsFactory->create();
+                $orderTaxScheme->setOrderId((int)$tax->getOrderId());
+                $orderTaxScheme->setReference($taxScheme->getSchemeRegistrationNumber($storeId));
+                $orderTaxScheme->setName($taxScheme->getSchemeName());
+                $orderTaxScheme->setStoreCurrency($order->getOrderCurrencyCode());
+                $orderTaxScheme->setBaseCurrency($order->getBaseCurrencyCode());
+                $orderTaxScheme->setSchemeCurrency($taxScheme->getSchemeCurrencyCode());
+                $orderTaxScheme->setExchangeRateBaseToStore((float)$baseToStore);
+                $orderTaxScheme->setExchangeRateSchemeToBase((float)$taxScheme->getSchemeExchangeRate($storeId));
+                $orderTaxScheme->setImportThresholdBase((float)$taxScheme->getThresholdInBaseCurrency($storeId));
+                $orderTaxScheme->setImportThresholdStore((float)$taxScheme->getThresholdInBaseCurrency($storeId) *
+                    $baseToStore);
+                $orderTaxScheme->setImportThresholdScheme((float)$taxScheme->getThresholdInSchemeCurrency($storeId));
+                $orderTaxScheme->save();
+                $output->writeln('<info>Saving Tax Scheme</info>');
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
             return Cli::RETURN_FAILURE;
         }
 
         return Cli::RETURN_SUCCESS;
     }
-
-
-
-
-
-
-
-
 }
