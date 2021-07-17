@@ -64,13 +64,6 @@
         <plugin name="taxRuleRepositoryPlugin" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRuleRepositoryPlugin" />
     </type>
     <preference for="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface" type="Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme" />
-    <type name="Magento\Framework\Console\CommandListInterface">
-        <arguments>
-            <argument name="commands" xsi:type="array">
-                <item name="populate_sales_order_tax_scheme" xsi:type="object">Gw\AutoCustomerGroup\Console\Command\PopulateSalesOrderTaxSchemeTable</item>
-            </argument>
-        </arguments>
-    </type>
     <type name="Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector">
         <plugin name="CopyTaxDetailsPlugin" type="Gw\AutoCustomerGroup\Plugin\ConvertAppliedTaxesPlugin"/>
     </type>
