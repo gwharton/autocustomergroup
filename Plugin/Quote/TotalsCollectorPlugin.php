@@ -9,6 +9,7 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\TotalsCollector;
 use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
 
 class TotalsCollectorPlugin
 {
@@ -33,17 +34,29 @@ class TotalsCollectorPlugin
     protected $storeManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @param Session $customerSession
+     * @param AutoCustomerGroup $autoCustomerGroup
+     * @param AddressRepositoryInterface $addressRepository
+     * @param StoreManagerInterface $storeManager
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Session $customerSession,
         AutoCustomerGroup $autoCustomerGroup,
         AddressRepositoryInterface $addressRepository,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        LoggerInterface $logger
     ) {
         $this->customerSession = $customerSession;
         $this->autoCustomerGroup = $autoCustomerGroup;
         $this->addressRepository = $addressRepository;
         $this->storeManager = $storeManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -123,7 +136,7 @@ class TotalsCollectorPlugin
             //Get the auto assigned group for customer
             $groupId = $this->autoCustomerGroup->getCustomerGroup(
                 $customerCountryCode,
-                $address->getPostcode(),
+                $address->getPostcode() ?? "",
                 $validationResult,
                 $quote,
                 $storeId
@@ -131,9 +144,18 @@ class TotalsCollectorPlugin
         }
 
         //Update the quote object if the group has changed.
+        $this->logger->debug("AutoCustomerGroup::Plugin/Quote/TotalsCollectorPlugin.php - Old Group Id=" .
+            $quote->getCustomerGroupId() .
+            " New Group Id=" .
+            $groupId);
+
         if (($groupId !== null) && $groupId !== $quote->getCustomerGroupId()) {
             $address->setPrevQuoteCustomerGroupId($quote->getCustomerGroupId());
             $quote->setCustomerGroupId($groupId);
+            $this->logger->debug(
+                "AutoCustomerGroup::Plugin/Quote/TotalsCollectorPlugin.php - Setting quote Group to " .
+                $groupId
+            );
             $this->customerSession->setCustomerGroupId($groupId);
             if ($customer->getId() !== null) {
                 $customer->setGroupId($groupId);

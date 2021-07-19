@@ -5,6 +5,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
+use Psr\Log\LoggerInterface;
 
 class AutoCustomerGroup
 {
@@ -25,15 +26,23 @@ class AutoCustomerGroup
     private $scopeConfig;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param TaxSchemes $taxSchemes
      * @param ScopeConfigInterface $scopeConfig
+     * @param LoggerInterface $logger
      */
     public function __construct(
         TaxSchemes $taxSchemes,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        LoggerInterface $logger
     ) {
         $this->taxSchemes = $taxSchemes;
         $this->scopeConfig = $scopeConfig;
+        $this->logger = $logger;
     }
 
     /**

@@ -341,9 +341,14 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
         //Merchant Postcode
         //Destination Country
         //Destination Postcode
+        //Tax ID
         //Expected Customer Group
         //Discount Percentage
         return [
+            //USA
+            [1, 10, 'GB', 'DT3 5RX', 'US', '90210', '', 'NOT LOGGED IN', 0 ],
+
+            //Brazil
             [1, 10, 'FR', '75001', 'BR', '12345', '', 'NOT LOGGED IN', 0],
             [1, 10, 'GB', '', 'BR', '12345', '', 'NOT LOGGED IN', 0],
 
