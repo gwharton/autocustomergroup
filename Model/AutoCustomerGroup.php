@@ -5,7 +5,6 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
-use Psr\Log\LoggerInterface;
 
 class AutoCustomerGroup
 {
@@ -14,6 +13,7 @@ class AutoCustomerGroup
     const XML_PATH_MODULE_ENABLED = 'autocustomergroup/general/enabled';
     const XML_PATH_VALIDATE_ON_EACH = 'autocustomergroup/general/validate_on_each_transaction';
     const XML_PATH_SALES_ORDER_TAX_SCHEME = 'autocustomergroup/general/enable_sales_order_tax_scheme_table';
+    const XML_PATH_DEFAULT_GROUP = 'autocustomergroup/general/default_customer_group';
 
     /**
      * @var TaxSchemes
@@ -26,23 +26,15 @@ class AutoCustomerGroup
     private $scopeConfig;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @param TaxSchemes $taxSchemes
      * @param ScopeConfigInterface $scopeConfig
-     * @param LoggerInterface $logger
      */
     public function __construct(
         TaxSchemes $taxSchemes,
-        ScopeConfigInterface $scopeConfig,
-        LoggerInterface $logger
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->taxSchemes = $taxSchemes;
         $this->scopeConfig = $scopeConfig;
-        $this->logger = $logger;
     }
 
     /**
@@ -149,6 +141,21 @@ class AutoCustomerGroup
     {
         return (string)$this->scopeConfig->getValue(
             self::XML_PATH_FRONTEND_LABEL,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Retrieve Default Group
+     *
+     * @param int $storeId
+     * @return int
+     */
+    public function getDefaultGroup(int $storeId): int
+    {
+        return (int)$this->scopeConfig->getValue(
+            self::XML_PATH_DEFAULT_GROUP,
             ScopeInterface::SCOPE_STORE,
             $storeId
         );

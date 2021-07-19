@@ -44,6 +44,15 @@
                     <label>Enable recording of Tax Scheme details to sales_order_tax_scheme table</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="default_customer_group" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Default Customer Group</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
+                    <comment>If the order is a guest order, which group should be used if none of the schemes generate a group change. (Existing
+                     customers will be assigned their correct customer group prior to being changed by this module)</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
             </group>
             <group id="ukvat" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>UK VAT Scheme</label>
@@ -179,7 +188,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                 <field id="importuntaxed" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importuntaxed" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Goods Value is above the Import VAT Threshold.</comment>

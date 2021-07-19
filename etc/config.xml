@@ -8,6 +8,7 @@
                 <validate_on_each_transaction>1</validate_on_each_transaction>
                 <frontendlabel>Tax Identifier</frontendlabel>
                 <enable_sales_order_tax_scheme_table>0</enable_sales_order_tax_scheme_table>
+                <default_customer_group>0</default_customer_group>
             </general>
             <ukvat>
                 <enabled>0</enabled>
