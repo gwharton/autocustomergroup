@@ -149,7 +149,7 @@ class TotalsCollectorPlugin
             " New Group Id=" .
             $groupId);
 
-        if (($groupId !== null) && $groupId !== $quote->getCustomerGroupId()) {
+        if (($groupId !== null) && $groupId != $quote->getCustomerGroupId()) {
             $address->setPrevQuoteCustomerGroupId($quote->getCustomerGroupId());
             $quote->setCustomerGroupId($groupId);
             $this->logger->debug(
