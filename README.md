@@ -22,6 +22,41 @@
 <li>Testing on frontend validation feedback</li>
 </ul>
 
+<h2>Magento Patches</h2>
+<p>Unfortunately under certain circumstances, this module requires Magento core to be patched. The core code for
+guest orders overwrites the CustomerGroupId assigned to a quote to NOT_LOGGED_IN when the order is placed. This ofcourse
+negates this modules purpose and results in orders placed with NOT_LOGGED_IN group being set. To overcome this please
+apply the following patch.</p>
+
+<pre>
+--- Model/QuoteManagement.orig.php	2020-09-19 18:09:21.263000000 +0100
++++ Model/QuoteManagement.php	2020-09-19 18:09:25.540000000 +0100
+@@ -395,8 +395,6 @@
+                 }
+             }
+             $quote->setCustomerIsGuest(true);
+-            $groupId = $quote->getCustomer()->getGroupId() ?: GroupInterface::NOT_LOGGED_IN_ID;
+-            $quote->setCustomerGroupId($groupId);
+         }
+
+         $remoteAddress = $this->remoteAddress->getRemoteAddress();
+</pre>
+
+If you use the Stripe Payment module, it is also necessary to apply the following patch to the strip code.
+<pre>
+--- Api/Service.orig.php	2021-06-10 14:36:28.000000000 +0100
++++ Api/Service.php	2021-07-23 08:31:42.503129700 +0100
+@@ -491,8 +491,7 @@
+                 $quote->setCheckoutMethod(\Magento\Checkout\Model\Type\Onepage::METHOD_GUEST)
+                       ->setCustomerId(null)
+                       ->setCustomerEmail($quote->getBillingAddress()->getEmail())
+-                      ->setCustomerIsGuest(true)
+-                      ->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
++                      ->setCustomerIsGuest(true);
+             } else {
+                 $quote
+                     ->setCheckoutMethod(\Magento\Checkout\Model\Type\Onepage::METHOD_CUSTOMER);
+</pre>
 <h2>Overview</h2>
 <p>Changes introduced to both the UK and EU VAT Tax systems require changes to be made to the Magento Tax system. These changes are required URGENTLY, and while Magento consider the changes required and work towards a permanent solution, this module can be used as an interim measure.</p>
 <p>The module should be considered BETA. I encourage users to analyse the code, suggest improvements, generate PR's where applicable.</p>
