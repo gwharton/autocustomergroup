@@ -131,9 +131,8 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
     protected function getOrderTotalBaseCurrency($quote)
     {
         $orderTotal = 0.0;
-        $rate = $quote->getBaseToQuoteRate();
         foreach ($quote->getItemsCollection() as $item) {
-            $orderTotal += ($item->getBaseRowTotal() - ($item->getDiscountAmount()/$rate));
+            $orderTotal += ($item->getBaseRowTotal() - $item->getBaseDiscountAmount());
         }
         return $orderTotal;
     }
@@ -147,9 +146,8 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
     protected function getMostExpensiveItemBaseCurrency($quote)
     {
         $mostExpensive = 0.0;
-        $rate = $quote->getBaseToQuoteRate();
         foreach ($quote->getItemsCollection() as $item) {
-            $itemPrice = $item->getBasePrice() - (($item->getDiscountAmount()/$rate) / $item->getQty());
+            $itemPrice = $item->getBasePrice() - ($item->getBaseDiscountAmount() / $item->getQty());
             if ($itemPrice > $mostExpensive) {
                 $mostExpensive = $itemPrice;
             }

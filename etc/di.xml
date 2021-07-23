@@ -11,9 +11,6 @@
            </argument>
         </arguments>
     </type>
-    <type name="Magento\Quote\Model\Quote\TotalsCollector">
-        <plugin name="autocustomergroup-processgroupchange" type="Gw\AutoCustomerGroup\Plugin\Quote\TotalsCollectorPlugin" />
-    </type>
     <virtualType name="UkVatImportThresholdStoreBaseCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
         <arguments>
             <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\UkVat</argument>
@@ -39,11 +36,18 @@
             <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\NewZealandGst</argument>
         </arguments>
     </virtualType>
+    <type name="Gw\AutoCustomerGroup\Model\Collector\AutoCustomerGroup">
+        <arguments>
+            <argument name="additionalCollectors" xsi:type="array">
+                <item name="redo_tax_subtotal" xsi:type="object">Magento\Tax\Model\Sales\Total\Quote\Subtotal</item>
+                <item name="redo_tax_shipping" xsi:type="object">Magento\Tax\Model\Sales\Total\Quote\Shipping</item>
+                <item name="redo_tax" xsi:type="object">Magento\Tax\Model\Sales\Total\Quote\Tax</item>
+                <item name="redo_tax_weee_tax" xsi:type="object">Magento\Weee\Model\Total\Quote\WeeeTax</item>
+            </argument>
+        </arguments>
+    </type>
     <type name="Magento\Directory\Model\CurrencyConfig">
         <plugin name="add_additional_base_currencies" type="Gw\AutoCustomerGroup\Plugin\Directory\CurrencyConfigPlugin" />
-    </type>
-    <type name="Magento\Sales\Observer\Frontend\RestoreCustomerGroupId">
-        <plugin name="disable_sales_observer_restorecustomergroupid" type="Gw\AutoCustomerGroup\Plugin\Sales\DisableRestoreCustomerGroupIdObserverPlugin" />
     </type>
     <type name="Magento\Quote\Observer\Frontend\Quote\Address\CollectTotalsObserver">
         <plugin name="disable_quote_observer_collecttotals" type="Gw\AutoCustomerGroup\Plugin\Quote\DisableCollectTotalsObserverPlugin" />

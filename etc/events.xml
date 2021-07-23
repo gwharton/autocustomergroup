@@ -4,4 +4,8 @@
     <event name="checkout_submit_all_after">
         <observer name="CheckoutSubmitAllAfter" instance="Gw\AutoCustomerGroup\Observer\CheckoutSubmitAllAfter"/>
     </event>
+    <event name="checkout_submit_before">
+        <observer name="CheckoutSubmitBeforeObserver"
+                  instance="Gw\AutoCustomerGroup\Observer\CheckoutSubmitBeforeObserver"/>
+    </event>
 </config>

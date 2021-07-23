@@ -9,6 +9,9 @@ use Magento\Tax\Model\TaxRuleRepository;
 use Gw\AutoCustomerGroup\Api\Data\OrderTaxSchemeInterfaceFactory;
 use Exception;
 
+/**
+ * Log the tax scheme information to the sales_order_tax_scheme table
+ */
 class CheckoutSubmitAllAfter implements ObserverInterface
 {
     /**
@@ -68,7 +71,7 @@ class CheckoutSubmitAllAfter implements ObserverInterface
                                 $ratesEA = $rate->getExtensionAttributes();
                                 if ($ratesEA) {
                                     $orderrules = array_unique(
-                                        array_merge($orderrules, $ratesEA->getTaxRuleIds() ?? [])
+                                        array_merge($orderrules, $ratesEA->getTaxRuleIds() ?: [])
                                     );
                                 }
                             }

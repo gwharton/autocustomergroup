@@ -161,7 +161,8 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
     ): void {
         $storeId = $this->storeManager->getStore()->getId();
         $this->config->setValue('tax/calculation/price_includes_tax', $taxinprice, ScopeInterface::SCOPE_STORE);
-        $this->config->setValue('tax/calculation/shipping_includes_tax', $taxinprice, ScopeInterface::SCOPE_STORE);
+        $this->config->setValue('tax/calculation/shipping_includes_tax', $taxinprice, ScopeInterface::SCOPE_ST
+        ORE);
         $this->config->setValue('tax/calculation/algorithm', $algorithm, ScopeInterface::SCOPE_STORE);
         $product1 = $this->productFactory->create();
         $product1->setTypeId('simple')

@@ -3,15 +3,10 @@
     <extension_attributes for="Magento\Tax\Api\Data\TaxRuleInterface">
         <attribute code="tax_scheme" type="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface" />
     </extension_attributes>
-    <extension_attributes for="Magento\Tax\Api\Data\OrderTaxDetailsAppliedTaxInterface">
-        <attribute code="taxable_amount" type="float" />
-        <attribute code="base_taxable_amount" type="float" />
-    </extension_attributes>
-    <extension_attributes for="Magento\Tax\Api\Data\OrderTaxDetailsItemInterface">
-        <attribute code="taxable_amount" type="float" />
-        <attribute code="base_taxable_amount" type="float" />
-    </extension_attributes>
     <extension_attributes for="Magento\Tax\Api\Data\AppliedTaxRateInterface">
         <attribute code="tax_rule_ids" type="int[]" />
+    </extension_attributes>
+    <extension_attributes for="Magento\Quote\Api\Data\CartInterface">
+        <attribute code="autocustomergroup_new_id" type="int" />
     </extension_attributes>
 </config>

@@ -23,7 +23,7 @@ class TaxRuleExtractor
             if ($rule_id) {
                 $code = $rate['code'];
                 $extensionAtt = $rates[$code]->getExtensionAttributes();
-                $taxrulesarray = $extensionAtt->getTaxRuleIds() ?? [];
+                $taxrulesarray = $extensionAtt->getTaxRuleIds() ?: [];
                 if (!in_array($rule_id, $taxrulesarray)) {
                     $taxrulesarray[] = $rule_id;
                 }
@@ -49,7 +49,7 @@ class TaxRuleExtractor
                     $code = $rate['code'];
                     $outputRates = $appliedTaxes[$code]->getRates();
                     $extensionAtt = $outputRates[$code]->getExtensionAttributes();
-                    $taxrulesarray = $extensionAtt->getTaxRuleIds() ?? [];
+                    $taxrulesarray = $extensionAtt->getTaxRuleIds() ?: [];
                     if (!in_array($rule_id, $taxrulesarray)) {
                         $taxrulesarray[] = $rule_id;
                     }

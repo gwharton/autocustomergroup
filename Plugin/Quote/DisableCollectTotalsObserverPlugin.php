@@ -7,6 +7,10 @@ use Magento\Framework\Event\Observer;
 use Magento\Quote\Observer\Frontend\Quote\Address\CollectTotalsObserver;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * Disable the builtin CollectTotals Observer which performs VAT validation and group change.
+ * If Autocustomergroup module is disabled for this store, then run existing observer
+ */
 class DisableCollectTotalsObserverPlugin
 {
     /**

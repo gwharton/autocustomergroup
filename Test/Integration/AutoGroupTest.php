@@ -370,7 +370,7 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             [1, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
             [20, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 50], //20 x 10ea = 200 * 50% = 100
             [1, 130, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_taxed', 0],
-            [1, 140, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 0],
+
             [14, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 0],
             [30, 10, 'FR', '75001', 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 50], //30 x 10ea = 300 * 50% = 200
 

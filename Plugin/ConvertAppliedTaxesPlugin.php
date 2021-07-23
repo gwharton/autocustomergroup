@@ -30,7 +30,7 @@ class ConvertAppliedTaxesPlugin
         foreach ($result as $index1 => $appliedTax) {
             foreach ($appliedTax['rates'] as $index2 => $rate) {
                 $extAtt = $appliedTaxes[$appliedTax['id']]->getRates()[$rate['code']]->getExtensionAttributes();
-                $result[$index1]['rates'][$index2]['extension_attributes']['tax_rule_ids'] = $extAtt->getTaxRuleIds() ?? [];
+                $result[$index1]['rates'][$index2]['extension_attributes']['tax_rule_ids'] = $extAtt->getTaxRuleIds() ?: [];
             }
         }
         return $result;
