@@ -1,6 +1,4 @@
 <?php
-
-
 namespace Gw\AutoCustomerGroup\Observer;
 
 use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
@@ -9,13 +7,14 @@ use Magento\Customer\Model\Session;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Quote\Model\Quote;
+use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 
 /**
  * Actually perform the group change on the quote as it is now being submitted.
  * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
  */
-class CheckoutSubmitBeforeObserver implements ObserverInterface
+class SalesModelServiceQuoteSubmitBefore implements ObserverInterface
 {
     /**
      * @var Session
@@ -48,7 +47,7 @@ class CheckoutSubmitBeforeObserver implements ObserverInterface
     }
 
     /**
-     * Observer for checkout_submit_before
+     * Observer for sales_model_service_quote_submit_before
      *
      * @param Observer $observer
      * @return void
@@ -58,6 +57,8 @@ class CheckoutSubmitBeforeObserver implements ObserverInterface
     {
         /** @var Quote $quote */
         $quote = $observer->getData('quote');
+        /** @var Order $order */
+        $order = $observer->getData('order');
 
         /** @var CustomerInterface $customer */
         $customer = $quote->getCustomer();
@@ -76,14 +77,15 @@ class CheckoutSubmitBeforeObserver implements ObserverInterface
         }
         if ($newGroup && $newGroup != $quote->getCustomerGroupId()) {
             $this->customerSession->setCustomerGroupId($newGroup);
-            $customer = $quote->getCustomer();
-            if ($customer && $customer->getId() !== null) {
-                $customer->setGroupId($newGroup);
-                $quote->setCustomer($customer);
+            $quoteCustomer = $quote->getCustomer();
+            if ($quoteCustomer && $quoteCustomer->getId() !== null) {
+                $quoteCustomer->setGroupId($newGroup);
+                $quote->setCustomer($quoteCustomer);
             }
             $quote->setCustomerGroupId($newGroup);
+            $order->setCustomerGroupId($newGroup);
             $this->logger->debug(
-                "AutoCustomerGroup::CheckoutSubmitBeforeObserver::execute() - Setting quote Group to " .
+                "AutoCustomerGroup::SalesModelServiceQuoteSubmitBefore::execute() - Finally Setting quote and order Group to " .
                 $newGroup
             );
         }

@@ -8,6 +8,7 @@ use Magento\Sales\Model\Order;
 use Magento\Tax\Model\TaxRuleRepository;
 use Gw\AutoCustomerGroup\Api\Data\OrderTaxSchemeInterfaceFactory;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 /**
  * Log the tax scheme information to the sales_order_tax_scheme table
@@ -30,18 +31,26 @@ class CheckoutSubmitAllAfter implements ObserverInterface
     private $otsFactory;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param TaxRuleRepository $taxRuleRepository
      * @param OrderTaxSchemeInterfaceFactory $otsFactory
      * @param AutoCustomerGroup $autoCustomerGroup
+     * @param LoggerInterface $logger
      */
     public function __construct(
         TaxRuleRepository $taxRuleRepository,
         OrderTaxSchemeInterfaceFactory $otsFactory,
-        AutoCustomerGroup $autoCustomerGroup
+        AutoCustomerGroup $autoCustomerGroup,
+        LoggerInterface $logger
     ) {
         $this->taxRuleRepository = $taxRuleRepository;
         $this->otsFactory = $otsFactory;
         $this->autoCustomerGroup = $autoCustomerGroup;
+        $this->logger = $logger;
     }
 
     /**
@@ -54,7 +63,8 @@ class CheckoutSubmitAllAfter implements ObserverInterface
         /** @var Order $order */
         $order = $observer->getData('order');
         $storeId = $order->getStoreId();
-        if (!$this->autoCustomerGroup->isSalesOrderTaxSchemeEnabled($storeId)) {
+        if (!($this->autoCustomerGroup->isModuleEnabled($storeId) &&
+            $this->autoCustomerGroup->isSalesOrderTaxSchemeEnabled($storeId))) {
             return;
         }
         $orderEA = $order->getExtensionAttributes();
@@ -114,6 +124,10 @@ class CheckoutSubmitAllAfter implements ObserverInterface
                 $baseToStore);
             $orderTaxScheme->setImportThresholdScheme((float)$taxScheme->getThresholdInSchemeCurrency($storeId));
             $orderTaxScheme->save();
+            $this->logger->debug(
+                "AutoCustomerGroup::CheckoutSubmitAllAfter::execute() - Saving Tax Scheme to database " .
+                $orderTaxScheme->getName()
+            );
         }
     }
 }
