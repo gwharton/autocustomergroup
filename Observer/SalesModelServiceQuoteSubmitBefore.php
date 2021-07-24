@@ -2,7 +2,6 @@
 namespace Gw\AutoCustomerGroup\Observer;
 
 use Gw\AutoCustomerGroup\Model\AutoCustomerGroup;
-use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\Session;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
@@ -81,7 +80,8 @@ class SalesModelServiceQuoteSubmitBefore implements ObserverInterface
             $quote->setCustomerGroupId($newGroup);
             $order->setCustomerGroupId($newGroup);
             $this->logger->debug(
-                "AutoCustomerGroup::SalesModelServiceQuoteSubmitBefore::execute() - Finally Setting quote and order Group to " .
+                "AutoCustomerGroup::SalesModelServiceQuoteSubmitBefore::execute() - " .
+                "Finally Setting quote and order Group to " .
                 $newGroup
             );
         }
