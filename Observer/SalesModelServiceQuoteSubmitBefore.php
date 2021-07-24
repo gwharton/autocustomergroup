@@ -60,12 +60,8 @@ class SalesModelServiceQuoteSubmitBefore implements ObserverInterface
         /** @var Order $order */
         $order = $observer->getData('order');
 
-        /** @var CustomerInterface $customer */
-        $customer = $quote->getCustomer();
-        $storeId = $quote->getStoreId();
-
-        if (!$this->autoCustomerGroup->isModuleEnabled($storeId) ||
-            $customer->getDisableAutoGroupChange() ||
+        if (!$this->autoCustomerGroup->isModuleEnabled($quote->getStoreId()) ||
+            $quote->getCustomer()->getDisableAutoGroupChange() ||
             !$quote->getItemsCount()) {
             return;
         }
