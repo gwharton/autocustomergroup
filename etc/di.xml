@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Gw\AutoCustomerGroup\Model\TaxSchemes">
         <arguments>
             <argument name="taxSchemes" xsi:type="array">
@@ -11,27 +12,32 @@
            </argument>
         </arguments>
     </type>
-    <virtualType name="UkVatImportThresholdStoreBaseCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+    <virtualType name="UkVatImportThresholdStoreBaseCurrency"
+                 type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
         <arguments>
             <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\UkVat</argument>
         </arguments>
     </virtualType>
-    <virtualType name="EuVatImportThresholdStoreBaseCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+    <virtualType name="EuVatImportThresholdStoreBaseCurrency"
+                 type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
         <arguments>
             <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat</argument>
         </arguments>
     </virtualType>
-    <virtualType name="NoVatImportThresholdStoreBaseCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+    <virtualType name="NoVatImportThresholdStoreBaseCurrency"
+                 type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
         <arguments>
             <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\NorwayVoec</argument>
         </arguments>
     </virtualType>
-    <virtualType name="AuGstImportThresholdStoreBaseCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+    <virtualType name="AuGstImportThresholdStoreBaseCurrency"
+                 type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
         <arguments>
             <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\AustraliaGst</argument>
         </arguments>
     </virtualType>
-    <virtualType name="NzGstImportThresholdStoreBaseCurrency" type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
+    <virtualType name="NzGstImportThresholdStoreBaseCurrency"
+                 type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
         <arguments>
             <argument name="taxScheme" xsi:type="object">Gw\AutoCustomerGroup\Model\TaxSchemes\NewZealandGst</argument>
         </arguments>
@@ -46,38 +52,50 @@
             </argument>
         </arguments>
     </type>
+
     <type name="Magento\Directory\Model\CurrencyConfig">
-        <plugin name="add_additional_base_currencies" type="Gw\AutoCustomerGroup\Plugin\Directory\CurrencyConfigPlugin" />
+        <plugin name="AutoCustomerGroup_add_additional_base_currencies"
+                type="Gw\AutoCustomerGroup\Plugin\Directory\CurrencyConfigPlugin" />
     </type>
     <type name="Magento\Quote\Observer\Frontend\Quote\Address\CollectTotalsObserver">
-        <plugin name="disable_quote_observer_collecttotals" type="Gw\AutoCustomerGroup\Plugin\Quote\DisableCollectTotalsObserverPlugin" />
+        <plugin name="AutoCustomerGroup_disable_quote_observer_collecttotals"
+                type="Gw\AutoCustomerGroup\Plugin\Quote\DisableCollectTotalsObserverPlugin" />
     </type>
     <type name="Magento\Customer\Observer\AfterAddressSaveObserver">
-        <plugin name="disable_customer_observer_afteraddresssave" type="Gw\AutoCustomerGroup\Plugin\Customer\DisableAfterAddressSaveObserverPlugin" />
+        <plugin name="AutoCustomerGroup_disable_customer_observer_afteraddresssave"
+                type="Gw\AutoCustomerGroup\Plugin\Customer\DisableAfterAddressSaveObserverPlugin" />
     </type>
     <type name="Magento\Customer\Observer\BeforeAddressSaveObserver">
-        <plugin name="customer_observer_beforeaddresssave" type="Gw\AutoCustomerGroup\Plugin\Customer\BeforeAddressSaveObserverPlugin" />
+        <plugin name="AutoCustomerGroup_customer_observer_beforeaddresssave"
+                type="Gw\AutoCustomerGroup\Plugin\Customer\BeforeAddressSaveObserverPlugin" />
     </type>
     <type name="Magento\Customer\Controller\Adminhtml\System\Config\Validatevat\Validate">
-        <plugin name="customer_system_config_vat_validate" type="Gw\AutoCustomerGroup\Plugin\Customer\ValidatePlugin" />
+        <plugin name="AutoCustomerGroup_customer_system_config_vat_validate"
+                type="Gw\AutoCustomerGroup\Plugin\Customer\ValidatePlugin" />
     </type>
     <type name="Magento\Customer\Controller\Adminhtml\System\Config\Validatevat\ValidateAdvanced">
-        <plugin name="customer_system_config_vat_validate" type="Gw\AutoCustomerGroup\Plugin\Customer\ValidateAdvancedPlugin" />
+        <plugin name="AutoCustomerGroup_customer_system_config_vat_validate"
+                type="Gw\AutoCustomerGroup\Plugin\Customer\ValidateAdvancedPlugin" />
     </type>
     <type name="Magento\Tax\Model\TaxRuleRepository">
-        <plugin name="taxRuleRepositoryPlugin" type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRuleRepositoryPlugin" />
+        <plugin name="AutoCustomerGroup_taxRuleRepositoryPlugin"
+                type="Gw\AutoCustomerGroup\Plugin\Tax\TaxRuleRepositoryPlugin" />
     </type>
-    <preference for="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface" type="Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme" />
     <type name="Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector">
-        <plugin name="CopyTaxDetailsPlugin" type="Gw\AutoCustomerGroup\Plugin\ConvertAppliedTaxesPlugin"/>
+        <plugin name="AutoCustomerGroup_CopyTaxDetailsPlugin"
+                type="Gw\AutoCustomerGroup\Plugin\ConvertAppliedTaxesPlugin"/>
     </type>
-    <preference for="Magento\Tax\Model\TaxRuleCollection" type="Gw\AutoCustomerGroup\Model\TaxRuleCollection"/>
 
+    <preference for="Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface"
+                type="Gw\AutoCustomerGroup\Model\TaxSchemes\AbstractTaxScheme" />
+    <preference for="Magento\Tax\Model\TaxRuleCollection"
+                type="Gw\AutoCustomerGroup\Model\TaxRuleCollection"/>
     <preference for="Magento\Tax\Model\Calculation\UnitBaseCalculator"
                 type="Gw\AutoCustomerGroup\Model\Calculation\UnitBaseCalculator"/>
     <preference for="Magento\Tax\Model\Calculation\TotalBaseCalculator"
                 type="Gw\AutoCustomerGroup\Model\Calculation\TotalBaseCalculator"/>
     <preference for="Magento\Tax\Model\Calculation\RowBaseCalculator"
                 type="Gw\AutoCustomerGroup\Model\Calculation\RowBaseCalculator"/>
-    <preference for="Gw\AutoCustomerGroup\Api\Data\OrderTaxSchemeInterface" type="Gw\AutoCustomerGroup\Model\OrderTaxScheme" />
+    <preference for="Gw\AutoCustomerGroup\Api\Data\OrderTaxSchemeInterface"
+                type="Gw\AutoCustomerGroup\Model\OrderTaxScheme" />
 </config>
