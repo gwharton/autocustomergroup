@@ -40,7 +40,7 @@
                     <comment>To enable currency conversion of Import Thresholds using Magento Currency Conversion subsystem, the scheme currencies need to be
                         configured as additional base currencies within Magento. Currency download will need to be triggered after enabling this setting.</comment>
                 </field>
-                <field id="enable_sales_order_tax_scheme_table" translate="label" type="select" sortOrder="70" showInDefault="1" canRestore="1">
+                <field id="enable_sales_order_tax_scheme_table" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable recording of Tax Scheme details to sales_order_tax_scheme table</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Log the tax scheme information to the sales_order_tax_scheme table
  */
-class CheckoutSubmitAllAfter implements ObserverInterface
+class SalesModelServiceQuoteSubmitSuccess implements ObserverInterface
 {
     /**
      * @var AutoCustomerGroup
@@ -63,8 +63,7 @@ class CheckoutSubmitAllAfter implements ObserverInterface
         /** @var Order $order */
         $order = $observer->getData('order');
         $storeId = $order->getStoreId();
-        if (!($this->autoCustomerGroup->isModuleEnabled($storeId) &&
-            $this->autoCustomerGroup->isSalesOrderTaxSchemeEnabled($storeId))) {
+        if (!$this->autoCustomerGroup->isSalesOrderTaxSchemeEnabled($storeId)) {
             return;
         }
         $orderEA = $order->getExtensionAttributes();
@@ -125,7 +124,7 @@ class CheckoutSubmitAllAfter implements ObserverInterface
             $orderTaxScheme->setImportThresholdScheme((float)$taxScheme->getThresholdInSchemeCurrency($storeId));
             $orderTaxScheme->save();
             $this->logger->debug(
-                "AutoCustomerGroup::CheckoutSubmitAllAfter::execute() - Saving Tax Scheme to database " .
+                "AutoCustomerGroup::SalesModelServiceQuoteSubmitSuccess::execute() - Saving Tax Scheme to database " .
                 $orderTaxScheme->getName()
             );
         }
