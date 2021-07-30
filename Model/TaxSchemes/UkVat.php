@@ -207,7 +207,9 @@ class UkVat extends AbstractTaxScheme
             ScopeInterface::SCOPE_STORE
         );
         if (!$registrationNumber) {
-            $this->logger->critical("AutoCustomerGroup::UKVat Registration Number not set.");
+            $this->logger->critical(
+                "Gw/AutoCustomerGroup/Model/TaxSchemes/UkVat::checkTaxId() : UKVat Registration Number not set."
+            );
             return $gatewayResponse;
         }
 
@@ -247,7 +249,10 @@ class UkVat extends AbstractTaxScheme
                     $gatewayResponse->setIsValid(false);
                     $gatewayResponse->setRequestSuccess(false);
                     $gatewayResponse->setRequestMessage(__('There was an error checking the VAT number.'));
-                    $this->logger->critical("AutoCustomerGroup::UKVat Error received from HMRC. " . $e->getCode());
+                    $this->logger->error(
+                        "Gw/AutoCustomerGroup/Model/TaxSchemes/UkVat::checkTaxId() : UKVat Error received from " .
+                        "HMRC. " . $e->getCode()
+                    );
                     break;
             }
         }

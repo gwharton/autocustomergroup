@@ -168,7 +168,7 @@ class AutoCustomerGroup extends AbstractTotal
         );
 
         $this->logger->debug(
-            "AutoCustomerGroup::Collector/AutoCustomerGroup::collect() - Quote Group Id=" .
+            "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::collect() : Quote Group Id=" .
             $quote->getCustomerGroupId() .
             " Customer Group Id=" .
             $customerGroupId .
@@ -206,8 +206,8 @@ class AutoCustomerGroup extends AbstractTotal
                 $customer->setGroupId($newGroup);
                 $quote->setCustomer($customer);
             }
-            $this->logger->debug(
-                "AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() - Setting quote Group to " .
+            $this->logger->info(
+                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Setting quote Group to " .
                 $newGroup
             );
             $quote->setCustomerGroupId($newGroup);

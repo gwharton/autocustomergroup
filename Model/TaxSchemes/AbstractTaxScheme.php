@@ -325,8 +325,10 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
             );
             $exchangerate = $this->getSchemeCurrency()->getAnyRate($websiteBaseCurrency);
             if (!$exchangerate) {
-                $this->logger->critical("AutoCustomerGroup : No Magento Exchange Rate configured for " .
-                    static::SCHEME_CURRENCY . " to " . $websiteBaseCurrency . ". Using 1.0");
+                $this->logger->critical(
+                    "Gw/AutoCustomerGroup/Model/TaxSchemes/AbstractTaxScheme::getSchemeExchangeRate() : " .
+                    "No Magento Exchange Rate configured for " . static::SCHEME_CURRENCY . " to " .
+                    $websiteBaseCurrency . ". Using 1.0");
                 $exchangerate = 1.0;
             }
             return $exchangerate;
