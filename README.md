@@ -72,6 +72,7 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>VAT Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to VIES when all validation checks are made.</li>
 <li><b>VAT Registration Number</b> - The EU VAT Registration Number for the Merchant. This will be provided to VIES when all validation checks are made.</li>
+<li><b>Environment</b> - Whether to use the Sandbox or Production servers for the VIES VAT Validation Service.</li>
 <li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>
 <li><b>Use Magento Exchange Rate</b> - To convert from EUR Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
 <li><b>Exchange Rate</b> - The exchange rate to use to convert from EUR Threshold to Store Currency Threshold.</li>

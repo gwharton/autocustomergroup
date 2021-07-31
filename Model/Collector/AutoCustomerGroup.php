@@ -1,11 +1,9 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\Collector;
 
-use Magento\Customer\Api\AddressRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\Session;
 use Magento\Framework\DataObject;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
@@ -40,23 +38,16 @@ class AutoCustomerGroup extends AbstractTotal
      */
     private $additionalCollectors;
 
-    /**
-     * @var AddressRepositoryInterface
-     */
-    private $addressRepository;
-
     public function __construct(
         \Gw\AutoCustomerGroup\Model\AutoCustomerGroup $autoCustomerGroup,
         Session $customerSession,
         LoggerInterface $logger,
-        AddressRepositoryInterface $addressRepository,
         array $additionalCollectors = []
     ) {
         $this->setCode('autocustomergroup');
         $this->autoCustomerGroup = $autoCustomerGroup;
         $this->customerSession = $customerSession;
         $this->logger = $logger;
-        $this->addressRepository = $addressRepository;
         $this->additionalCollectors = $additionalCollectors;
     }
 
@@ -65,7 +56,6 @@ class AutoCustomerGroup extends AbstractTotal
      * @param ShippingAssignmentInterface $shippingAssignment
      * @param Total $total
      * @return $this
-     * @throws LocalizedException
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -86,68 +76,45 @@ class AutoCustomerGroup extends AbstractTotal
         $customer = $quote->getCustomer();
         $storeId = $quote->getStoreId();
 
-        if (!$this->autoCustomerGroup->isModuleEnabled($storeId) ||
-            $customer->getDisableAutoGroupChange() ||
-            !$quote->getItemsCount()) {
+        if (!($storeId && $this->autoCustomerGroup->isModuleEnabled($storeId))) {
             return $this;
         }
 
-        $address = $quote->getShippingAddress();
-        $customerCountryCode = $address->getCountryId();
-        $customerTaxId = $address->getVatId();
-        $customerGroupId = $customer->getGroupId() ?: $this->autoCustomerGroup->getDefaultGroup($storeId);
-
-        // try to get data from customer if quote address needed data is empty
-        if (empty($customerCountryCode) && empty($customerTaxId) && $customer->getDefaultShipping()) {
-            $customerAddress = $this->addressRepository->getById($customer->getDefaultShipping());
-            $customerCountryCode = $customerAddress->getCountryId();
-            $customerTaxId = $customerAddress->getVatId();
-            $address->setCountryId($customerCountryCode);
-            $address->setVatId($customerTaxId);
+        if ($customer->getId()) {
+            $this->logger->debug(
+                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Existing Customer Group " .
+                $customer->getGroupId()
+            );
         }
 
-        // We can't proceed if we dont have a country code or a store ID.
-        if (empty($customerCountryCode) || !$storeId) {
+        if ($customer->getDisableAutoGroupChange()) {
+            $this->logger->debug(
+                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : AutoGroupChange disabled " .
+                "for customer"
+            );
             return $this;
         }
 
-        if (!empty($customerTaxId)) {
-            //We have a tax ID
+        $quoteAddress = $quote->getShippingAddress();
 
-            //If we are set to not validate on each transaction and the country code and tax ID match that saved
-            //in the customer address, just reuse.
-            if (!$this->autoCustomerGroup->isValidateOnEachTransactionEnabled($storeId) &&
-                $customerCountryCode == $address->getData('validated_country_code') &&
-                $customerTaxId != $address->getData('validated_vat_number')
-            ) {
-                $validationResult = new DataObject(
-                    [
-                        'is_valid' => (int)$address->getData('vat_is_valid'),
-                        'request_identifier' => (string)$address->getData('vat_request_id'),
-                        'request_date' => (string)$address->getData('vat_request_date'),
-                        'request_success' => (bool)$address->getData('vat_request_success'),
-                    ]
-                );
-            } else {
-                //We have a Tax ID and we need to validate online
-                $validationResult = $this->autoCustomerGroup->checkTaxId(
-                    $customerCountryCode,
-                    $customerTaxId,
-                    $storeId
-                );
-                if ($validationResult) {
-                    // Store validation results in corresponding quote address
-                    $address->setData('vat_is_valid', $validationResult->getData('is_valid'));
-                    $address->setData('vat_request_id', $validationResult->getData('request_identifier'));
-                    $address->setData('vat_request_date', $validationResult->getData('request_date'));
-                    $address->setData('vat_request_success', $validationResult->getData('request_success'));
-                    $address->setData('validated_vat_number', $customerTaxId);
-                    $address->setData('validated_country_code', $customerCountryCode);
-                    $quote->setShippingAddress($address);
-                }
-            }
-        } else {
-            //Tax ID is empty
+        if (empty($quoteAddress->getCountryId())) {
+            $this->logger->error(
+                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Quote Country Id empty "
+            );
+            return $this;
+        }
+        //If we have a customer, start with their CustomerGroupId, otherwise use default group
+        $customerGroupId = $customer->getId() ?
+            $customer->getGroupId() :
+            $this->autoCustomerGroup->getDefaultGroup($storeId);
+
+        $this->logger->debug(
+            "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Starting Group is " .
+            $customerGroupId
+        );
+
+        //No point in validating if we haven't got a tax ID
+        if (empty($quoteAddress->getVatId())) {
             $validationResult = new DataObject(
                 [
                     'is_valid' => false,
@@ -156,25 +123,64 @@ class AutoCustomerGroup extends AbstractTotal
                     'request_success' => false,
                 ]
             );
+        } else {
+            if (!$this->autoCustomerGroup->isValidateOnEachTransactionEnabled($storeId) &&
+                !empty($quoteAddress->getData('validated_country_code')) &&
+                !empty($quoteAddress->getData('validated_vat_number'))
+            ) {
+                //If we have previous validation data in the address, and we don't have to validate every time
+                //Then reuse the validation data
+                $this->logger->debug(
+                    "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Reusing validation data " .
+                    "from quote address."
+                );
+                $validationResult = new DataObject(
+                    [
+                        'is_valid' => (int)$quoteAddress->getData('vat_is_valid'),
+                        'request_identifier' => (string)$quoteAddress->getData('vat_request_id'),
+                        'request_date' => (string)$quoteAddress->getData('vat_request_date'),
+                        'request_success' => (bool)$quoteAddress->getData('vat_request_success'),
+                    ]
+                );
+            } else {
+                //Validate every time
+                $validationResult = $this->autoCustomerGroup->checkTaxId(
+                    $quoteAddress->getCountryId(),
+                    $quoteAddress->getVatId(),
+                    $storeId
+                );
+                if ($validationResult) {
+                    // Store validation results in corresponding quote address
+                    $quoteAddress->setData('vat_is_valid', $validationResult->getData('is_valid'));
+                    $quoteAddress->setData('vat_request_id', $validationResult->getData('request_identifier'));
+                    $quoteAddress->setData('vat_request_date', $validationResult->getData('request_date'));
+                    $quoteAddress->setData('vat_request_success', $validationResult->getData('request_success'));
+                    $quoteAddress->setData('validated_vat_number', $quoteAddress->getVatId());
+                    $quoteAddress->setData('validated_country_code', $quoteAddress->getCountryId());
+                    $quote->setShippingAddress($quoteAddress);
+                }
+            }
         }
 
         //Get the auto assigned group for customer, returns null if group shouldnt be changed.
         $newGroup = $this->autoCustomerGroup->getCustomerGroup(
-            $customerCountryCode,
-            $address->getPostcode() ?: "",
+            $quoteAddress->getCountryId(),
+            $quoteAddress->getPostcode() ?: "",
             $validationResult,
             $quote,
             $storeId
         );
 
-        $this->logger->debug(
-            "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::collect() : Quote Group Id=" .
-            $quote->getCustomerGroupId() .
-            " Customer Group Id=" .
-            $customerGroupId .
-            " New Group Id=" .
-            $newGroup
-        );
+        if ($newGroup) {
+            $this->logger->debug(
+                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : New Group Required " .
+                $newGroup
+            );
+        } else {
+            $this->logger->debug(
+                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : No Group Change Required "
+            );
+        }
 
         //Set the group of the $quote object, so the collectTotals will be performed on the
         //correct group. Use newGroup if set, otherwise use $customerGroupId
@@ -197,7 +203,7 @@ class AutoCustomerGroup extends AbstractTotal
      * @param $shippingAssignment
      * @param $total
      */
-    private function updateGroup($newGroup, $quote, $customer, $shippingAssignment, $total)
+    private function updateGroup($newGroup, Quote $quote, $customer, $shippingAssignment, $total)
     {
         if ($newGroup != $quote->getCustomerGroupId()) {
             $this->customerSession->setCustomerGroupId($newGroup);

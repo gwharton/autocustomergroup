@@ -1,24 +1,23 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
+use Gw\AutoCustomerGroup\Model\Config\Source\Environment;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 use SoapClient;
 
 /**
- * Live EU VAT numbers
- * IE3206488LH - Stripe
- * IE8256796U - Microsoft
- * IE6388047V - Google
+ * Sandbox Test Number
+ * 100 Valid
+ * 200 Invalid
  */
 class EuVat extends AbstractTaxScheme
 {
     const CODE = "euvat";
     const SCHEME_CURRENCY = 'EUR';
     protected $code = self::CODE;
-
-    const VAT_VALIDATION_WSDL_URL = 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
      * Array of country ID's that this scheme supports
@@ -187,7 +186,7 @@ class EuVat extends AbstractTaxScheme
 
         if (extension_loaded('soap')) {
             try {
-                $soapClient = new SoapClient(self::VAT_VALIDATION_WSDL_URL);
+                $soapClient = new SoapClient($this->getWsdlUrl());
 
                 $requestParams = [];
                 $requestParams['countryCode'] = $countryCodeForVatNumber;
@@ -233,6 +232,23 @@ class EuVat extends AbstractTaxScheme
         // instead of its ISO 3166-1 alpha-2 country code GR)"
 
         return $countryCode === 'GR' ? 'EL' : $countryCode;
+    }
+
+    /**
+     * Return the correct SOAP Url depending on the environment settiong
+     *
+     * @return string
+     */
+    private function getWsdlUrl()
+    {
+        if ($this->scopeConfig->getValue(
+            "autocustomergroup/" . self::CODE . "/environment",
+            ScopeInterface::SCOPE_STORE
+        ) == Environment::ENVIRONMENT_PRODUCTION) {
+            return "https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl";
+        } else {
+            return "https://ec.europa.eu/taxation_customs/vies/checkVatTestService.wsdl";
+        }
     }
 
     /**

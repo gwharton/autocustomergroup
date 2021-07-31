@@ -144,7 +144,8 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 135
      * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationcountry IE
-     * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber IE3206488LH
+     * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber 100
+     * @magentoConfigFixture current_store autocustomergroup/euvat/environment sandbox
      * @magentoConfigFixture current_store autocustomergroup/euvat/usemagentoexchangerate 0
      * @magentoConfigFixture current_store autocustomergroup/euvat/exchangerate 0.88603
      * @magentoConfigFixture current_store autocustomergroup/euvat/importthreshold 150
@@ -345,6 +346,8 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
         //Expected Customer Group
         //Discount Percentage
         return [
+            [1, 10, 'GB', 'BT1 1AA', 'IE', '', '100', 'eu_intraeu_b2b', 0], //VAT is valid
+
             //USA
             [1, 10, 'GB', 'DT3 5RX', 'US', '90210', '', 'NOT LOGGED IN', 0 ],
 
@@ -377,21 +380,21 @@ class AutoGroupTest extends \PHPUnit\Framework\TestCase
             //EU VAT
             //Threshold is 150EUR = 132.90 GBP
             [1, 10, 'IE', '', 'IE', '', '', 'eu_domestic', 0],
-            [1, 10, 'IE', '', 'IE', '', 'IE8256796U', 'eu_domestic', 0], //VAT is valid
-            [1, 10, 'DE', '', 'IE', '', 'IE8256796U', 'eu_intraeu_b2b', 0], //VAT is valid
-            [1, 10, 'GB', 'BT1 1AA', 'IE', '', 'IE8256796U', 'eu_intraeu_b2b', 0], //VAT is valid
-            [1, 10, 'DE', '', 'IE', '', 'IE8256796H', 'eu_intraeu_b2c', 0], //VAT is invalid
+            [1, 10, 'IE', '', 'IE', '', '100', 'eu_domestic', 0],
+            [1, 10, 'DE', '', 'IE', '', '100', 'eu_intraeu_b2b', 0],
+            [1, 10, 'GB', 'BT1 1AA', 'IE', '', '100', 'eu_intraeu_b2b', 0],
+            [1, 10, 'DE', '', 'IE', '', '200', 'eu_intraeu_b2c', 0], //VAT is invalid
             [1, 10, 'GB', 'BT1 1AA', 'IE', '', '', 'eu_intraeu_b2c', 0],
-            [1, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 0], //VAT is valid
+            [1, 10, 'GB', '', 'IE', '', '100', 'eu_import_b2b', 0],
             //30 x 10ea = 300,  * 50% = 150
-            [30, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 50], //VAT is valid
+            [30, 10, 'GB', '', 'IE', '', '100', 'eu_import_b2b', 50],
             //18 x 10ea = 180,  * 50% = 90
-            [18, 10, 'GB', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 50], //VAT is valid
+            [18, 10, 'GB', '', 'IE', '', '100', 'eu_import_b2b', 50],
             //16 x 10ea = 160,  * 50% = 80
-            [16, 10, 'GB', '', 'IE', '','IE8256796U', 'eu_import_b2b', 50], //VAT is valid
-            [1, 10, 'BR', '', 'IE', '', 'IE8256796U', 'eu_import_b2b', 0], //VAT is valid
+            [16, 10, 'GB', '', 'IE', '','100', 'eu_import_b2b', 50],
+            [1, 10, 'BR', '', 'IE', '', '100', 'eu_import_b2b', 0],
             [1, 10, 'GB', '', 'FR', '75001', '', 'eu_import_taxed', 0],
-            [1, 10, 'GB', '', 'IE', '', '123456', 'eu_import_taxed', 0], //VAT is invalid
+            [1, 10, 'GB', '', 'IE', '', '123456', 'eu_import_taxed', 0],
             [1, 10, 'BR', '', 'IE', '', '', 'eu_import_taxed', 0],
             [1, 130, 'BR', '', 'IE', '', '', 'eu_import_taxed', 0],
             [1, 140, 'BR', '', 'IE', '', '', 'eu_import_untaxed', 0],

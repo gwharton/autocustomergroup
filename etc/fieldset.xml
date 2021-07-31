@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:DataObject/etc/fieldset.xsd">
+    <scope id="global">
+         <fieldset id="customer_address">
+             <field name="vat_id">
+                 <aspect name="to_quote_address" />
+             </field>
+             <field name="vat_is_valid">
+                 <aspect name="to_quote_address" />
+             </field>
+             <field name="vat_request_id">
+                 <aspect name="to_quote_address" />
+             </field>
+             <field name="vat_request_date">
+                 <aspect name="to_quote_address" />
+             </field>
+             <field name="vat_request_success">
+                 <aspect name="to_quote_address" />
+             </field>
+             <field name="validated_country_code">
+                 <aspect name="to_quote_address" />
+             </field>
+             <field name="validated_vat_number">
+                 <aspect name="to_quote_address" />
+             </field>
+        </fieldset>
+    </scope>
+</config>

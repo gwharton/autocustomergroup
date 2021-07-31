@@ -45,7 +45,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="default_customer_group" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Default Customer Group</label>
+                    <label>Default Customer Group for Guest Orders</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>If the order is a guest order, which group should be used if none of the schemes generate a group change. (Existing
                      customers will be assigned their correct customer group prior to being changed by this module)</comment>
@@ -245,33 +245,40 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="registrationcountry" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="environment" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Environment</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Environment</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="registrationcountry" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Registration Country</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="registrationnumber" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="registrationnumber" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>VAT Registration Number</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthreshold" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="importthreshold" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Import VAT Threshold (EUR)</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="usemagentoexchangerate" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Use Magento Exchange Rate</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="exchangerate" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="exchangerate" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exchange Rate</label>
                     <comment>
                         <![CDATA[
@@ -283,7 +290,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1">
+                <field id="importthresholdstorecurrency" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1">
                     <label>Import VAT Threshold (Store Base Currency)</label>
                     <frontend_model>EuVatImportThresholdStoreBaseCurrency</frontend_model>
                     <comment>The order value (ex VAT) above which no VAT should be charged. Calculated as the sum of all line items after discount ex Tax.</comment>
@@ -291,7 +298,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="domestic" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="domestic" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Domestic</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU, Item is being shipped to the same country.</comment>
@@ -299,7 +306,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="intraeub2b" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="intraeub2b" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Intra-EU B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, Validated EU VAT Number Supplied.</comment>
@@ -307,7 +314,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="intraeub2c" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="intraeub2c" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Intra EU B2C</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is within the EU or NI, Item is being shipped to the EU, Merchant Country and Shipping Country are not the same, Validated EU VAT Number is NOT Supplied..</comment>
@@ -315,7 +322,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importb2b" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importb2b" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Import B2B</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Validated EU VAT Number Supplied.</comment>
@@ -323,7 +330,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importtaxed" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importtaxed" translate="label" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Import Taxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Goods Value is below or equal to the Import VAT Threshold.</comment>
@@ -331,7 +338,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="importuntaxed" translate="label" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="importuntaxed" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Customer Group - Import Untaxed</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Group</source_model>
                     <comment>Merchant Country is not within the EU, Item is being shipped to the EU, Goods Value is above the Import VAT Threshold.</comment>

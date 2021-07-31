@@ -140,7 +140,8 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 10000
      *
      * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
-     * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber IE6388047V
+     * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber 100
+     * @magentoConfigFixture current_store autocustomergroup/ukvat/environment sandbox
      * @magentoConfigFixture current_store autocustomergroup/euvat/usemagentoexchangerate 0
      * @magentoConfigFixture current_store autocustomergroup/euvat/exchangerate 0.75
      * @magentoConfigFixture current_store autocustomergroup/euvat/importthreshold 20000
@@ -311,7 +312,7 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
             round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateSchemeToBase(),2)
         );
         $this->assertEquals($order->getEntityId(), $orderTaxScheme->getOrderId());
-        $this->assertEquals("IE6388047V", $orderTaxScheme->getReference());
+        $this->assertEquals("100", $orderTaxScheme->getReference());
         $this->assertEquals("EU VAT OSS Scheme", $orderTaxScheme->getName());
         $this->assertEquals("USD", $orderTaxScheme->getStoreCurrency());
         $this->assertEquals("USD", $orderTaxScheme->getBaseCurrency());

@@ -268,7 +268,7 @@ class UkVat extends AbstractTaxScheme
     {
         if ($this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/environment",
-            ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+            ScopeInterface::SCOPE_STORE
         ) == Environment::ENVIRONMENT_PRODUCTION) {
             return "https://api.service.hmrc.gov.uk";
         } else {
