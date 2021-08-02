@@ -627,7 +627,7 @@
     New Zealand border.</p>
 <p>More information on the scheme can be found on the
     <a href="https://www.ird.govt.nz/gst/gst-for-overseas-businesses/gst-on-low-value-imported-goods" target="_blank">New Zealand Inland Revenue Website</a></p>
-<p>Buyers NZBN numbers are checked using the New Zealand Governments NZBN online checking service. Current registration for GST is checked.</p>
+<p>When validating online, Buyers NZBN numbers are checked using the New Zealand Governments NZBN online checking service. Current registration for GST is checked.</p>
 <p>To obtain the access token follow the procedure.</p>
 <ul>
 <li>Sign up for an account at <a href="https://api.business.govt.nz">the New Zealand Government API Website</a><ul>
@@ -637,6 +637,8 @@
 <li>Generate keys for both sandbox and production services</li>
 <li>Generate access tokens with -1 seconds validity time (this ensures they don't expire)</li>
 </ul>
+<p>With offline validation, only a simple format check and checksum calculation is performed. The New Zealand Government do NOT require you to perform
+online validation before accepting an NZBN number.</p>
 </div>
                     ]]></comment>
                 <depends>
