@@ -652,7 +652,7 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="validate_online" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="validate_online" translate="label" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Validate Online</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>
@@ -663,7 +663,7 @@
                         </ul>
                         ]]></comment>
                 </field>
-                <field id="environment" translate="label" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="environment" translate="label" type="select" sortOrder="26" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Environment</label>
                     <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Environment</source_model>
                     <depends>

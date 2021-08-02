@@ -21,6 +21,10 @@ use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterfaceFactory;
 /**
  * New Zealand NZBN Test numbers for Sandbox
  * 9429038644047 - TEST LIMITED No GST
+ *
+ * Real New Zealand numbers
+ * 9429046452894 - ZEALAND CONSULTING LIMITED - GST Number 124367621
+ * 9429033961842 - ZEALAND LIMITED - No GST
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class NewZealandGst extends AbstractTaxScheme
@@ -230,7 +234,7 @@ class NewZealandGst extends AbstractTaxScheme
                 );
                 return $gatewayResponse;
             }
-            $gatewayResponse->setRequestMessage(__('GST Number not registered at the NZBN Register.'));
+            $gatewayResponse->setRequestMessage(__('GST Number not registered at the NZBN Register for this NZBN.'));
             $gatewayResponse->setRequestSuccess(true);
             $gatewayResponse->setIsValid(false);
             foreach ($registrations as $registration) {
