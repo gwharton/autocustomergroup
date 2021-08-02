@@ -1,8 +1,8 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model;
 
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 
@@ -41,13 +41,13 @@ class AutoCustomerGroup
      * @param string $countryCode
      * @param string $taxId
      * @param int $storeId
-     * @return DataObject|null
+     * @return GatewayResponseInterface|null
      */
     public function checkTaxId(
         string $countryCode,
         string $taxId,
         int $storeId
-    ): ?DataObject {
+    ): ?GatewayResponseInterface {
         if ($this->isModuleEnabled($storeId)) {
             foreach ($this->taxSchemes->getEnabledTaxSchemes($storeId) as $taxScheme) {
                 if ($taxScheme->isSchemeCountry($countryCode)) {
@@ -61,7 +61,7 @@ class AutoCustomerGroup
     /**
      * @param string $customerCountryCode
      * @param string $customerPostCode
-     * @param DataObject $validationResults
+     * @param GatewayResponseInterface $validationResults
      * @param Quote $quote
      * @param int $storeId
      * @return int|null
@@ -69,7 +69,7 @@ class AutoCustomerGroup
     public function getCustomerGroup(
         string $customerCountryCode,
         string $customerPostCode,
-        DataObject $validationResults,
+        GatewayResponseInterface $validationResults,
         Quote $quote,
         int $storeId
     ): ?int {

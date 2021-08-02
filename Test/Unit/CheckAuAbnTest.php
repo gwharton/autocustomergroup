@@ -21,6 +21,8 @@ class CheckAuAbnTest extends TestCase
     }
 
     /**
+     * @param $number
+     * @param $valid
      * @return void
      * @dataProvider isValidAbnDataProvider
      */

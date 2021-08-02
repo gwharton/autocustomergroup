@@ -3,11 +3,12 @@ namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
 use GuzzleHttp\ClientFactory;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\GuzzleException;
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterface;
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterfaceFactory;
 use Gw\AutoCustomerGroup\Model\Config\Source\Environment;
-use Gw\AutoCustomerGroup\Model\TaxSchemes\EuVat;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\DataObject;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Webapi\Rest\Request;
@@ -62,6 +63,7 @@ class UkVat extends AbstractTaxScheme
      * @param EuVat $euVat
      * @param StoreManagerInterface $storeManager
      * @param CurrencyFactory $currencyFactory
+     * @param GatewayResponseInterfaceFactory $gwrFactory
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -71,14 +73,16 @@ class UkVat extends AbstractTaxScheme
         LoggerInterface $logger,
         EuVat $euVat,
         StoreManagerInterface $storeManager,
-        CurrencyFactory $currencyFactory
+        CurrencyFactory $currencyFactory,
+        GatewayResponseInterfaceFactory $gwrFactory
     ) {
         parent::__construct(
             $scopeConfig,
             $logger,
             $storeManager,
             $datetime,
-            $currencyFactory
+            $currencyFactory,
+            $gwrFactory
         );
         $this->clientFactory = $clientFactory;
         $this->serializer = $serializer;
@@ -88,8 +92,8 @@ class UkVat extends AbstractTaxScheme
     /**
      * Get customer group based on Validation Result and Country of customer
      * @param string $customerCountryCode
-     * @param string $customerPostCode
-     * @param DataObject $vatValidationResult
+     * @param string|null $customerPostCode
+     * @param GatewayResponseInterface $vatValidationResult
      * @param Quote $quote
      * @param int|null $storeId
      * @return int|null
@@ -97,13 +101,20 @@ class UkVat extends AbstractTaxScheme
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function getCustomerGroup(
-        $customerCountryCode,
-        $customerPostCode,
-        $vatValidationResult,
-        $quote,
-        $storeId
-    ) {
+        string $customerCountryCode,
+        ?string $customerPostCode,
+        GatewayResponseInterface $vatValidationResult,
+        Quote $quote,
+        ?int $storeId
+    ): ?int {
         $merchantCountry = $this->getMerchantCountryCode($storeId);
+        if (empty($merchantCountry)) {
+            $this->logger->critical(
+                "Gw/AutoCustomerGroup/Model/TaxSchemes/UkVat::getCustomerGroup() : " .
+                "Merchant country not set."
+            );
+            return null;
+        }
         $importThreshold = $this->getThresholdInBaseCurrency($storeId);
         //Merchant Country is in the UK/IM
         //Item shipped to the UK/IM
@@ -188,19 +199,17 @@ class UkVat extends AbstractTaxScheme
      * Peform validation of the VAT number, returning a gatewayResponse object
      *
      * @param string $countryCode
-     * @param string $vatNumber
-     * @return DataObject
+     * @param string|null $taxId
+     * @return GatewayResponseInterface
+     * @throws GuzzleException
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function checkTaxId($countryCode, $vatNumber)
-    {
-        $gatewayResponse = new DataObject([
-            'is_valid' => false,
-            'request_date' => '',
-            'request_identifier' => '',
-            'request_success' => false,
-            'request_message' => __('Error during VAT Number verification.'),
-        ]);
+    public function checkTaxId(
+        string $countryCode,
+        ?string $taxId
+    ): GatewayResponseInterface {
+        $gatewayResponse = $this->gwrFactory->create();
+        $gatewayResponse->setRequestMessage(__('Error during VAT Number verification.'));
 
         $registrationNumber = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/registrationnumber",
@@ -218,7 +227,7 @@ class UkVat extends AbstractTaxScheme
             $response = $client->request(
                 Request::HTTP_METHOD_GET,
                 $this->getBaseUrl() . "/organisations/vat/check-vat-number/lookup/" .
-                    str_replace([' ', '-', 'GB'], ['', '', ''], $vatNumber) . "/" .
+                    str_replace([' ', '-', 'GB'], ['', '', ''], $taxId) . "/" .
                     str_replace([' ', '-', 'GB'], ['', '', ''], $registrationNumber),
                 [
                     'headers' => [
@@ -264,7 +273,7 @@ class UkVat extends AbstractTaxScheme
      *
      * @return string
      */
-    private function getBaseUrl()
+    private function getBaseUrl(): string
     {
         if ($this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/environment",
@@ -281,7 +290,7 @@ class UkVat extends AbstractTaxScheme
      *
      * @return string
      */
-    public function getSchemeName()
+    public function getSchemeName(): string
     {
         return "UK VAT Scheme";
     }

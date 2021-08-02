@@ -25,52 +25,52 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         $this->setData('order_id', $orderId);
     }
 
-    public function getReference(): string
+    public function getReference(): ?string
     {
         return $this->getData('reference');
     }
 
-    public function setReference(string $reference)
+    public function setReference(?string $reference)
     {
         $this->setData('reference', $reference);
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->getData('name');
     }
 
-    public function setName(string $name)
+    public function setName(?string $name)
     {
         $this->setData('name', $name);
     }
 
-    public function getStoreCurrency(): string
+    public function getStoreCurrency(): ?string
     {
         return $this->getData('store_currency');
     }
 
-    public function setStoreCurrency(string $currency)
+    public function setStoreCurrency(?string $currency)
     {
         $this->setData('store_currency', $currency);
     }
 
-    public function getBaseCurrency(): string
+    public function getBaseCurrency(): ?string
     {
         return $this->getData('base_currency');
     }
 
-    public function setBaseCurrency(string $currency)
+    public function setBaseCurrency(?string $currency)
     {
         $this->setData('base_currency', $currency);
     }
 
-    public function getSchemeCurrency(): string
+    public function getSchemeCurrency(): ?string
     {
         return $this->getData('scheme_currency');
     }
 
-    public function setSchemeCurrency(string $currency)
+    public function setSchemeCurrency(?string $currency)
     {
         $this->setData('scheme_currency', $currency);
     }

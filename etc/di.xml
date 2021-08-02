@@ -98,4 +98,6 @@
                 type="Gw\AutoCustomerGroup\Model\Calculation\RowBaseCalculator"/>
     <preference for="Gw\AutoCustomerGroup\Api\Data\OrderTaxSchemeInterface"
                 type="Gw\AutoCustomerGroup\Model\OrderTaxScheme" />
+    <preference for="Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterface"
+                type="Gw\AutoCustomerGroup\Model\GatewayResponse" />
 </config>

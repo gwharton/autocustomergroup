@@ -606,8 +606,8 @@
 <p>The module assumes the following rules :</p>
 <ul>
     <li><b>Domestic</b> - For shipments within New Zealand, normal New Zealand GST rules apply.</li>
-    <li><b>Import B2B</b> - For shipments from outside of New Zealand to New Zealand and the buyer presents their GST Number, then
-        GST should not be charged.</li>
+    <li><b>Import B2B</b> - For shipments from outside of New Zealand to New Zealand and the buyer presents their GST validated NZBN
+    Number, then GST should not be charged.</li>
     <li><b>Import Taxed</b> - For imports into New Zealand, where the value of each individual item is below or equal to 1,000 NZD, then
         GST should be charged on the order.</li>
     <li><b>Import Untaxed</b> - For imports into New Zealand, where one or more individual items value is above 1,000 NZD, then GST should
@@ -627,7 +627,16 @@
     New Zealand border.</p>
 <p>More information on the scheme can be found on the
     <a href="https://www.ird.govt.nz/gst/gst-for-overseas-businesses/gst-on-low-value-imported-goods" target="_blank">New Zealand Inland Revenue Website</a></p>
-<p>GST Number Verification is performed by checking the number format and mathematical check digit. No online lookups are performed.</p>
+<p>Buyers NZBN numbers are checked using the New Zealand Governments NZBN online checking service. Current registration for GST is checked.</p>
+<p>To obtain the access token follow the procedure.</p>
+<ul>
+<li>Sign up for an account at <a href="https://api.business.govt.nz">the New Zealand Government API Website</a><ul>
+<li>Create an application at the "My Applications" section</li>
+<li>Subscribe to the NZBN Version 4 API in the "Apis" section</li>
+<li>You may be required to sign a license agreement to use the service</li>
+<li>Generate keys for both sandbox and production services</li>
+<li>Generate access tokens with -1 seconds validity time (this ensures they don't expire)</li>
+</ul>
 </div>
                     ]]></comment>
                 <depends>
@@ -641,6 +650,30 @@
                     <label>Tax Identifier Field - Customer Prompt</label>
                     <depends>
                         <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="validate_online" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Validate Online</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>
+                        <![CDATA[
+                        <ul>
+                        <li>Yes : GST Registration is checked with NZBN Register using the NZBN number.</li>
+                        <li>No : Format of the NZBN number is checked only.</li>
+                        </ul>
+                        ]]></comment>
+                </field>
+                <field id="environment" translate="label" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Environment</label>
+                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Environment</source_model>
+                    <depends>
+                        <field id="validate_online">1</field>
+                    </depends>
+                </field>
+                <field id="accesstoken" translate="label" type="text" sortOrder="27" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API Access Token</label>
+                    <depends>
+                        <field id="validate_online">1</field>
                     </depends>
                 </field>
                 <field id="registrationnumber" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">

@@ -3,12 +3,13 @@ namespace Gw\AutoCustomerGroup\Model\Collector;
 
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\Session;
-use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote\Address\Total;
 use Psr\Log\LoggerInterface;
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterfaceFactory;
+use Gw\AutoCustomerGroup\Model\AutoCustomerGroup as AutoCustomerGroupModel;
 
 /**
  * AutoCustomerGroup totals collector, configured from sales.xml which runs at the end of the stack
@@ -19,7 +20,7 @@ use Psr\Log\LoggerInterface;
 class AutoCustomerGroup extends AbstractTotal
 {
     /**
-     * @var \Gw\AutoCustomerGroup\Model\AutoCustomerGroup
+     * @var AutoCustomerGroupModel
      */
     private $autoCustomerGroup;
 
@@ -38,10 +39,23 @@ class AutoCustomerGroup extends AbstractTotal
      */
     private $additionalCollectors;
 
+    /**
+     * @var GatewayResponseInterfaceFactory
+     */
+    private $gwrFactory;
+
+    /**
+     * @param AutoCustomerGroupModel $autoCustomerGroup
+     * @param Session $customerSession
+     * @param LoggerInterface $logger
+     * @param GatewayResponseInterfaceFactory $gwrFactory
+     * @param array $additionalCollectors
+     */
     public function __construct(
-        \Gw\AutoCustomerGroup\Model\AutoCustomerGroup $autoCustomerGroup,
+        AutoCustomerGroupModel $autoCustomerGroup,
         Session $customerSession,
         LoggerInterface $logger,
+        GatewayResponseInterfaceFactory $gwrFactory,
         array $additionalCollectors = []
     ) {
         $this->setCode('autocustomergroup');
@@ -49,6 +63,7 @@ class AutoCustomerGroup extends AbstractTotal
         $this->customerSession = $customerSession;
         $this->logger = $logger;
         $this->additionalCollectors = $additionalCollectors;
+        $this->gwrFactory = $gwrFactory;
     }
 
     /**
@@ -113,17 +128,9 @@ class AutoCustomerGroup extends AbstractTotal
             $customerGroupId
         );
 
+        $validationResult = $this->gwrFactory->create();
         //No point in validating if we haven't got a tax ID
-        if (empty($quoteAddress->getVatId())) {
-            $validationResult = new DataObject(
-                [
-                    'is_valid' => false,
-                    'request_identifier' => '',
-                    'request_date' => '',
-                    'request_success' => false,
-                ]
-            );
-        } else {
+        if (!empty($quoteAddress->getVatId())) {
             if (!$this->autoCustomerGroup->isValidateOnEachTransactionEnabled($storeId) &&
                 !empty($quoteAddress->getData('validated_country_code')) &&
                 !empty($quoteAddress->getData('validated_vat_number'))
@@ -134,14 +141,10 @@ class AutoCustomerGroup extends AbstractTotal
                     "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Reusing validation data " .
                     "from quote address."
                 );
-                $validationResult = new DataObject(
-                    [
-                        'is_valid' => (int)$quoteAddress->getData('vat_is_valid'),
-                        'request_identifier' => (string)$quoteAddress->getData('vat_request_id'),
-                        'request_date' => (string)$quoteAddress->getData('vat_request_date'),
-                        'request_success' => (bool)$quoteAddress->getData('vat_request_success'),
-                    ]
-                );
+                $validationResult->setIsValid((bool)$quoteAddress->getData('vat_is_valid'));
+                $validationResult->setRequestIdentifier((string)$quoteAddress->getData('vat_request_id'));
+                $validationResult->setRequestDate((string)$quoteAddress->getData('vat_request_date'));
+                $validationResult->setRequestSuccess((bool)$quoteAddress->getData('vat_request_success'));
             } else {
                 //Validate every time
                 $validationResult = $this->autoCustomerGroup->checkTaxId(
@@ -151,10 +154,10 @@ class AutoCustomerGroup extends AbstractTotal
                 );
                 if ($validationResult) {
                     // Store validation results in corresponding quote address
-                    $quoteAddress->setData('vat_is_valid', $validationResult->getData('is_valid'));
-                    $quoteAddress->setData('vat_request_id', $validationResult->getData('request_identifier'));
-                    $quoteAddress->setData('vat_request_date', $validationResult->getData('request_date'));
-                    $quoteAddress->setData('vat_request_success', $validationResult->getData('request_success'));
+                    $quoteAddress->setData('vat_is_valid', $validationResult->getIsValid());
+                    $quoteAddress->setData('vat_request_id', $validationResult->getRequestIdentifier());
+                    $quoteAddress->setData('vat_request_date', $validationResult->getRequestDate());
+                    $quoteAddress->setData('vat_request_success', $validationResult->getRequestSuccess());
                     $quoteAddress->setData('validated_vat_number', $quoteAddress->getVatId());
                     $quoteAddress->setData('validated_country_code', $quoteAddress->getCountryId());
                     $quote->setShippingAddress($quoteAddress);

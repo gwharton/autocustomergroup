@@ -1,7 +1,27 @@
 {
-    "tax_calculation_rate": {
+    "tax_calculation_rule": {
         "column": {
             "tax_scheme_id": true
+        }
+    },
+    "sales_order_tax_scheme": {
+        "column": {
+            "order_tax_scheme_id": true,
+            "order_id": true,
+            "reference": true,
+            "name": true,
+            "store_currency": true,
+            "base_currency": true,
+            "scheme_currency": true,
+            "exchange_rate_base_to_store": true,
+            "exchange_rate_scheme_to_base": true,
+            "import_threshold_store": true,
+            "import_threshold_base": true,
+            "import_threshold_scheme": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "SALES_ORDER_TAX_SCHEME_ORDER_ID_SALES_ORDER_ENTITY_ID": true
         }
     }
 }

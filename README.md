@@ -168,5 +168,6 @@ used on an order, can be included on the Invoice PDF's for example.</p>
 <p>To run the integration tests, you need your own credentials for the Australian ID Checker services. Please
 add them to config-global.php. The tests for UK (Sandbox), EU and Australia use the live API's</p>
 <ul>
-<li>autocustomergroup/australiagst/apiguid'</li>
+<li>autocustomergroup/australiagst/apiguid</li>
+<li>autocustomergroup/newzealandgst/accesscode</li>
 </ul>

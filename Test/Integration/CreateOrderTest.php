@@ -3,26 +3,34 @@ declare(strict_types=1);
 
 namespace Gw\AutoCustomerGroup\Test\Integration;
 
+use Gw\AutoCustomerGroup\Api\Data\OrderTaxSchemeInterface;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Api\GroupRepositoryInterface;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Exception\State\InvalidTransitionException;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\GuestCartManagementInterface;
 use Magento\Quote\Api\GuestCartRepositoryInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\AddressFactory;
-use Magento\Quote\Model\QuoteIdMask;
-use Magento\Quote\Model\QuoteIdMaskFactory;
 use Magento\Sales\Model\OrderRepository;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Tax\Model\Calculation\Rate;
+use Magento\Tax\Model\Calculation\Rule;
 use Magento\TestFramework\Helper\Bootstrap;
-use PHPUnit\Framework\Constraint\StringContains;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Customer\Api\Data\GroupInterfaceFactory;
 use Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme\CollectionFactory;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Create test order and examine results in sales_order_tax_scheme table
@@ -32,17 +40,12 @@ use Gw\AutoCustomerGroup\Model\ResourceModel\OrderTaxScheme\CollectionFactory;
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.LongVariable)
  */
-class CreateOrderTest extends \PHPUnit\Framework\TestCase
+class CreateOrderTest extends TestCase
 {
     /**
      * @var ObjectManagerInterface
      */
     private $objectManager;
-
-    /**
-     * @var QuoteIdMaskFactory
-     */
-    private $quoteIdMaskFactory;
 
     /**
      * @var ProductRepositoryInterface
@@ -111,7 +114,6 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
     {
         parent::setUp();
         $this->objectManager = Bootstrap::getObjectManager();
-        $this->quoteIdMaskFactory = $this->objectManager->get(QuoteIdMaskFactory::class);
         $this->productRepository = $this->objectManager->get(ProductRepositoryInterface::class);
         $this->productFactory = $this->objectManager->get(ProductFactory::class);
         $this->addressFactory = $this->objectManager->get(AddressFactory::class);
@@ -127,7 +129,19 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @param $algorithm
+     * @param $grandtotal
+     * @param $totalTaxStore
+     * @param $totalTaxBase
+     * @param $totalTaxSchemeUK
+     * @param $totalTaxSchemeEU
+     * @param $taxinprice
      * @return void
+     * @throws CouldNotSaveException
+     * @throws InputException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws InvalidTransitionException
      * @magentoConfigFixture current_store autocustomergroup/general/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/general/enable_sales_order_tax_scheme_table 1
      * @magentoConfigFixture current_store tax/classes/shipping_tax_class 2
@@ -172,9 +186,9 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
             ->setName('Simple Product 1')
             ->setSku('simple1')
             ->setPrice(123.52)
-            ->setTaxClassId(2)
-            ->setVisibility(\Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
-            ->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED)
+            ->setData('tax_class_id', 2)
+            ->setVisibility(Visibility::VISIBILITY_BOTH)
+            ->setStatus(Status::STATUS_ENABLED)
             ->setStockData(['use_config_manage_stock' => 0])
             ->setUrlKey('simple1')
             ->save();
@@ -186,9 +200,9 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
             ->setName('Simple Product 2')
             ->setSku('simple2')
             ->setPrice(145.97)
-            ->setTaxClassId(2)
-            ->setVisibility(\Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
-            ->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED)
+            ->setData('tax_class_id', 2)
+            ->setVisibility(Visibility::VISIBILITY_BOTH)
+            ->setStatus(Status::STATUS_ENABLED)
             ->setStockData(['use_config_manage_stock' => 0])
             ->setUrlKey('simple2')
             ->save();
@@ -215,8 +229,8 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
             'tax_postcode' => '*',
             'code' => 'UK VAT',
             'rate' => '20.0000'
-       ];
-        $rate1 = $this->objectManager->create(\Magento\Tax\Model\Calculation\Rate::class)->setData($taxRate1)->save();
+        ];
+        $rate1 = $this->objectManager->create(Rate::class)->setData($taxRate1)->save();
 
         $taxRate2 = [
             'tax_country_id' => 'GB',
@@ -225,7 +239,7 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
             'code' => 'UK Reduced Rate',
             'rate' => '5.0000'
         ];
-        $rate2 = $this->objectManager->create(\Magento\Tax\Model\Calculation\Rate::class)->setData($taxRate2)->save();
+        $rate2 = $this->objectManager->create(Rate::class)->setData($taxRate2)->save();
 
         $ruleData1 = [
             'code' => 'UK VAT Rule',
@@ -237,7 +251,7 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
             'tax_rates_codes' => [$rate1->getId() => $rate1->getCode()],
             'tax_scheme_id' => 'ukvat'
         ];
-        $this->objectManager->create(\Magento\Tax\Model\Calculation\Rule::class)->setData($ruleData1)->save();
+        $this->objectManager->create(Rule::class)->setData($ruleData1)->save();
 
         $ruleData2 = [
             'code' => 'EU Reduced VAT Rule',
@@ -249,7 +263,7 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
             'tax_rates_codes' => [$rate2->getId() => $rate2->getCode()],
             'tax_scheme_id' => 'euvat'
         ];
-        $this->objectManager->create(\Magento\Tax\Model\Calculation\Rule::class)->setData($ruleData2)->save();
+        $this->objectManager->create(Rule::class)->setData($ruleData2)->save();
 
         $shippingAddress = $this->addressFactory->create(['data' => $addressData]);
         $shippingAddress->setAddressType('shipping');
@@ -287,11 +301,12 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($totalTaxBase, $order->getBaseTaxAmount());
 
         $orderTaxSchemes = $this->orderTaxSchemeCollectionFactory->create()->loadByOrder($order);
+        /** @var OrderTaxSchemeInterface $orderTaxScheme */
         $orderTaxScheme = $orderTaxSchemes->getItemByColumnValue('name', "UK VAT Scheme");
         $this->assertNotNull($orderTaxScheme);
         $this->assertEquals(
             $totalTaxSchemeUK,
-            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateSchemeToBase(),2)
+            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateSchemeToBase(), 2)
         );
         $this->assertEquals($order->getEntityId(), $orderTaxScheme->getOrderId());
         $this->assertEquals("GB553557881", $orderTaxScheme->getReference());
@@ -299,17 +314,18 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals("USD", $orderTaxScheme->getStoreCurrency());
         $this->assertEquals("USD", $orderTaxScheme->getBaseCurrency());
         $this->assertEquals("GBP", $orderTaxScheme->getSchemeCurrency());
-        $this->assertEquals(1.0, (float)$orderTaxScheme->getExchangeRateBaseToStore());
-        $this->assertEquals(0.5, (float)$orderTaxScheme->getExchangeRateSchemeToBase());
-        $this->assertEquals(5000.0, (float)$orderTaxScheme->getImportThresholdStore());
-        $this->assertEquals(5000.0, (float)$orderTaxScheme->getImportThresholdBase());
-        $this->assertEquals(10000.0, (float)$orderTaxScheme->getImportThresholdScheme());
+        $this->assertEquals(1.0, $orderTaxScheme->getExchangeRateBaseToStore());
+        $this->assertEquals(0.5, $orderTaxScheme->getExchangeRateSchemeToBase());
+        $this->assertEquals(5000.0, $orderTaxScheme->getImportThresholdStore());
+        $this->assertEquals(5000.0, $orderTaxScheme->getImportThresholdBase());
+        $this->assertEquals(10000.0, $orderTaxScheme->getImportThresholdScheme());
 
+        /** @var OrderTaxSchemeInterface $orderTaxScheme */
         $orderTaxScheme = $orderTaxSchemes->getItemByColumnValue('name', "EU VAT OSS Scheme");
         $this->assertNotNull($orderTaxScheme);
         $this->assertEquals(
             $totalTaxSchemeEU,
-            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateSchemeToBase(),2)
+            round($order->getBaseTaxAmount() / $orderTaxScheme->getExchangeRateSchemeToBase(), 2)
         );
         $this->assertEquals($order->getEntityId(), $orderTaxScheme->getOrderId());
         $this->assertEquals("100", $orderTaxScheme->getReference());
@@ -317,17 +333,17 @@ class CreateOrderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals("USD", $orderTaxScheme->getStoreCurrency());
         $this->assertEquals("USD", $orderTaxScheme->getBaseCurrency());
         $this->assertEquals("EUR", $orderTaxScheme->getSchemeCurrency());
-        $this->assertEquals(1.0, (float)$orderTaxScheme->getExchangeRateBaseToStore());
-        $this->assertEquals(0.75, (float)$orderTaxScheme->getExchangeRateSchemeToBase());
-        $this->assertEquals(15000.0, (float)$orderTaxScheme->getImportThresholdStore());
-        $this->assertEquals(15000.0, (float)$orderTaxScheme->getImportThresholdBase());
-        $this->assertEquals(20000.0, (float)$orderTaxScheme->getImportThresholdScheme());
+        $this->assertEquals(1.0, $orderTaxScheme->getExchangeRateBaseToStore());
+        $this->assertEquals(0.75, $orderTaxScheme->getExchangeRateSchemeToBase());
+        $this->assertEquals(15000.0, $orderTaxScheme->getImportThresholdStore());
+        $this->assertEquals(15000.0, $orderTaxScheme->getImportThresholdBase());
+        $this->assertEquals(20000.0, $orderTaxScheme->getImportThresholdScheme());
     }
 
     /**
      * @return array
      */
-    public function dataProviderForTest()
+    public function dataProviderForTest(): array
     {
         //Tax Calc Method
         //Grand Total

@@ -24,6 +24,8 @@ class CheckNzGstTest extends TestCase
     }
 
     /**
+     * @param $number
+     * @param $valid
      * @return void
      * @dataProvider isValidGstDataProvider
      */
@@ -45,7 +47,36 @@ class CheckNzGstTest extends TestCase
             ["123123123", true],
             ["123456789", false],
             ["ghkk", false],
-            ["", false]
+            ["", false],
+            [null, false]
+        ];
+    }
+
+    /**
+     * @param $number
+     * @param $valid
+     * @return void
+     * @dataProvider isValidNZBNDataProvider
+     */
+    public function testIsValidNzbn($number, $valid): void
+    {
+        $this->assertEquals($valid, $this->model->isValidNzbn($number));
+    }
+
+    /**
+     * Data provider for testIsValidNzbn()
+     *
+     * @return array
+     */
+    public function isValidNZBNDataProvider(): array
+    {
+        return [
+            ["6291041500213", true],
+            ["6291041500212", false],
+            ["123456789", false],
+            ["ghkk", false],
+            ["", false],
+            [null, false]
         ];
     }
 }

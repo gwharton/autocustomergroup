@@ -258,6 +258,7 @@ class CustomerAccountTest extends TestCase
         //VatID
         //ExpectedGroup
         return [
+            ["domestic", 140, null, "GB", null, null, "domestic"],
             ["domestic", 130, "US", "GB", "SW1 1AA", "", "importtaxed"],
             ["domestic", 140, "US", "GB", "SW1 1AA", "", "importuntaxed"],
             ["domestic", 130, "GB", "GB", "SW1 1AA", "", "domestic"],
@@ -273,6 +274,8 @@ class CustomerAccountTest extends TestCase
             [0, 130, "FR", "GB", "BT1 1AA", "", "intraeub2c"],
             [0, 130, "FR", "GB", "BT1 1AA", "GB146295999727", "intraeub2b"],
             [0, 140, "FR", "GB", "", "GB146295999727", "importb2b"],
+            ["domestic", 140, "GB", "GB", null, "GB146295999727", "domestic"],
+            ["domestic", 140, "GB", "GB", null, null, "domestic"],
         ];
     }
 }

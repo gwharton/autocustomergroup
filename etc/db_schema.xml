@@ -17,17 +17,17 @@
         <column xsi:type="varchar" name="base_currency" nullable="true" length="255" comment="Base Currency"/>
         <column xsi:type="varchar" name="scheme_currency" nullable="true" length="255" comment="Scheme Currency"/>
 
-        <column xsi:type="decimal" name="exchange_rate_base_to_store" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Exchange Rate (Base to Store)"/>
-        <column xsi:type="decimal" name="exchange_rate_scheme_to_base" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Exchange Rate (Scheme to Base)"/>
+        <column xsi:type="decimal" name="exchange_rate_base_to_store" scale="4" precision="12" unsigned="false" nullable="false"
+                default="1" comment="Exchange Rate (Base to Store)"/>
+        <column xsi:type="decimal" name="exchange_rate_scheme_to_base" scale="4" precision="12" unsigned="false" nullable="false"
+                default="1" comment="Exchange Rate (Scheme to Base)"/>
 
-        <column xsi:type="decimal" name="import_threshold_store" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Import Threshold in Store Currency"/>
-        <column xsi:type="decimal" name="import_threshold_base" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Import Threshold in Base Currency"/>
-        <column xsi:type="decimal" name="import_threshold_scheme" scale="4" precision="12" unsigned="false" nullable="true"
-                comment="Import Threshold in Scheme Currency"/>
+        <column xsi:type="decimal" name="import_threshold_store" scale="4" precision="12" unsigned="false" nullable="false"
+                default="0" comment="Import Threshold in Store Currency"/>
+        <column xsi:type="decimal" name="import_threshold_base" scale="4" precision="12" unsigned="false" nullable="false"
+                default="0" comment="Import Threshold in Base Currency"/>
+        <column xsi:type="decimal" name="import_threshold_scheme" scale="4" precision="12" unsigned="false" nullable="false"
+                default="0" comment="Import Threshold in Scheme Currency"/>
 
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="order_tax_scheme_id"/>

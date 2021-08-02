@@ -1,11 +1,12 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterface;
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterfaceFactory;
 use Gw\AutoCustomerGroup\Api\Data\TaxSchemeInterface;
 use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\DataObject;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Information as StoreInformation;
@@ -20,6 +21,11 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
 
     protected $code;
     protected $schemeCountries = [];
+
+    /**
+     * @var GatewayResponseInterfaceFactory
+     */
+    protected $gwrFactory;
 
     /**
      * @var ScopeConfigInterface
@@ -52,28 +58,31 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * @param StoreManagerInterface $storeManager
      * @param DateTime $datetime
      * @param CurrencyFactory $currencyFactory
+     * @param GatewayResponseInterfaceFactory $gwrFactory
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         LoggerInterface $logger,
         StoreManagerInterface $storeManager,
         DateTime $datetime,
-        CurrencyFactory $currencyFactory
+        CurrencyFactory $currencyFactory,
+        GatewayResponseInterfaceFactory $gwrFactory
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->logger = $logger;
         $this->storeManager = $storeManager;
         $this->datetime = $datetime;
         $this->currencyFactory = $currencyFactory;
+        $this->gwrFactory = $gwrFactory;
     }
 
     /**
      * Check if this Tax Scheme is enabled in Config
      *
      * @param int|null $storeId
-     * @return boolean
+     * @return bool
      */
-    public function isEnabled($storeId)
+    public function isEnabled(?int $storeId): bool
     {
         return $this->scopeConfig->isSetFlag(
             "autocustomergroup/" . $this->code . "/enabled",
@@ -87,7 +96,8 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString(): string
+    {
         return $this->getSchemeId();
     }
 
@@ -96,7 +106,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      *
      * @return string[]
      */
-    public function getSchemeCountries()
+    public function getSchemeCountries(): array
     {
         return $this->schemeCountries;
     }
@@ -105,9 +115,9 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * Check if this scheme supports the given country
      *
      * @param string $countryId
-     * @return string[]
+     * @return bool
      */
-    public function isSchemeCountry($countryId)
+    public function isSchemeCountry(string $countryId): bool
     {
         return in_array($countryId, $this->schemeCountries);
     }
@@ -117,7 +127,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      *
      * @return string
      */
-    public function getSchemeId()
+    public function getSchemeId(): string
     {
         return $this->code;
     }
@@ -128,7 +138,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * @param Quote $quote
      * @return float
      */
-    protected function getOrderTotalBaseCurrency($quote)
+    protected function getOrderTotalBaseCurrency(Quote $quote): float
     {
         $orderTotal = 0.0;
         foreach ($quote->getItemsCollection() as $item) {
@@ -143,7 +153,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * @param Quote $quote
      * @return float
      */
-    protected function getMostExpensiveItemBaseCurrency($quote)
+    protected function getMostExpensiveItemBaseCurrency(Quote $quote)
     {
         $mostExpensive = 0.0;
         foreach ($quote->getItemsCollection() as $item) {
@@ -158,10 +168,10 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
     /**
      * Check whether a validation result contained a valid VAT Number
      *
-     * @param DataObject $validationResult
-     * @return boolean
+     * @param GatewayResponseInterface $validationResult
+     * @return bool
      */
-    protected function isValid($validationResult)
+    protected function isValid(GatewayResponseInterface $validationResult): bool
     {
         return ($validationResult->getRequestSuccess() && $validationResult->getIsValid());
     }
@@ -172,7 +182,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * @param int|null $storeId
      * @return string
      */
-    protected function getMerchantCountryCode($storeId)
+    protected function getMerchantCountryCode(?int $storeId): string
     {
         return (string)$this->scopeConfig->getValue(
             StoreInformation::XML_PATH_STORE_INFO_COUNTRY_CODE,
@@ -184,9 +194,10 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
     /**
      * Return the Scheme Registration number
      *
-     * @return string
+     * @param int|null $storeId
+     * @return string|null
      */
-    public function getSchemeRegistrationNumber($storeId)
+    public function getSchemeRegistrationNumber(?int $storeId): ?string
     {
         return (string)$this->scopeConfig->getValue(
             "autocustomergroup/" . $this->getSchemeId() . "/registrationnumber",
@@ -199,10 +210,10 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * Check whether specified Country and PostCode is within Northern Ireland
      *
      * @param string $country
-     * @param string $postCode
-     * @return boolean
+     * @param string|null $postCode
+     * @return bool
      */
-    protected function isNI($country, $postCode)
+    protected function isNI(string $country, ?string $postCode): bool
     {
         return ($country == "GB" && preg_match("/^[Bb][Tt].*$/", $postCode));
     }
@@ -213,7 +224,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * @param int|null $storeId
      * @return string
      */
-    protected function getMerchantPostCode($storeId)
+    protected function getMerchantPostCode(?int $storeId): string
     {
         return (string)$this->scopeConfig->getValue(
             StoreInformation::XML_PATH_STORE_INFO_POSTCODE,
@@ -228,7 +239,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * @param int|null $storeId
      * @return bool
      */
-    private function useMagentoExchangeRate($storeId)
+    private function useMagentoExchangeRate(?int $storeId): bool
     {
         return $this->scopeConfig->isSetFlag(
             "autocustomergroup/" . $this->getSchemeId() . '/usemagentoexchangerate',
@@ -243,7 +254,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * @param int|null $storeId
      * @return float
      */
-    public function getThresholdInBaseCurrency($storeId)
+    public function getThresholdInBaseCurrency(?int $storeId): float
     {
         return $this->getSchemeExchangeRate($storeId) *
             $this->scopeConfig->getValue(
@@ -259,7 +270,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * @param int|null $storeId
      * @return float
      */
-    public function getThresholdInSchemeCurrency($storeId)
+    public function getThresholdInSchemeCurrency(?int $storeId): float
     {
         return $this->scopeConfig->getValue(
             "autocustomergroup/" . $this->getSchemeId() . "/importthreshold",
@@ -273,12 +284,15 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      *
      * @return string
      */
-    public function getSchemeCurrencyCode()
+    public function getSchemeCurrencyCode(): string
     {
         return static::SCHEME_CURRENCY;
     }
 
-    public function getSchemeCurrency()
+    /**
+     * @return Currency
+     */
+    public function getSchemeCurrency(): Currency
     {
         return $this->currencyFactory->create()->load(static::SCHEME_CURRENCY);
     }
@@ -287,9 +301,9 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
      * Retrieve Frontend prompt for scheme
      *
      * @param int|null $storeId
-     * @return string
+     * @return string|null
      */
-    public function getFrontEndPrompt($storeId)
+    public function getFrontEndPrompt(?int $storeId): ?string
     {
         return (string)$this->scopeConfig->getValue(
             "autocustomergroup/" . $this->getSchemeId() . "/frontendprompt",
@@ -299,23 +313,23 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
     }
 
     abstract public function getCustomerGroup(
-        $customerCountryCode,
-        $customerPostCode,
-        $vatValidationResult,
-        $quote,
-        $storeId
-    );
+        string $customerCountryCode,
+        ?string $customerPostCode,
+        GatewayResponseInterface $vatValidationResult,
+        Quote $quote,
+        ?int $storeId
+    ): ?int;
     abstract public function checkTaxId(
-        $countryCode,
-        $taxId
-    );
-    abstract public function getSchemeName();
+        string $countryCode,
+        ?string $taxId
+    ): GatewayResponseInterface;
+    abstract public function getSchemeName(): string;
 
     /**
      * @param int|null $storeId
      * @return float
      */
-    public function getSchemeExchangeRate($storeId)
+    public function getSchemeExchangeRate(?int $storeId): float
     {
         if ($this->useMagentoExchangeRate($storeId)) {
             $websiteBaseCurrency = $this->scopeConfig->getValue(
@@ -328,16 +342,16 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
                 $this->logger->critical(
                     "Gw/AutoCustomerGroup/Model/TaxSchemes/AbstractTaxScheme::getSchemeExchangeRate() : " .
                     "No Magento Exchange Rate configured for " . static::SCHEME_CURRENCY . " to " .
-                    $websiteBaseCurrency . ". Using 1.0");
+                    $websiteBaseCurrency . ". Using 1.0"
+                );
                 $exchangerate = 1.0;
             }
             return $exchangerate;
         }
-        $exchangerate = $this->scopeConfig->getValue(
+        return $this->scopeConfig->getValue(
             "autocustomergroup/" . $this->getSchemeId() . "/exchangerate",
             ScopeInterface::SCOPE_STORE,
             $storeId
         );
-        return $exchangerate;
     }
 }

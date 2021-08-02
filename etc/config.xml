@@ -68,7 +68,10 @@
             </australiagst>
             <newzealandgst>
                 <enabled>0</enabled>
-                <frontendprompt>GST Registered Businesses, please enter your GST Number so we can apply the correct rate of GST to your order..</frontendprompt>
+                <frontendprompt>GST Registered Businesses, please enter your NZBN Number so we can apply the correct rate of GST to your order.</frontendprompt>
+                <environment>sandbox</environment>
+                <validate_online>0</validate_online>
+                <accesstoken></accesstoken>
                 <registrationnumber></registrationnumber>
                 <importthreshold>1000</importthreshold>
                 <usemagentoexchangerate>1</usemagentoexchangerate>

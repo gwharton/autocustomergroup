@@ -1,15 +1,17 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
-use Magento\Framework\DataObject;
+use Exception;
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 use SoapClient;
 
 /**
- * Australian Test Numbers
- * 50 110 219 460 - Company without GST
- * 72 629 951 766 - Company with GST
+ * Australian Test Numbers on Live system (No Sandbox)
+ * https://abr.business.gov.au/Documentation/WebServiceResponse
+ * 50 110 219 460 - EXAMPLE PTY LTD without GST
+ * 72 629 951 766 - EXAMPLE HOUSE PTY LTD with GST
  */
 class AustraliaGst extends AbstractTaxScheme
 {
@@ -28,8 +30,8 @@ class AustraliaGst extends AbstractTaxScheme
     /**
      * Get customer group based on Validation Result and Country of customer
      * @param string $customerCountryCode
-     * @param string $customerPostCode
-     * @param DataObject $vatValidationResult
+     * @param string|null $customerPostCode
+     * @param GatewayResponseInterface $vatValidationResult
      * @param Quote $quote
      * @param int|null $storeId
      * @return int|null
@@ -38,13 +40,20 @@ class AustraliaGst extends AbstractTaxScheme
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getCustomerGroup(
-        $customerCountryCode,
-        $customerPostCode,
-        $vatValidationResult,
-        $quote,
-        $storeId
-    ) {
+        string $customerCountryCode,
+        ?string $customerPostCode,
+        GatewayResponseInterface $vatValidationResult,
+        Quote $quote,
+        ?int $storeId
+    ): ?int {
         $merchantCountry = $this->getMerchantCountryCode($storeId);
+        if (empty($merchantCountry)) {
+            $this->logger->critical(
+                "Gw/AutoCustomerGroup/Model/TaxSchemes/AustraliaGst::getCustomerGroup() : " .
+                "Merchant country not set."
+            );
+            return null;
+        }
         $importThreshold = $this->getThresholdInBaseCurrency($storeId);
         //Merchant Country is in Australia
         //Item shipped to Australia
@@ -103,21 +112,18 @@ class AustraliaGst extends AbstractTaxScheme
      * Peform validation of the ABN, returning a gatewayResponse object
      *
      * @param string $countryCode
-     * @param string $abn
-     * @return DataObject
+     * @param string|null $taxId
+     * @return GatewayResponseInterface
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    public function checkTaxId($countryCode, $abn)
-    {
-        $gatewayResponse = new DataObject([
-            'is_valid' => false,
-            'request_date' => '',
-            'request_identifier' => '',
-            'request_success' => false,
-            'request_message' => __('Error during ABN verification.'),
-        ]);
+    public function checkTaxId(
+        string $countryCode,
+        ?string $taxId
+    ): GatewayResponseInterface {
+        $gatewayResponse = $this->gwrFactory->create();
+        $gatewayResponse->setRequestMessage(__('Error during ABN verification.'));
 
-        $sanitisedAbn = str_replace([' ', '-'], ['', ''], $abn);
+        $sanitisedAbn = str_replace([' ', '-'], ['', ''], $taxId);
 
         if (!preg_match("/^[0-9]{11}$/", $sanitisedAbn) ||
             !$this->isSchemeCountry($countryCode) ||
@@ -180,7 +186,7 @@ class AustraliaGst extends AbstractTaxScheme
                     $gatewayResponse->setRequestMessage(__('Please enter a valid ABN number, where ' .
                         'the business is registered for GST.'));
                 }
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $gatewayResponse->setRequestSuccess(false);
                 $gatewayResponse->setIsValid(false);
                 $gatewayResponse->setRequestDate('');
@@ -193,10 +199,10 @@ class AustraliaGst extends AbstractTaxScheme
     /**
      * Validate an Australian Business Number (ABN)
      *
-     * @param string $abn
+     * @param string|null $abn
      * @return bool
      */
-    public function isValidAbn($abn)
+    public function isValidAbn(?string $abn): bool
     {
         $weights = [10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
 
@@ -228,7 +234,7 @@ class AustraliaGst extends AbstractTaxScheme
      *
      * @return string
      */
-    public function getSchemeName()
+    public function getSchemeName(): string
     {
         return "Australia GST for Non Residents Scheme";
     }

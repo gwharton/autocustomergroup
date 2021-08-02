@@ -1,7 +1,7 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
-use Magento\Framework\DataObject;
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 
@@ -21,8 +21,8 @@ class NorwayVoec extends AbstractTaxScheme
     /**
      * Get customer group based on Validation Result and Country of customer
      * @param string $customerCountryCode
-     * @param string $customerPostCode
-     * @param DataObject $vatValidationResult
+     * @param string|null $customerPostCode
+     * @param GatewayResponseInterface $vatValidationResult
      * @param Quote $quote
      * @param int|null $storeId
      * @return int|null
@@ -31,13 +31,20 @@ class NorwayVoec extends AbstractTaxScheme
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getCustomerGroup(
-        $customerCountryCode,
-        $customerPostCode,
-        $vatValidationResult,
-        $quote,
-        $storeId
-    ) {
+        string $customerCountryCode,
+        ?string $customerPostCode,
+        GatewayResponseInterface $vatValidationResult,
+        Quote $quote,
+        ?int $storeId
+    ): ?int {
         $merchantCountry = $this->getMerchantCountryCode($storeId);
+        if (empty($merchantCountry)) {
+            $this->logger->critical(
+                "Gw/AutoCustomerGroup/Model/TaxSchemes/MorwayVoec::getCustomerGroup() : " .
+                "Merchant country not set."
+            );
+            return null;
+        }
         $importThreshold = $this->getThresholdInBaseCurrency($storeId);
         //Merchant Country is in Norway
         //Item shipped to Norway
@@ -104,21 +111,18 @@ class NorwayVoec extends AbstractTaxScheme
      * customer."
      *
      * @param string $countryCode
-     * @param string $businessNumber
-     * @return DataObject
+     * @param string|null $taxId
+     * @return GatewayResponseInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function checkTaxId($countryCode, $businessNumber)
-    {
-        $gatewayResponse = new DataObject([
-            'is_valid' => false,
-            'request_date' => '',
-            'request_identifier' => '',
-            'request_success' => false,
-            'request_message' => __('Error during VAT Number verification.'),
-        ]);
+    public function checkTaxId(
+        string $countryCode,
+        ?string $taxId
+    ): GatewayResponseInterface {
+        $gatewayResponse = $this->gwrFactory->create();
+        $gatewayResponse->setRequestMessage(__('Error during VAT Number verification.'));
 
-        if (preg_match("/^[89][0-9]{8}$/", $businessNumber) &&
+        if (preg_match("/^[89][0-9]{8}$/", $taxId) &&
             $this->isSchemeCountry($countryCode)) {
             $gatewayResponse->setIsValid(true);
             $gatewayResponse->setRequestSuccess(true);
@@ -136,7 +140,7 @@ class NorwayVoec extends AbstractTaxScheme
      *
      * @return string
      */
-    public function getSchemeName()
+    public function getSchemeName(): string
     {
         return "Norway VOEC Scheme";
     }

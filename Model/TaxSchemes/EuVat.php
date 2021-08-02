@@ -1,9 +1,9 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
+use Exception;
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterface;
 use Gw\AutoCustomerGroup\Model\Config\Source\Environment;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 use SoapClient;
@@ -30,7 +30,8 @@ class EuVat extends AbstractTaxScheme
     /**
      * Get customer group based on Validation Result and Country of customer
      * @param string $customerCountryCode
-     * @param DataObject $vatValidationResult
+     * @param string|null $customerPostCode
+     * @param GatewayResponseInterface $vatValidationResult
      * @param Quote $quote
      * @param int|null $storeId
      * @return int|null
@@ -40,14 +41,28 @@ class EuVat extends AbstractTaxScheme
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function getCustomerGroup(
-        $customerCountryCode,
-        $customerPostCode,
-        $vatValidationResult,
-        $quote,
-        $storeId
-    ) {
+        string $customerCountryCode,
+        ?string $customerPostCode,
+        GatewayResponseInterface $vatValidationResult,
+        Quote $quote,
+        ?int $storeId
+    ): ?int {
         $merchantCountry = $this->getMerchantCountryCode($storeId);
+        if (empty($merchantCountry)) {
+            $this->logger->critical(
+                "Gw/AutoCustomerGroup/Model/TaxSchemes/EuVat::getCustomerGroup() : " .
+                "Merchant country not set."
+            );
+            return null;
+        }
         $merchantPostCode = $this->getMerchantPostCode($storeId);
+        if (empty($merchantPostCode) && $merchantCountry == "GB") {
+            $this->logger->critical(
+                "Gw/AutoCustomerGroup/Model/TaxSchemes/EuVat::getCustomerGroup() : " .
+                "Merchant Postcode not set in UK (We need to determine if you are in NI)."
+            );
+            return null;
+        }
         $importThreshold = $this->getThresholdInBaseCurrency($storeId);
         //Merchant Country is in the EU
         //Item shipped to the EU
@@ -140,18 +155,15 @@ class EuVat extends AbstractTaxScheme
      * Peform validation of the VAT Number, returning a gatewayResponse object
      *
      * @param string $countryCode
-     * @param string $vatNumber
-     * @return DataObject
+     * @param string|null $taxId
+     * @return GatewayResponseInterface
      */
-    public function checkTaxId($countryCode, $vatNumber)
-    {
-        $gatewayResponse = new DataObject([
-            'is_valid' => false,
-            'request_date' => '',
-            'request_identifier' => '',
-            'request_success' => false,
-            'request_message' => __('Error during VAT Number verification.'),
-        ]);
+    public function checkTaxId(
+        string $countryCode,
+        ?string $taxId
+    ): GatewayResponseInterface {
+        $gatewayResponse = $this->gwrFactory->create();
+        $gatewayResponse->setRequestMessage(__('Error during VAT Number verification.'));
 
         $requesterCountryCode = $this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/registrationcountry",
@@ -161,24 +173,21 @@ class EuVat extends AbstractTaxScheme
             "autocustomergroup/" . self::CODE . "/registrationnumber",
             ScopeInterface::SCOPE_STORE
         );
-        $countryCodeForVatNumber = $this->getCountryCodeForVatNumber($countryCode);
-        $requesterCountryCodeForVatNumber = $this->getCountryCodeForVatNumber($requesterCountryCode);
-        $sanitisedVAT = str_replace(
-            [' ', '-', $countryCodeForVatNumber],
+        $newVat = str_replace(
+            [' ', '-', $this->getCountryCodeForVatNumber($countryCode)],
             ['', '', ''],
-            $vatNumber
+            $taxId
         );
-        $sanitisedRequesterVAT = str_replace(
-            [' ', '-',
-            $requesterCountryCodeForVatNumber],
+        $newRequesterVat = str_replace(
+            [' ', '-', $this->getCountryCodeForVatNumber($requesterCountryCode)],
             ['', '', ''],
             $requesterVatNumber
         );
 
-        if (empty($sanitisedVAT) ||
-            empty($sanitisedRequesterVAT) ||
-            empty($countryCodeForVatNumber) ||
-            empty($requesterCountryCodeForVatNumber) ||
+        if (empty($newVat) ||
+            empty($newRequesterVat) ||
+            empty($this->getCountryCodeForVatNumber($countryCode)) ||
+            empty($this->getCountryCodeForVatNumber($requesterCountryCode)) ||
             !$this->isSchemeCountry($countryCode)) {
             $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number.'));
             return $gatewayResponse;
@@ -189,10 +198,10 @@ class EuVat extends AbstractTaxScheme
                 $soapClient = new SoapClient($this->getWsdlUrl());
 
                 $requestParams = [];
-                $requestParams['countryCode'] = $countryCodeForVatNumber;
-                $requestParams['vatNumber'] = $sanitisedVAT;
-                $requestParams['requesterCountryCode'] = $requesterCountryCodeForVatNumber;
-                $requestParams['requesterVatNumber'] = $sanitisedRequesterVAT;
+                $requestParams['countryCode'] = $this->getCountryCodeForVatNumber($countryCode);
+                $requestParams['vatNumber'] = $newVat;
+                $requestParams['requesterCountryCode'] = $this->getCountryCodeForVatNumber($requesterCountryCode);
+                $requestParams['requesterVatNumber'] = $newRequesterVat;
 
                 $result = $soapClient->checkVatApprox($requestParams);
 
@@ -206,7 +215,7 @@ class EuVat extends AbstractTaxScheme
                 } else {
                     $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number including country code.'));
                 }
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $gatewayResponse->setRequestSuccess(false);
                 $gatewayResponse->setIsValid(false);
                 $gatewayResponse->setRequestDate('');
@@ -222,7 +231,7 @@ class EuVat extends AbstractTaxScheme
      * @param string $countryCode
      * @return string
      */
-    private function getCountryCodeForVatNumber(string $countryCode)
+    private function getCountryCodeForVatNumber(string $countryCode): string
     {
         // Greece uses a different code for VAT numbers then its country code
         // See: http://ec.europa.eu/taxation_customs/vies/faq.html#item_11
@@ -239,7 +248,7 @@ class EuVat extends AbstractTaxScheme
      *
      * @return string
      */
-    private function getWsdlUrl()
+    private function getWsdlUrl(): string
     {
         if ($this->scopeConfig->getValue(
             "autocustomergroup/" . self::CODE . "/environment",
@@ -256,7 +265,7 @@ class EuVat extends AbstractTaxScheme
      *
      * @return string
      */
-    public function getSchemeName()
+    public function getSchemeName(): string
     {
         return "EU VAT OSS Scheme";
     }
