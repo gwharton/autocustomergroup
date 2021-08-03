@@ -21,6 +21,9 @@ use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterfaceFactory;
 /**
  * New Zealand NZBN Test numbers for Sandbox
  * 9429038644047 - TEST LIMITED No GST
+ * 9429034241868 - with GST
+ * 9429050853731 - with GST
+ * 9429049835892 - with GST
  *
  * Real New Zealand numbers
  * 9429046452894 - ZEALAND CONSULTING LIMITED - GST Number 124367621

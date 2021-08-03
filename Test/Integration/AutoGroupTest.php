@@ -384,17 +384,17 @@ class AutoGroupTest extends TestCase
             [1, 10, 'NZ', null, 'NZ', "0620", '9429038644047', 'newzealand_domestic', 0, true],
             [1, 10, 'NZ', null, 'NZ', "0620", '9429038644047', 'newzealand_domestic', 0],
 
-            //Online check will show valid but no GST, Offline check will show valid TODO Need with GST number
-            [1, 10, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_taxed', 0, true],
-            [1, 10, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_b2b', 0],
+            //Online check will show valid with GST, Offline check will show valid
+            [1, 10, 'GB', 'NE1 1AA', 'NZ', "0620", '9429034241868', 'newzealand_import_b2b', 0, true],
+            [1, 10, 'GB', 'NE1 1AA', 'NZ', "0620", '9429034241868', 'newzealand_import_b2b', 0],
 
-            //Online check will show valid but no GST, Offline check will show valid TODO Need with GST number
-            [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_untaxed', 0, true],
-            [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_b2b', 0],
+            //Online check will show valid with GST, Offline check will show valid
+            [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429050853731', 'newzealand_import_b2b', 0, true],
+            [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429050853731', 'newzealand_import_b2b', 0],
 
-            //Online check will show valid but no GST, Offline check will show valid TODO Need with GST number
-            [1, 4000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_untaxed', 0, true],
-            [1, 4000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_b2b', 0],
+            //Online check will show valid with GST, Offline check will show valid
+            [1, 4000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429049835892', 'newzealand_import_b2b', 0, true],
+            [1, 4000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429049835892', 'newzealand_import_b2b', 0],
 
             //Online check will show valid but no GST, Offline check will show valid
             [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_untaxed', 0, true],
