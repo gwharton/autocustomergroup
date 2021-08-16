@@ -115,7 +115,9 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>Tax Identifier Field</b> - Displayed to the customer during checkout when this scheme is being used.</li>
-<li><b>Validate Online</b> - Whether the customers NZBN number should be validated online for GST registration.</li>
+<li><b>Validate Online</b> - Whether the customers NZBN number should be validated online for GST registration. (Please note, not all
+Businesses have their GST registration status recorded on the NZBN checking website so this setting should be used with caution. This
+may change in the future if recording of registration status becomes mandatory.)</li>
 <li><b>Environment</b> - Whether to use the Sandbox or Production servers for the NZBN Validation Service.</li>
 <li><b>API Access Token</b> - The API Access Token provided by the NZBN Business Register website for API access.</li>
 <li><b>GST Registration Number</b> - The GST Registration Number for the Merchant. This is not currently used by the module.</li>
