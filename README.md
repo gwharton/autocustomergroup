@@ -46,6 +46,7 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <img src="images/ukvat.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
+<li><b>Tax Identifier Field</b> - Displayed to the customer during checkout when this scheme is being used.</li>
 <li><b>Environment</b> - Whether to use the Sandbox or Production servers for the HMRC VAT Validation Service.</li>
 <li><b>VAT Registration Number</b> - The UK VAT Registration Number for the Merchant. This will be provided to HMRC when all validation checks are made.</li>
 <li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>
@@ -63,6 +64,7 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <img src="images/euvat.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
+<li><b>Tax Identifier Field</b> - Displayed to the customer during checkout when this scheme is being used.</li>
 <li><b>VAT Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to VIES when all validation checks are made.</li>
 <li><b>VAT Registration Number</b> - The EU VAT Registration Number for the Merchant. This will be provided to VIES when all validation checks are made.</li>
 <li><b>Environment</b> - Whether to use the Sandbox or Production servers for the VIES VAT Validation Service.</li>
@@ -81,6 +83,7 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <img src="images/norwayvoec.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
+<li><b>Tax Identifier Field</b> - Displayed to the customer during checkout when this scheme is being used.</li>
 <li><b>VOEC Registration Number</b> - The Norway VOEC Registration Number for the Merchant. This is not currently used by the module.</li>
 <li><b>Import VAT Threshold</b> - If any single item within the order is valued above the VAT threshold then no VAT should be charged.</li>
 <li><b>Use Magento Exchange Rate</b> - To convert from NOK Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
@@ -95,6 +98,7 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <img src="images/australiagst.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
+<li><b>Tax Identifier Field</b> - Displayed to the customer during checkout when this scheme is being used.</li>
 <li><b>ABN API GUID</b> - The GUID provided by the Australian Business Register website for API access.</li>
 <li><b>ATO Registration Number</b> - The ATO Registration Number for the Merchant. This is not currently used by the module.</li>
 <li><b>Import GST Threshold</b> - If the order value is above the GST Threshold, no GST should be charged.</li>
@@ -110,6 +114,10 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <img src="images/newzealandgst.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
+<li><b>Tax Identifier Field</b> - Displayed to the customer during checkout when this scheme is being used.</li>
+<li><b>Validate Online</b> - Whether the customers NZBN number should be validated online for GST registration.</li>
+<li><b>Environment</b> - Whether to use the Sandbox or Production servers for the NZBN Validation Service.</li>
+<li><b>API Access Token</b> - The API Access Token provided by the NZBN Business Register website for API access.</li>
 <li><b>GST Registration Number</b> - The GST Registration Number for the Merchant. This is not currently used by the module.</li>
 <li><b>Import GST Threshold</b> - If the order value is above the GST Threshold, no GST should be charged.</li>
 <li><b>Use Magento Exchange Rate</b> - To convert from NZD Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>
@@ -120,11 +128,12 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within New Zealand, Item is being shipped to New Zealand, One or more items in the order is valued above the Import GST Threshold.</li>
 </ul>
 
-<h2>Tax Rate to Tax Scheme Links</h2>
-<p>The module allows you to link each tax rate to a particular tax scheme. In post order functions, this allows you to query this module using order details, and obtain the list of tax rates applicable to the order, and return the TAX Scheme Registration Numbers linked to the order. This is useful
+<h2>Tax Rule to Tax Scheme Links</h2>
+<p>The module allows you to link each tax rule to a particular tax scheme. In post order functions, this allows you to query this module using order details, and obtain the list of tax rules that were applicable to the order, and return the TAX Scheme Registration Numbers linked to these rules. This is useful
 when generating invoices for example.</p>
-<p>The links can be set under the existing Tax Zones and Rates Screens</p>
-<img src="images/taxrates.png">
+<p>The links can be set under the existing Tax Rules Screens</p>
+<img src="images/taxrules1.png">
+<img src="images/taxrules2.png">
 
 <h2>Sales Order Grid</h2>
 <p>The module introduces a new Sales Order Grid column that will display details of the Tax Scheme used for the order.</p>
