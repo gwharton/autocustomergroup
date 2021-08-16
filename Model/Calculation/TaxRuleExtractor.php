@@ -43,11 +43,12 @@ class TaxRuleExtractor
     public function extractMultiple(array $appliedTaxes, array $originalRates): array
     {
         foreach ($originalRates as $appliedRate) {
+            $id = $appliedRate['id'];
+            $outputRates = $appliedTaxes[$id]->getRates();
             foreach ($appliedRate['rates'] as $rate) {
                 $rule_id = $rate['rule_id'];
                 if ($rule_id) {
                     $code = $rate['code'];
-                    $outputRates = $appliedTaxes[$code]->getRates();
                     $extensionAtt = $outputRates[$code]->getExtensionAttributes();
                     $taxrulesarray = $extensionAtt->getTaxRuleIds() ?: [];
                     if (!in_array($rule_id, $taxrulesarray)) {
@@ -55,9 +56,9 @@ class TaxRuleExtractor
                     }
                     $extensionAtt->setTaxRuleIds($taxrulesarray);
                     $outputRates[$code]->setExtensionAttributes($extensionAtt);
-                    $appliedTaxes[$code]->setRates($outputRates);
                 }
             }
+            $appliedTaxes[$id]->setRates($outputRates);
         }
         return $appliedTaxes;
     }

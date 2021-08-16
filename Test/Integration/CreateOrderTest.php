@@ -355,7 +355,10 @@ class CreateOrderTest extends TestCase
         return [
             ['UNIT_BASE_CALCULATION', 1048.08, 209.61, 209.61, 419.22, 279.48, 0],
             ['ROW_BASE_CALCULATION', 1048.09, 209.62, 209.62, 419.24, 279.49, 0],
-            ['TOTAL_BASE_CALCULATION', 1048.09, 209.62, 209.62, 419.24, 279.49, 0]
+            ['TOTAL_BASE_CALCULATION', 1048.09, 209.62, 209.62, 419.24, 279.49, 0],
+            ['UNIT_BASE_CALCULATION', 1048.08, 209.61, 209.61, 419.22, 279.48, 1],
+            ['ROW_BASE_CALCULATION', 1048.08, 209.62, 209.62, 419.24, 279.49, 1],
+            ['TOTAL_BASE_CALCULATION', 1048.08, 209.62, 209.62, 419.24, 279.49, 1]
         ];
     }
 }
