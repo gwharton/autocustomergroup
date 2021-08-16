@@ -12,7 +12,9 @@
 <li>Module can be disabled, where legacy Magento functionality is restored. Module can be enabled/disabled on a per store basis with legacy functionality on one store, and new functionality on another store.</li>
 <li>Extends Tax Rate functionality to allow linking of Tax Rates to Tax Schemes</li>
 <li>Includes Code to allow retieval of Order Tax Rates and linked Tax Schemes, for example when producing Invoice PDF's so the Tax Scheme details can be added to the PDF depending on which rates were used on the order. (example code below)</li>
-<li>Records details of Tax Scheme used on orders to new table sales_order_tax_scheme.</li></ul>
+<li>Records details of Tax Scheme used on orders to new table sales_order_tax_scheme.</li>
+<li>Sales Order Grid column to show Tax Scheme Details for order.</li>
+</ul>
 
 <h2>Overview</h2>
 <p>Changes introduced to both the UK and EU VAT Tax systems require changes to be made to the Magento Tax system. These changes are required URGENTLY, and while Magento consider the changes required and work towards a permanent solution, this module can be used as an interim measure.</p>
@@ -28,6 +30,9 @@
 <li><b>Validate on Each Transaction</b> - If the order is being placed by a customer that has existing Tax ID Validation data stored in their shipping address, then this can be re-used on each subsequent order, or it can be revalidated every time.</li>
 <li><b>VAT/Tax Identifier Frontend Label</b> - The label for the VAT/Tax Id Input Box at Checkout.</li>
 <li><b>Enable download of Additional Base Currencies</b> - Adds the Scheme Currencies (for enabled Schemes) to the list of Magento Base Currencies. This enables the downloading of the correct exchange rates for use in this module. This can be verified in Stores -> Currency Rates.</li>
+<li><b>Enable recording of Tax Scheme details to sales_order_tax_scheme table</b> - When an order is placed, and a tax rule is triggered that
+is linked to a tax scheme, then the tax scheme information is recorded in table sales_order_tax_scheme in the database.</li>
+<li><b>Default Customer Group for Guest Orders</b> - Which Customer Group to assign guest orders to.</li>
 </ul>
 <h2>Frontend Validation Feedback</h2>
 <p>When enabled, this module replaces the frontend Form Element for the VAT/Tax ID Input box. If the currently selected Country has a Tax Scheme
