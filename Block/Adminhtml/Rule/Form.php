@@ -4,6 +4,7 @@ namespace Gw\AutoCustomerGroup\Block\Adminhtml\Rule;
 use Gw\AutoCustomerGroup\Model\TaxSchemes;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Data\FormFactory;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
 use Magento\Tax\Api\Data\TaxRuleInterface;
 use Magento\Tax\Api\TaxClassRepositoryInterface;
@@ -84,10 +85,13 @@ class Form extends RuleForm
         );
 
         $taxRuleId = $this->_coreRegistry->registry('tax_rule_id');
-        $taxRule = $this->ruleService->get($taxRuleId);
-
         $sessionFormValues = (array)$this->_coreRegistry->registry('tax_rule_form_data');
-        $taxRuleData = isset($taxRule) ? $this->extractTaxRuleData($taxRule) : [];
+        try {
+            $taxRule = $this->ruleService->get($taxRuleId);
+            $taxRuleData = $this->extractTaxRuleData($taxRule);
+        } catch (NoSuchEntityException $e) {
+            $taxRuleData = [];
+        }
         $formValues = array_merge($taxRuleData, $sessionFormValues);
         $formValues['tax_calculation_rule_id'] = $taxRuleId;
         $form->setValues($formValues);
