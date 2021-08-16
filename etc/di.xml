@@ -12,6 +12,13 @@
            </argument>
         </arguments>
     </type>
+    <type name="Gw\AutoCustomerGroup\Ui\Component\Listing\Column\OrderTaxCollected">
+        <arguments>
+            <argument name="taxCollectors" xsi:type="array">
+                <item name="autocustomergroup" xsi:type="object">Gw\AutoCustomerGroup\Model\OrderTaxCollected</item>
+            </argument>
+        </arguments>
+    </type>
     <virtualType name="UkVatImportThresholdStoreBaseCurrency"
                  type="Gw\AutoCustomerGroup\Block\Adminhtml\ThresholdSummary">
         <arguments>
