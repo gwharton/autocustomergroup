@@ -14,13 +14,6 @@
 <li>Includes Code to allow retieval of Order Tax Rates and linked Tax Schemes, for example when producing Invoice PDF's so the Tax Scheme details can be added to the PDF depending on which rates were used on the order. (example code below)</li>
 <li>Records details of Tax Scheme used on orders to new table sales_order_tax_scheme.</li></ul>
 
-<h2>Known Issues/Left to do</h2>
-<ul>
-<li>Need to test using logged in customers</li>
-<li>Need more multi store/website testing with different currencies per store</li>
-<li>Need to test enabling and disabling the module. Does legacy still work when disabled</li>
-<li>Testing on frontend validation feedback</li>
-</ul>
 <h2>Overview</h2>
 <p>Changes introduced to both the UK and EU VAT Tax systems require changes to be made to the Magento Tax system. These changes are required URGENTLY, and while Magento consider the changes required and work towards a permanent solution, this module can be used as an interim measure.</p>
 <p>The module should be considered BETA. I encourage users to analyse the code, suggest improvements, generate PR's where applicable.</p>
@@ -132,6 +125,10 @@ it, the customer is presented with a prompt above the input field, notifying wha
 when generating invoices for example.</p>
 <p>The links can be set under the existing Tax Zones and Rates Screens</p>
 <img src="images/taxrates.png">
+
+<h2>Sales Order Grid</h2>
+<p>The module introduces a new Sales Order Grid column that will display details of the Tax Scheme used for the order.</p>
+<img src="images/sogcolumn.png">
 
 <h2>Getting Information on Tax Schemes used on Order</h2>
 <p>This module stores additional information into the sales_order_tax_scheme table whenever
