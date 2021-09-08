@@ -8,7 +8,7 @@
                 <label translate="true">Tax Collected</label>
                 <dataType>text</dataType>
                 <bodyTmpl>ui/grid/cells/html</bodyTmpl>
-                <disableAction>true</disableAction>
+                <fieldAction/>
             </settings>
         </column>
     </columns>
