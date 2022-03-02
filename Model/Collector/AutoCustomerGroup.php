@@ -147,25 +147,33 @@ class AutoCustomerGroup extends AbstractTotal
                 $validationResult->setRequestSuccess((bool)$quoteAddress->getData('vat_request_success'));
             } else {
                 //Validate every time
-                $validationResult = $this->autoCustomerGroup->checkTaxId(
+                $result = $this->autoCustomerGroup->checkTaxId(
                     $quoteAddress->getCountryId(),
                     $quoteAddress->getVatId(),
                     $storeId
                 );
-                if ($validationResult) {
-                    // Store validation results in corresponding quote address
-                    $quoteAddress->setData('vat_is_valid', $validationResult->getIsValid());
-                    $quoteAddress->setData('vat_request_id', $validationResult->getRequestIdentifier());
-                    $quoteAddress->setData('vat_request_date', $validationResult->getRequestDate());
-                    $quoteAddress->setData('vat_request_success', $validationResult->getRequestSuccess());
-                    $quoteAddress->setData('validated_vat_number', $quoteAddress->getVatId());
-                    $quoteAddress->setData('validated_country_code', $quoteAddress->getCountryId());
-                    $quote->setShippingAddress($quoteAddress);
+                //Must check $result as it could be null if a tax ID is entered for a non supported country
+                if ($result) {
+                    $validationResult->setIsValid($result->getIsValid());
+                    $validationResult->setRequestDate($result->getRequestDate());
+                    $validationResult->setRequestIdentifier($result->getRequestIdentifier());
+                    $validationResult->setRequestMessage($result->getRequestMessage());
+                    $validationResult->setRequestSuccess($result->getRequestSuccess());
+                    if ($validationResult->getIsValid()) {
+                        // Store validation results in corresponding quote address
+                        $quoteAddress->setData('vat_is_valid', $validationResult->getIsValid());
+                        $quoteAddress->setData('vat_request_id', $validationResult->getRequestIdentifier());
+                        $quoteAddress->setData('vat_request_date', $validationResult->getRequestDate());
+                        $quoteAddress->setData('vat_request_success', $validationResult->getRequestSuccess());
+                        $quoteAddress->setData('validated_vat_number', $quoteAddress->getVatId());
+                        $quoteAddress->setData('validated_country_code', $quoteAddress->getCountryId());
+                        $quote->setShippingAddress($quoteAddress);
+                    }
                 }
             }
         }
 
-        //Get the auto assigned group for customer, returns null if group shouldnt be changed.
+        //Get the auto assigned group for customer, returns null if group shouldn't be changed.
         $newGroup = $this->autoCustomerGroup->getCustomerGroup(
             $quoteAddress->getCountryId(),
             $quoteAddress->getPostcode() ?: "",
