@@ -158,6 +158,7 @@ class AutoGroupTest extends TestCase
      * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 135
      * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationcountry IE
+     * @magentoConfigFixture current_store autocustomergroup/euvat/viesregistrationnumber 100
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber 100
      * @magentoConfigFixture current_store autocustomergroup/euvat/environment sandbox
      * @magentoConfigFixture current_store autocustomergroup/euvat/usemagentoexchangerate 0

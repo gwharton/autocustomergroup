@@ -154,6 +154,7 @@ class CreateOrderTest extends TestCase
      * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 10000
      *
      * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
+     * @magentoConfigFixture current_store autocustomergroup/euvat/viesregistrationnumber 100
      * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber 100
      * @magentoConfigFixture current_store autocustomergroup/ukvat/environment sandbox
      * @magentoConfigFixture current_store autocustomergroup/euvat/usemagentoexchangerate 0
