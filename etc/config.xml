@@ -29,8 +29,9 @@
                 <enabled>0</enabled>
                 <frontendprompt>EU VAT Registered Businesses, please enter your EU VAT Number (including Country Code), so we can apply the correct rate of VAT to your order.</frontendprompt>
                 <environment>sandbox</environment>
-                <registrationnumber></registrationnumber>
                 <registrationcountry></registrationcountry>
+                <viesregistrationnumber></viesregistrationnumber>
+                <registrationnumber></registrationnumber>
                 <importthreshold>150</importthreshold>
                 <usemagentoexchangerate>1</usemagentoexchangerate>
                 <exchangerate>1</exchangerate>

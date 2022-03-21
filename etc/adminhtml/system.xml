@@ -198,12 +198,12 @@
                 </field>
             </group>
             <group id="euvat" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>EU OSS VAT Scheme</label>
+                <label>EU OSS/IOSS VAT Scheme</label>
                 <comment><![CDATA[
 <div class="autocustomergroup-schemeoverview">
 <p>This Scheme applies to shipments being sent from anywhere in the world to the EU. Note special procedures
     apply for shipments from Northern Ireland (NI, Part of UK) to the EU.</p>
-<p>As of 1st July 2021, all sellers must register for the EU OSS scheme in an EU country of their choice, and collect the
+<p>As of 1st July 2021, sellers may register for the EU OSS/IOSS scheme in an EU country of their choice, and collect the
     appropriate EU VAT at the point of sale and remit to the EU.</p>
 <p>The module assumes the following rules :</p>
 <ul>
@@ -219,7 +219,7 @@
     <li><b>Import Untaxed</b> - For shipments from outside of the EU to the EU and the total goods value is above 150 EUR, then VAT should
         NOT be charged and instead will be collected at the EU border along with any duties due.</li>
 </ul>
-<p>For the EU OSS VAT Scheme, the following applies (This can be confirmed
+<p>For the EU OSS/IOSS VAT Scheme, the following applies (This can be confirmed
     <a href="https://ec.europa.eu/taxation_customs/sites/taxation/files/guidance_on_import_and_export_of_low_value_consignments_final.pdf"
     target="_blank">here</a> in Section 1.3.1) :</p>
 <ul>
@@ -253,14 +253,20 @@
                     </depends>
                 </field>
                 <field id="registrationcountry" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Registration Country</label>
+                    <label>VIES Registration Country</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
                 </field>
+                <field id="viesregistrationnumber" translate="label" type="text" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>VIES Registration Number</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
                 <field id="registrationnumber" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>VAT Registration Number</label>
+                    <label>VAT/Scheme Registration Number</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

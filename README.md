@@ -65,13 +65,14 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <li><b>Customer Group - Import Untaxed</b> - Merchant Country is not within the UK/Isle of Man, Item is being shipped to the UK/Isle of Man, Order Value is above the Import VAT Threshold.</li>
 </ul>
 
-<h2>EU VAT Scheme</h2>
+<h2>EU OSS/IOSS Scheme</h2>
 <img src="images/euvat.png">
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>Tax Identifier Field</b> - Displayed to the customer during checkout when this scheme is being used.</li>
-<li><b>VAT Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to VIES when all validation checks are made.</li>
-<li><b>VAT Registration Number</b> - The EU VAT Registration Number for the Merchant. This will be provided to VIES when all validation checks are made.</li>
+<li><b>VIES Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to VIES when all validation checks are made.</li>
+<li><b>VIES Registration Number</b> - The EU VAT Registration Number for the Merchant. This will be provided to VIES when all validation checks are made.</li>
+<li><b>VAT Registration Number</b> - The Scheme Registration Number for the Merchant.</li>
 <li><b>Environment</b> - Whether to use the Sandbox or Production servers for the VIES VAT Validation Service.</li>
 <li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>
 <li><b>Use Magento Exchange Rate</b> - To convert from EUR Threshold to Store Currency Threshold, should we use the Magento Exchange Rate, or our own.</li>

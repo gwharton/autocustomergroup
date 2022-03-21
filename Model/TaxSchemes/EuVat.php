@@ -170,7 +170,7 @@ class EuVat extends AbstractTaxScheme
             ScopeInterface::SCOPE_STORE
         );
         $requesterVatNumber = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/registrationnumber",
+            "autocustomergroup/" . self::CODE . "/viesregistrationnumber",
             ScopeInterface::SCOPE_STORE
         );
         $newVat = str_replace(
