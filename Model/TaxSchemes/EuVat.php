@@ -267,6 +267,6 @@ class EuVat extends AbstractTaxScheme
      */
     public function getSchemeName(): string
     {
-        return "EU VAT OSS Scheme";
+        return "EU VAT OSS/IOSS Scheme";
     }
 }
