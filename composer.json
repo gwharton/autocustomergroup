@@ -22,6 +22,6 @@
         "magento/module-quote": "^101.1.0",
         "magento/module-config": "^101.1.0",
         "ext-soap": "*",
-        "guzzlehttp/guzzle": "^6.3.3"
+        "guzzlehttp/guzzle": "*"
     }
 }
