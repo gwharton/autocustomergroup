@@ -11,6 +11,9 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Data\Form\FormKey\Validator;
 
+/**
+ * Ajax Controller to validate VAT number
+ */
 class Validate implements HttpPostActionInterface
 {
     /**
@@ -65,35 +68,35 @@ class Validate implements HttpPostActionInterface
     public function execute()
     {
         $taxIdToCheck = $this->request->getParam('tax_id');
-        $countrycode = $this->request->getParam('country_code');
+        $countryCode = $this->request->getParam('country_code');
         $storeId = (int)$this->request->getParam('store_id', 0);
         if (!$this->validator->validate($this->request)) {
             $redirect = $this->redirectFactory->create();
             return $redirect->setPath('*/*/');
         }
 
-        $gatewayresponse = null;
-        if (!empty($countrycode) && !empty($taxIdToCheck) && $storeId) {
-            $gatewayresponse = $this->autoCustomerGroup->checkTaxId(
-                $countrycode,
+        $gatewayResponse = null;
+        if (!empty($countryCode) && !empty($taxIdToCheck) && $storeId) {
+            $gatewayResponse = $this->autoCustomerGroup->checkTaxId(
+                $countryCode,
                 $taxIdToCheck,
                 $storeId
             );
         }
 
-        $responsedata = [
+        $responseData = [
             'valid' => false,
             'message' => __('There was an error validating your Tax Id'),
             'success' => false
         ];
-        if ($gatewayresponse) {
-            $responsedata = [
-                'valid' => $gatewayresponse->getIsValid(),
-                'message' => $gatewayresponse->getRequestMessage(),
-                'success' => $gatewayresponse->getRequestSuccess()
+        if ($gatewayResponse) {
+            $responseData = [
+                'valid' => $gatewayResponse->getIsValid(),
+                'message' => $gatewayResponse->getRequestMessage(),
+                'success' => $gatewayResponse->getRequestSuccess()
             ];
         }
         $resultJson = $this->jsonFactory->create();
-        return $resultJson->setData($responsedata);
+        return $resultJson->setData($responseData);
     }
 }

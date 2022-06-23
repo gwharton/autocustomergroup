@@ -42,13 +42,17 @@ class Save extends \Magento\Tax\Controller\Adminhtml\Rule\Save
         );
     }
 
+    /**
+     * @param $postData
+     * @return TaxRuleInterface
+     */
     protected function populateTaxRule($postData): TaxRuleInterface
     {
         $taxRule = parent::populateTaxRule($postData);
         if (isset($postData['tax_scheme_id']) && $postData['tax_scheme_id'] != "") {
-            $ea = $taxRule->getExtensionAttributes();
-            $ea->setTaxScheme($this->taxSchemes->getTaxScheme($postData['tax_scheme_id']));
-            $taxRule->setExtensionAttributes($ea);
+            $extensionAttributes = $taxRule->getExtensionAttributes();
+            $extensionAttributes->setTaxScheme($this->taxSchemes->getTaxScheme($postData['tax_scheme_id']));
+            $taxRule->setExtensionAttributes($extensionAttributes);
         }
         return $taxRule;
     }
