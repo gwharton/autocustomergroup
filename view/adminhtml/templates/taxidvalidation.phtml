@@ -1,9 +1,9 @@
 <?php
-?>
-<script>
+$script = <<<script
 require([
     "prototype",
     "Gw_AutoCustomerGroup/js/taxidvalidation"
 ], function(){
 });
-</script>
+script;
+$secureRenderer->renderTag('script', [], $script, false);
