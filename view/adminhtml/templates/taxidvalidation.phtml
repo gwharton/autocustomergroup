@@ -6,4 +6,5 @@ require([
 ], function(){
 });
 script;
-$secureRenderer->renderTag('script', [], $script, false);
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $script, false); ?>
