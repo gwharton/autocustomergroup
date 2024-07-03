@@ -2,8 +2,6 @@
 namespace Gw\AutoCustomerGroup\Ui\Component\Listing\Column;
 
 use Gw\AutoCustomerGroup\Api\Data\OrderTaxCollectedInterface;
-use Gw\AutoCustomerGroup\Model\TaxSchemes;
-use Gw\Ebay\Model\ApiFulfillment;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
