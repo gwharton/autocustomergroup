@@ -3,38 +3,129 @@ namespace Gw\AutoCustomerGroup\Api\Data;
 
 interface OrderTaxSchemeInterface
 {
-    public function save();
+    /**
+     * @return void
+     */
+    public function save(): void;
 
+    /**
+     * @return int
+     */
     public function getOrderId(): int;
-    public function setOrderId(int $orderId);
 
+    /**
+     * @param int $orderId
+     * @return void
+     */
+    public function setOrderId(int $orderId): void;
+
+    /**
+     * @return string|null
+     */
     public function getReference(): ?string;
-    public function setReference(?string $reference);
 
+    /**
+     * @param string|null $reference
+     * @return void
+     */
+    public function setReference(?string $reference): void;
+
+    /**
+     * @return string|null
+     */
     public function getName(): ?string;
-    public function setName(?string $name);
 
+    /**
+     * @param string|null $name
+     * @return void
+     */
+    public function setName(?string $name): void;
+
+    /**
+     * @return string|null
+     */
     public function getStoreCurrency(): ?string;
-    public function setStoreCurrency(?string $currency);
 
+    /**
+     * @param string|null $currency
+     * @return void
+     */
+    public function setStoreCurrency(?string $currency): void;
+
+    /**
+     * @return string|null
+     */
     public function getBaseCurrency(): ?string;
-    public function setBaseCurrency(?string $currency);
 
+    /**
+     * @param string|null $currency
+     * @return void
+     */
+    public function setBaseCurrency(?string $currency): void;
+
+    /**
+     * @return string|null
+     */
     public function getSchemeCurrency(): ?string;
-    public function setSchemeCurrency(?string $currency);
 
+    /**
+     * @param string|null $currency
+     * @return void
+     */
+    public function setSchemeCurrency(?string $currency): void;
+
+    /**
+     * @return float
+     */
     public function getExchangeRateBaseToStore(): float;
-    public function setExchangeRateBaseToStore(float $rate);
 
+    /**
+     * @param float $rate
+     * @return void
+     */
+    public function setExchangeRateBaseToStore(float $rate): void;
+
+    /**
+     * @return float
+     */
     public function getExchangeRateSchemeToBase(): float;
-    public function setExchangeRateSchemeToBase(float $rate);
 
+    /**
+     * @param float $rate
+     * @return void
+     */
+    public function setExchangeRateSchemeToBase(float $rate): void;
+
+    /**
+     * @return float
+     */
     public function getImportThresholdStore(): float;
-    public function setImportThresholdStore(float $threshold);
 
+    /**
+     * @param float $threshold
+     * @return void
+     */
+    public function setImportThresholdStore(float $threshold): void;
+
+    /**
+     * @return float
+     */
     public function getImportThresholdBase(): float;
-    public function setImportThresholdBase(float $threshold);
 
+    /**
+     * @param float $threshold
+     * @return void
+     */
+    public function setImportThresholdBase(float $threshold): void;
+
+    /**
+     * @return float
+     */
     public function getImportThresholdScheme(): float;
-    public function setImportThresholdScheme(float $threshold);
+
+    /**
+     * @param float $threshold
+     * @return void
+     */
+    public function setImportThresholdScheme(float $threshold): void;
 }

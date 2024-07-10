@@ -97,14 +97,14 @@ class AutoCustomerGroup extends AbstractTotal
 
         if ($customer->getId()) {
             $this->logger->debug(
-                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Existing Customer Group " .
+                "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::updateGroup() : Existing Customer Group " .
                 $customer->getGroupId()
             );
         }
 
         if ($customer->getDisableAutoGroupChange()) {
             $this->logger->debug(
-                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : AutoGroupChange disabled " .
+                "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::updateGroup() : AutoGroupChange disabled " .
                 "for customer"
             );
             return $this;
@@ -113,8 +113,8 @@ class AutoCustomerGroup extends AbstractTotal
         $quoteAddress = $quote->getShippingAddress();
 
         if (empty($quoteAddress->getCountryId())) {
-            $this->logger->error(
-                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Quote Country Id empty "
+            $this->logger->debug(
+                "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::updateGroup() : Quote Country Id empty "
             );
             return $this;
         }
@@ -124,7 +124,7 @@ class AutoCustomerGroup extends AbstractTotal
             $this->autoCustomerGroup->getDefaultGroup($storeId);
 
         $this->logger->debug(
-            "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Starting Group is " .
+            "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::updateGroup() : Starting Group is " .
             $customerGroupId
         );
 
@@ -138,7 +138,7 @@ class AutoCustomerGroup extends AbstractTotal
                 //If we have previous validation data in the address, and we don't have to validate every time
                 //Then reuse the validation data
                 $this->logger->debug(
-                    "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Reusing validation data " .
+                    "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::updateGroup() : Reusing validation data " .
                     "from quote address."
                 );
                 $validationResult->setIsValid((bool)$quoteAddress->getData('vat_is_valid'));
@@ -184,12 +184,12 @@ class AutoCustomerGroup extends AbstractTotal
 
         if ($newGroup) {
             $this->logger->debug(
-                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : New Group Required " .
+                "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::updateGroup() : New Group Required " .
                 $newGroup
             );
         } else {
             $this->logger->debug(
-                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : No Group Change Required "
+                "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::updateGroup() : No Group Change Required "
             );
         }
 
@@ -224,7 +224,7 @@ class AutoCustomerGroup extends AbstractTotal
                 $quote->setCustomer($customer);
             }
             $this->logger->info(
-                "Gw/AutoCustomerGroup::Collector/AutoCustomerGroup::updateGroup() : Setting quote Group to " .
+                "Gw/AutoCustomerGroup/Model/Collector/AutoCustomerGroup::updateGroup() : Setting quote Group to " .
                 $newGroup
             );
             $quote->setCustomerGroupId($newGroup);

@@ -3,18 +3,58 @@ namespace Gw\AutoCustomerGroup\Api\Data;
 
 interface GatewayResponseInterface
 {
-    public function setIsValid(bool $valid);
+    /**
+     * @param bool $valid
+     * @return void
+     */
+    public function setIsValid(bool $valid): void;
+
+    /**
+     * @return bool
+     */
     public function getIsValid(): bool;
 
-    public function setRequestSuccess(bool $success);
+    /**
+     * @param bool $success
+     * @return void
+     */
+    public function setRequestSuccess(bool $success): void;
+
+    /**
+     * @return bool
+     */
     public function getRequestSuccess(): bool;
 
-    public function setRequestDate(string $date);
+    /**
+     * @param string $date
+     * @return void
+     */
+    public function setRequestDate(string $date): void;
+
+    /**
+     * @return string
+     */
     public function getRequestDate(): string;
 
-    public function setRequestIdentifier(string $identifier);
+    /**
+     * @param string $identifier
+     * @return void
+     */
+    public function setRequestIdentifier(string $identifier): void;
+
+    /**
+     * @return string
+     */
     public function getRequestIdentifier(): string;
 
-    public function setRequestMessage(string $message);
+    /**
+     * @param string $message
+     * @return void
+     */
+    public function setRequestMessage(string $message): void;
+
+    /**
+     * @return string
+     */
     public function getRequestMessage(): string;
 }

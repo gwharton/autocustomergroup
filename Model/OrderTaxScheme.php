@@ -20,7 +20,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('order_id');
     }
 
-    public function setOrderId(int $orderId)
+    public function setOrderId(int $orderId): void
     {
         $this->setData('order_id', $orderId);
     }
@@ -30,7 +30,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('reference');
     }
 
-    public function setReference(?string $reference)
+    public function setReference(?string $reference): void
     {
         $this->setData('reference', $reference);
     }
@@ -40,7 +40,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('name');
     }
 
-    public function setName(?string $name)
+    public function setName(?string $name): void
     {
         $this->setData('name', $name);
     }
@@ -50,7 +50,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('store_currency');
     }
 
-    public function setStoreCurrency(?string $currency)
+    public function setStoreCurrency(?string $currency): void
     {
         $this->setData('store_currency', $currency);
     }
@@ -60,7 +60,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('base_currency');
     }
 
-    public function setBaseCurrency(?string $currency)
+    public function setBaseCurrency(?string $currency): void
     {
         $this->setData('base_currency', $currency);
     }
@@ -70,7 +70,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('scheme_currency');
     }
 
-    public function setSchemeCurrency(?string $currency)
+    public function setSchemeCurrency(?string $currency): void
     {
         $this->setData('scheme_currency', $currency);
     }
@@ -80,7 +80,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('exchange_rate_base_to_store');
     }
 
-    public function setExchangeRateBaseToStore(float $rate)
+    public function setExchangeRateBaseToStore(float $rate): void
     {
         $this->setData('exchange_rate_base_to_store', $rate);
     }
@@ -90,7 +90,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('exchange_rate_scheme_to_base');
     }
 
-    public function setExchangeRateSchemeToBase(float $rate)
+    public function setExchangeRateSchemeToBase(float $rate): void
     {
         $this->setData('exchange_rate_scheme_to_base', $rate);
     }
@@ -100,7 +100,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('import_threshold_store');
     }
 
-    public function setImportThresholdStore(float $threshold)
+    public function setImportThresholdStore(float $threshold): void
     {
         $this->setData('import_threshold_store', $threshold);
     }
@@ -110,7 +110,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('import_threshold_base');
     }
 
-    public function setImportThresholdBase(float $threshold)
+    public function setImportThresholdBase(float $threshold): void
     {
         $this->setData('import_threshold_base', $threshold);
     }
@@ -120,7 +120,7 @@ class OrderTaxScheme extends AbstractExtensibleModel implements OrderTaxSchemeIn
         return $this->getData('import_threshold_scheme');
     }
 
-    public function setImportThresholdScheme(float $threshold)
+    public function setImportThresholdScheme(float $threshold): void
     {
         $this->setData('import_threshold_scheme', $threshold);
     }
