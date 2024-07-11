@@ -207,7 +207,7 @@ class AustraliaGst extends AbstractTaxScheme
         $weights = [10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
 
         // Strip non-numbers from the acn
-        $abn = preg_replace('/[^0-9]/', '', $abn);
+        $abn = preg_replace('/[^0-9]/', '', $abn ?? "");
 
         // Check abn is 11 chars long
         if (strlen($abn) != 11) {

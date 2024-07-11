@@ -19,15 +19,18 @@ use Psr\Log\LoggerInterface;
 use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterfaceFactory;
 
 /**
- * New Zealand NZBN Test numbers for Sandbox
- * 9429038644047 - TEST LIMITED No GST
- * 9429034241868 - with GST
- * 9429050853731 - with GST
- * 9429049835892 - with GST
+ * New Zealand NZBN Test numbers for Sandbox (as of 11/07/2024)
+ * 9429032097351 - MICROSOFT NEW ZEALAND LIMITED - NO GST
+ * 9429036975273 - GOOGLE NEW ZEALAND LIMITED - NO GST
+ * 9429050853731 - TRACY'S TEST COMPANY LIMITED - GST 111111111
+ * 9429049835892 - WOF 00916825 LIMITED - GST 111111111
  *
- * Real New Zealand numbers
- * 9429046452894 - ZEALAND CONSULTING LIMITED - GST Number 124367621
- * 9429033961842 - ZEALAND LIMITED - No GST
+ * Real New Zealand numbers (as of 11/07/2024)
+ * 9429039098740 - MICROSOFT NEW ZEALAND LIMITED - NO GST
+ * 9429034243282 - GOOGLE NEW ZEALAND LIMITED - NO GST
+ * 9429041535110 - AMAZON SERVICES LIMITED - GST 115706691
+ * 9429049999198 - G.S.GILL. LIMITED - GST 134953500
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class NewZealandGst extends AbstractTaxScheme
@@ -219,7 +222,7 @@ class NewZealandGst extends AbstractTaxScheme
                 $this->getBaseUrl() . "/entities/" . $taxId . "/gst-numbers",
                 [
                     'headers' => [
-                        "Authorization" => 'Bearer ' . $accesstoken,
+                        "Ocp-Apim-Subscription-Key" => $accesstoken,
                         'Accept' => "application/json"
                     ]
                 ]
@@ -258,7 +261,6 @@ class NewZealandGst extends AbstractTaxScheme
         } catch (BadResponseException $e) {
             switch ($e->getCode()) {
                 case 404:
-                case 400:
                     $gatewayResponse->setIsValid(false);
                     $gatewayResponse->setRequestSuccess(true);
                     $gatewayResponse->setRequestMessage(__('NZBN Number not found.'));
@@ -288,9 +290,9 @@ class NewZealandGst extends AbstractTaxScheme
             "autocustomergroup/" . self::CODE . "/environment",
             ScopeInterface::SCOPE_STORE
         ) == Environment::ENVIRONMENT_PRODUCTION) {
-            return "https://api.business.govt.nz/services/v4/nzbn";
+            return "https://api.business.govt.nz/gateway/nzbn/v5";
         } else {
-            return "https://sandbox.api.business.govt.nz/services/v4/nzbn";
+            return "https://api.business.govt.nz/sandbox/nzbn/v5";
         }
     }
 
@@ -308,7 +310,7 @@ class NewZealandGst extends AbstractTaxScheme
     {
         $weightsa = [3,2,7,6,5,4,3,2];
         $weightsb = [7,4,3,2,5,2,7,6];
-        $gst = preg_replace('/[^0-9]/', '', $gst);
+        $gst = preg_replace('/[^0-9]/', '', $gst ?? "");
         if (!is_numeric($gst)) {
             return false;
         }

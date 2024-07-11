@@ -6,7 +6,7 @@ use Magento\Framework\DataObject;
 
 class GatewayResponse extends DataObject implements GatewayResponseInterface
 {
-    public function setIsValid(bool $valid)
+    public function setIsValid(bool $valid): void
     {
         $this->setData('is_valid', $valid);
     }
@@ -16,7 +16,7 @@ class GatewayResponse extends DataObject implements GatewayResponseInterface
         return $this->getData('is_valid') ?: false;
     }
 
-    public function setRequestSuccess(bool $success)
+    public function setRequestSuccess(bool $success): void
     {
         $this->setData('request_success', $success);
     }
@@ -26,7 +26,7 @@ class GatewayResponse extends DataObject implements GatewayResponseInterface
         return $this->getData('request_success') ?: false;
     }
 
-    public function setRequestDate(string $date)
+    public function setRequestDate(string $date): void
     {
         $this->setData('request_date', $date);
     }
@@ -36,7 +36,7 @@ class GatewayResponse extends DataObject implements GatewayResponseInterface
         return $this->getData('request_date') ?: "";
     }
 
-    public function setRequestIdentifier(string $identifier)
+    public function setRequestIdentifier(string $identifier): void
     {
         $this->setData('request_identifier', $identifier);
     }
@@ -46,7 +46,7 @@ class GatewayResponse extends DataObject implements GatewayResponseInterface
         return $this->getData('request_identifier') ?: "";
     }
 
-    public function setRequestMessage(string $message)
+    public function setRequestMessage(string $message): void
     {
         $this->setData('request_message', $message);
     }

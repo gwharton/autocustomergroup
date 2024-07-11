@@ -1,17 +1,25 @@
 <?php
 namespace Gw\AutoCustomerGroup\Model\TaxSchemes;
 
-use Exception;
+use GuzzleHttp\ClientFactory;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Exception\BadResponseException;
 use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterface;
-use Gw\AutoCustomerGroup\Model\Config\Source\Environment;
+use Gw\AutoCustomerGroup\Api\Data\GatewayResponseInterfaceFactory;
+use Magento\Directory\Model\CurrencyFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
-use SoapClient;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
- * Sandbox Test Number
- * 100 Valid
- * 200 Invalid
+ * Real EU VAT numbers (as of 11/07/2024)
+ * NL - 810433941B01 - COOLBLUE B.V. - VALID
+ * IE - IE8256796U - MICROSOFT IRELAND OPERATIONS LIMITED - VALID
+ * IE - IE3206488LH - STRIPE PAYMENTS EUROPE LIMITED - VALID
  */
 class EuVat extends AbstractTaxScheme
 {
@@ -25,7 +33,49 @@ class EuVat extends AbstractTaxScheme
      * @var string[]
      */
     protected $schemeCountries = [  'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE',
-                                    'IT','LV','LT','LU','MT','MC','NL','PL','PT','RO','SK','SI','ES','SE'];
+        'IT','LV','LT','LU','MT','MC','NL','PL','PT','RO','SK','SI','ES','SE'];
+
+    /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
+
+    /**
+     * @var Json
+     */
+    private $serializer;
+
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     * @param ClientFactory $clientFactory
+     * @param Json $serializer
+     * @param DateTime $datetime
+     * @param LoggerInterface $logger
+     * @param StoreManagerInterface $storeManager
+     * @param CurrencyFactory $currencyFactory
+     * @param GatewayResponseInterfaceFactory $gwrFactory
+     */
+    public function __construct(
+        ScopeConfigInterface $scopeConfig,
+        ClientFactory $clientFactory,
+        Json $serializer,
+        DateTime $datetime,
+        LoggerInterface $logger,
+        StoreManagerInterface $storeManager,
+        CurrencyFactory $currencyFactory,
+        GatewayResponseInterfaceFactory $gwrFactory
+    ) {
+        parent::__construct(
+            $scopeConfig,
+            $logger,
+            $storeManager,
+            $datetime,
+            $currencyFactory,
+            $gwrFactory
+        );
+        $this->clientFactory = $clientFactory;
+        $this->serializer = $serializer;
+    }
 
     /**
      * Get customer group based on Validation Result and Country of customer
@@ -165,64 +215,101 @@ class EuVat extends AbstractTaxScheme
         $gatewayResponse = $this->gwrFactory->create();
         $gatewayResponse->setRequestMessage(__('Error during VAT Number verification.'));
 
-        $requesterCountryCode = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/registrationcountry",
-            ScopeInterface::SCOPE_STORE
-        );
-        $requesterVatNumber = $this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/viesregistrationnumber",
-            ScopeInterface::SCOPE_STORE
-        );
-        $newVat = str_replace(
+        $sanitisedVatNumber = str_replace(
             [' ', '-', $this->getCountryCodeForVatNumber($countryCode)],
             ['', '', ''],
             $taxId
         );
-        $newRequesterVat = str_replace(
-            [' ', '-', $this->getCountryCodeForVatNumber($requesterCountryCode)],
-            ['', '', ''],
-            $requesterVatNumber
-        );
 
-        if (empty($newVat) ||
-            empty($newRequesterVat) ||
+        if (empty($sanitisedVatNumber) ||
             empty($this->getCountryCodeForVatNumber($countryCode)) ||
-            empty($this->getCountryCodeForVatNumber($requesterCountryCode)) ||
             !$this->isSchemeCountry($countryCode)) {
             $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number.'));
             return $gatewayResponse;
         }
 
-        if (extension_loaded('soap')) {
-            try {
-                $soapClient = new SoapClient($this->getWsdlUrl());
+        try {
+            $body['countryCode'] = $countryCode;
+            $body['vatNumber'] = $sanitisedVatNumber;
 
-                $requestParams = [];
-                $requestParams['countryCode'] = $this->getCountryCodeForVatNumber($countryCode);
-                $requestParams['vatNumber'] = $newVat;
-                $requestParams['requesterCountryCode'] = $this->getCountryCodeForVatNumber($requesterCountryCode);
-                $requestParams['requesterVatNumber'] = $newRequesterVat;
+            $requesterCountryCode = $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/registrationcountry",
+                ScopeInterface::SCOPE_STORE
+            );
+            $requesterVatNumber = $this->scopeConfig->getValue(
+                "autocustomergroup/" . self::CODE . "/viesregistrationnumber",
+                ScopeInterface::SCOPE_STORE
+            );
 
-                $result = $soapClient->checkVatApprox($requestParams);
+            if ($requesterCountryCode && $requesterVatNumber) {
+                $sanitisedRequesterVatNumber = str_replace(
+                    [' ', '-', $this->getCountryCodeForVatNumber($requesterCountryCode)],
+                    ['', '', ''],
+                    $requesterVatNumber
+                );
+                $body['requesterMemberStateCode'] = $requesterCountryCode;
+                $body['requesterNumber'] = $sanitisedRequesterVatNumber;
+            }
 
-                $gatewayResponse->setIsValid((bool)$result->valid);
-                $gatewayResponse->setRequestDate((string)$result->requestDate);
-                $gatewayResponse->setRequestIdentifier((string)$result->requestIdentifier);
+            $client = $this->clientFactory->create();
+            $response = $client->send(
+                new Request(
+                    "POST",
+                    $this->getBaseUrl() . "/check-vat-number",
+                    [
+                        'Content-Type' => "application/json",
+                        'Accept' => "application/json"
+                    ],
+                    $this->serializer->serialize($body)
+                )
+            );
+            $responseBody = $response->getBody();
+            $vatRegistration = $this->serializer->unserialize($responseBody->getContents());
+            if (isset($vatRegistration['actionSucceeded']) && $vatRegistration['actionSucceeded'] == false) {
+                $gatewayResponse->setIsValid(false);
+                $gatewayResponse->setRequestSuccess(false);
+                $gatewayResponse->setRequestMessage(__('There was an error checking the VAT number.'));
+            } else {
+                $gatewayResponse->setIsValid($vatRegistration['valid']);
                 $gatewayResponse->setRequestSuccess(true);
+                $gatewayResponse->setRequestDate($vatRegistration['requestDate']);
+                $gatewayResponse->setRequestIdentifier($vatRegistration['requestIdentifier']);
 
                 if ($gatewayResponse->getIsValid()) {
                     $gatewayResponse->setRequestMessage(__('VAT Number validated with VIES.'));
                 } else {
                     $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number including country code.'));
                 }
-            } catch (Exception $exception) {
-                $gatewayResponse->setRequestSuccess(false);
-                $gatewayResponse->setIsValid(false);
-                $gatewayResponse->setRequestDate('');
-                $gatewayResponse->setRequestIdentifier('');
+            }
+        } catch (BadResponseException $e) {
+            switch ($e->getCode()) {
+                case 404:
+                    $gatewayResponse->setIsValid(false);
+                    $gatewayResponse->setRequestSuccess(true);
+                    $gatewayResponse->setRequestMessage(__('Please enter a valid VAT number.'));
+                    break;
+                default:
+                    $gatewayResponse->setIsValid(false);
+                    $gatewayResponse->setRequestSuccess(false);
+                    $gatewayResponse->setRequestMessage(__('There was an error checking the VAT number.'));
+                    $this->logger->error(
+                        "Gw/AutoCustomerGroup/Model/TaxSchemes/EuVat::checkTaxId() : EuVat Error received from " .
+                        "VIES. " . $e->getCode()
+                    );
+                    break;
             }
         }
         return $gatewayResponse;
+    }
+
+    /**
+     * Return the correct REST API Base Url
+     *
+     * @return string
+     */
+    private function getBaseUrl(): string
+    {
+        return "https://ec.europa.eu/taxation_customs/vies/rest-api";
     }
 
     /**
@@ -241,23 +328,6 @@ class EuVat extends AbstractTaxScheme
         // instead of its ISO 3166-1 alpha-2 country code GR)"
 
         return $countryCode === 'GR' ? 'EL' : $countryCode;
-    }
-
-    /**
-     * Return the correct SOAP Url depending on the environment settiong
-     *
-     * @return string
-     */
-    private function getWsdlUrl(): string
-    {
-        if ($this->scopeConfig->getValue(
-            "autocustomergroup/" . self::CODE . "/environment",
-            ScopeInterface::SCOPE_STORE
-        ) == Environment::ENVIRONMENT_PRODUCTION) {
-            return "https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl";
-        } else {
-            return "https://ec.europa.eu/taxation_customs/vies/checkVatTestService.wsdl";
-        }
     }
 
     /**

@@ -70,8 +70,8 @@ it, the customer is presented with a prompt above the input field, notifying wha
 <ul>
 <li><b>Enabled</b> - Enable/Disable this Scheme.</li>
 <li><b>Tax Identifier Field</b> - Displayed to the customer during checkout when this scheme is being used.</li>
-<li><b>VIES Registration Country</b> - The country in which the Merchant is VAT Registered. This will be provided to VIES when all validation checks are made.</li>
-<li><b>VIES Registration Number</b> - The EU VAT Registration Number for the Merchant. This will be provided to VIES when all validation checks are made.</li>
+<li><b>VIES Registration Country</b> - Optional. Must be valid EU country, if completed, it will be passed to the VIES with the validation request and a unique verification code will be returned and stored with the order as proof of validation.</li>
+<li><b>VIES Registration Number</b> - Optional. Must be valid EU VAT number, if completed, it will be passed to the VIES with the validation request and a unique verification code will be returned and stored with the order as proof of validation.</li>
 <li><b>VAT Registration Number</b> - The Scheme Registration Number for the Merchant.</li>
 <li><b>Environment</b> - Whether to use the Sandbox or Production servers for the VIES VAT Validation Service.</li>
 <li><b>Import VAT Threshold</b> - If the order value is above the VAT Threshold, no VAT should be charged.</li>

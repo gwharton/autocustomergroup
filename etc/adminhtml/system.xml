@@ -245,25 +245,30 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="environment" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Environment</label>
-                    <source_model>Gw\AutoCustomerGroup\Model\Config\Source\Environment</source_model>
-                    <depends>
-                        <field id="enabled">1</field>
-                    </depends>
-                </field>
-                <field id="registrationcountry" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="registrationcountry" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>VIES Registration Country</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
+                    <comment>
+                        <![CDATA[
+                        Optional. Must be valid EU country, if completed, it will be passed to the VIES with the validation request and a unique
+                        verification code will be returned and stored with the order as proof of validation.
+                        ]]>
+                    </comment>
                 </field>
-                <field id="viesregistrationnumber" translate="label" type="text" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="viesregistrationnumber" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>VIES Registration Number</label>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
+                    <comment>
+                        <![CDATA[
+                        Optional. Must be valid EU VAT number, if completed, it will be passed to the VIES with the validation request and a unique
+                        verification code will be returned and stored with the order as proof of validation.
+                        ]]>
+                    </comment>
                 </field>
                 <field id="registrationnumber" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>VAT/Scheme Registration Number</label>
@@ -638,9 +643,9 @@
 <ul>
 <li>Sign up for an account at <a href="https://api.business.govt.nz">the New Zealand Government API Website</a><ul>
 <li>Create an application at the "My Applications" section</li>
-<li>Subscribe to the NZBN Version 4 API in the "Apis" section</li>
+<li>Subscribe to the NZBN Version 5 API in the "Apis" section</li>
 <li>You may be required to sign a license agreement to use the service</li>
-<li>Generate keys for both sandbox and production services</li>
+<li>Generate Subscription Keys for both sandbox and production services</li>
 <li>Generate access tokens with -1 seconds validity time (this ensures they don't expire)</li>
 </ul>
 <p>With offline validation, only a simple format check and checksum calculation is performed. The New Zealand Government do NOT require you to perform

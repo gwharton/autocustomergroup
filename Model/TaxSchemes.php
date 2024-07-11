@@ -24,7 +24,7 @@ class TaxSchemes
      *
      * @return TaxSchemeInterface[]
      */
-    public function getTaxSchemes()
+    public function getTaxSchemes(): array
     {
         return $this->taxSchemes;
     }
@@ -35,7 +35,7 @@ class TaxSchemes
      * @param int|null $storeId
      * @return TaxSchemeInterface[]
      */
-    public function getEnabledTaxSchemes($storeId)
+    public function getEnabledTaxSchemes($storeId): array
     {
         $enabledSchemes = [];
         foreach ($this->taxSchemes as $taxScheme) {
@@ -51,7 +51,7 @@ class TaxSchemes
      *
      * @return array
      */
-    public function toOptionArray()
+    public function toOptionArray(): array
     {
         $array = [];
         foreach ($this->taxSchemes as $taxScheme) {
@@ -66,7 +66,7 @@ class TaxSchemes
      * @param string $code
      * @return null|TaxSchemeInterface
      */
-    public function getTaxScheme($code)
+    public function getTaxScheme($code): ?TaxSchemeInterface
     {
         return isset($this->taxSchemes[$code]) ? $this->taxSchemes[$code] : null;
     }

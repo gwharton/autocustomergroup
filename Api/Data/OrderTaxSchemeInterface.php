@@ -4,9 +4,9 @@ namespace Gw\AutoCustomerGroup\Api\Data;
 interface OrderTaxSchemeInterface
 {
     /**
-     * @return void
+     * @return $this
      */
-    public function save(): void;
+    public function save();
 
     /**
      * @return int

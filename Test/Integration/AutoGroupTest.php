@@ -157,9 +157,7 @@ class AutoGroupTest extends TestCase
      * @magentoConfigFixture current_store autocustomergroup/ukvat/exchangerate 1
      * @magentoConfigFixture current_store autocustomergroup/ukvat/importthreshold 135
      * @magentoConfigFixture current_store autocustomergroup/euvat/enabled 1
-     * @magentoConfigFixture current_store autocustomergroup/euvat/registrationcountry IE
-     * @magentoConfigFixture current_store autocustomergroup/euvat/viesregistrationnumber 100
-     * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber 100
+     * @magentoConfigFixture current_store autocustomergroup/euvat/registrationnumber IE8256796U
      * @magentoConfigFixture current_store autocustomergroup/euvat/environment sandbox
      * @magentoConfigFixture current_store autocustomergroup/euvat/usemagentoexchangerate 0
      * @magentoConfigFixture current_store autocustomergroup/euvat/exchangerate 0.88603
@@ -382,8 +380,8 @@ class AutoGroupTest extends TestCase
             [1, 10, 'NZ', null, 'NZ', "0620", '1234', 'newzealand_domestic', 0],
 
             //Online check will show valid but no GST, Offline check will show valid
-            [1, 10, 'NZ', null, 'NZ', "0620", '9429038644047', 'newzealand_domestic', 0, true],
-            [1, 10, 'NZ', null, 'NZ', "0620", '9429038644047', 'newzealand_domestic', 0],
+            [1, 10, 'NZ', null, 'NZ', "0620", '9429032097351', 'newzealand_domestic', 0, true],
+            [1, 10, 'NZ', null, 'NZ', "0620", '9429032097351', 'newzealand_domestic', 0],
 
             //Online check will show valid with GST, Offline check will show valid
             [1, 10, 'GB', 'NE1 1AA', 'NZ', "0620", '9429050853731', 'newzealand_import_b2b', 0, true],
@@ -398,8 +396,8 @@ class AutoGroupTest extends TestCase
             [1, 4000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429049835892', 'newzealand_import_b2b', 0],
 
             //Online check will show valid but no GST, Offline check will show valid
-            [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_untaxed', 0, true],
-            [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429038644047', 'newzealand_import_b2b', 0],
+            [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429036975273', 'newzealand_import_untaxed', 0, true],
+            [10, 1000, 'GB', 'NE1 1AA', 'NZ', "0620", '9429036975273', 'newzealand_import_b2b', 0],
 
             //Online and offline should both show invalid
             [1, 10, 'GB', 'NE1 1AA', 'NZ', "0620", '1234', 'newzealand_import_taxed', 0, true],
@@ -447,21 +445,21 @@ class AutoGroupTest extends TestCase
             [30, 10, 'FR', null, 'GB', 'NE1 1AA', '', 'uk_import_untaxed', 50], //30 x 10ea = 300 * 50% = 200
 
             //EU VAT
-            //Threshold is 150EUR = 132.90 GBP
+            //45-Threshold is 150EUR = 132.90 GBP
             [1, 10, 'IE', null, 'IE', null, '', 'eu_domestic', 0],
-            [1, 10, 'IE', null, 'IE', null, '100', 'eu_domestic', 0],
-            [1, 10, 'DE', null, 'IE', null, '100', 'eu_intraeu_b2b', 0],
-            [1, 10, 'GB', 'BT1 1AA', 'IE', null, '100', 'eu_intraeu_b2b', 0],
-            [1, 10, 'DE', null, 'IE', null, '200', 'eu_intraeu_b2c', 0], //VAT is invalid
+            [1, 10, 'IE', null, 'IE', null, 'IE8256796U', 'eu_domestic', 0],
+            [1, 10, 'DE', null, 'IE', null, 'IE8256796U', 'eu_intraeu_b2b', 0],
+            [1, 10, 'GB', 'BT1 1AA', 'IE', null, 'IE8256796U', 'eu_intraeu_b2b', 0],
+            [1, 10, 'DE', null, 'IE', null, 'IE8256796Z', 'eu_intraeu_b2c', 0], //VAT is invalid
             [1, 10, 'GB', 'BT1 1AA', 'IE', null, '', 'eu_intraeu_b2c', 0],
-            [1, 10, 'GB', 'NE1 1AA', 'IE', null, '100', 'eu_import_b2b', 0],
+            [1, 10, 'GB', 'NE1 1AA', 'IE', null, 'IE8256796U', 'eu_import_b2b', 0],
             //30 x 10ea = 300,  * 50% = 150
-            [30, 10, 'GB', 'NE1 1AA', 'IE', null, '100', 'eu_import_b2b', 50],
+            [30, 10, 'GB', 'NE1 1AA', 'IE', null, 'IE8256796U', 'eu_import_b2b', 50],
             //18 x 10ea = 180,  * 50% = 90
-            [18, 10, 'GB', 'NE1 1AA', 'IE', null, '100', 'eu_import_b2b', 50],
+            [18, 10, 'GB', 'NE1 1AA', 'IE', null, 'IE8256796U', 'eu_import_b2b', 50],
             //16 x 10ea = 160,  * 50% = 80
-            [16, 10, 'GB', 'NE1 1AA', 'IE', null,'100', 'eu_import_b2b', 50],
-            [1, 10, 'BR', null, 'IE', null, '100', 'eu_import_b2b', 0],
+            [16, 10, 'GB', 'NE1 1AA', 'IE', null, 'IE8256796U', 'eu_import_b2b', 50],
+            [1, 10, 'BR', null, 'IE', null, 'IE8256796U', 'eu_import_b2b', 0],
             [1, 10, 'GB', 'NE1 1AA', 'FR', '75001', '', 'eu_import_taxed', 0],
             [1, 10, 'GB', 'NE1 1AA', 'IE', null, '123456', 'eu_import_taxed', 0],
             [1, 10, 'BR', null, 'IE', null, '', 'eu_import_taxed', 0],
