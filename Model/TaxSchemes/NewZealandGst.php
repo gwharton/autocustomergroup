@@ -380,8 +380,7 @@ class NewZealandGst extends AbstractTaxScheme
         foreach (str_split($withoutcheck) as $key => $digit) {
             $sum += ((int) $digit * $weights[$key]);
         }
-        $remainder = $sum % 10;
-        $calculatedCheck = 10 - $remainder;
+        $calculatedCheck = (ceil($sum/10) * 10) - $sum;
         if ($calculatedCheck == $check) {
             return true;
         }

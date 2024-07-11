@@ -71,6 +71,10 @@ class CheckNzGstTest extends TestCase
     public function isValidNZBNDataProvider(): array
     {
         return [
+            ["9429039098740", true],
+            ["9429034243282", true],
+            ["9429041535110", true],
+            ["9429049999198", true],
             ["6291041500213", true],
             ["6291041500212", false],
             ["123456789", false],
@@ -80,3 +84,4 @@ class CheckNzGstTest extends TestCase
         ];
     }
 }
+
