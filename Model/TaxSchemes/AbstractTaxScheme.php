@@ -337,6 +337,7 @@ abstract class AbstractTaxScheme implements TaxSchemeInterface
                 ScopeInterface::SCOPE_STORE,
                 $storeId
             );
+            $schemeCurrency = $this->getSchemeCurrency();
             $exchangerate = $this->getSchemeCurrency()->getAnyRate($websiteBaseCurrency);
             if (!$exchangerate) {
                 $this->logger->critical(
